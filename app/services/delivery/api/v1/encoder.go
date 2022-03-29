@@ -1,0 +1,15 @@
+package v1
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func Encode(data any) ([]byte, error) {
+	encData, err := json.Marshal(data)
+	if err != nil {
+		return nil, fmt.Errorf("json encoding fail: %w", err)
+	}
+
+	return encData, nil
+}
