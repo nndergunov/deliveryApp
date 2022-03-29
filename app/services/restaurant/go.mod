@@ -1,3 +1,3 @@
-module github.com/nndergunov/deliveryApp/app/restaurant
+module github.com/nndergunov/deliveryApp/app/services/restaurant
 
 go 1.18
