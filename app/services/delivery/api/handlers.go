@@ -9,7 +9,7 @@ import (
 
 func (a *API) handlerInit() {
 	a.mux.HandleFunc("/status", a.statusHandler)
-	a.mux.HandleFunc("/func1", a.func1Handler) // TODO normal endpoints.
+	a.mux.HandleFunc("/func1", a.func1Handler)
 }
 
 func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -31,5 +31,5 @@ func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) 
 }
 
 func (a API) func1Handler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "func1 operational")
+	io.WriteString(w, "yeah this shit slaps")
 }
