@@ -5,8 +5,18 @@ import (
 	"log"
 )
 
-func NewLogger(out io.Writer, prefix string) *log.Logger {
+type Logger struct {
+	logger *log.Logger
+}
+
+func NewLogger(out io.Writer, prefix string) *Logger {
 	prefix += " "
 
-	return log.New(out, prefix, log.LstdFlags)
+	return &Logger{
+		logger: log.New(out, prefix, log.LstdFlags),
+	}
+}
+
+func (l Logger) Println(data any) {
+	l.logger.Println(data)
 }
