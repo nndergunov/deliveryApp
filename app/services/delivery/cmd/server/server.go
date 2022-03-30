@@ -1,17 +1,18 @@
 package server
 
 import (
-	"log"
 	"net/http"
 
+	"github.com/nndergunov/deliveryApp/app/libs/logger"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/cmd/server/config"
 )
 
 type Server struct {
 	HTTPServer *http.Server
+	Logger     logger.Logger
 }
 
-func NewServer(handler http.Handler, serverConfig config.Config, errorLog *log.Logger) *Server {
+func NewServer(handler http.Handler, serverConfig config.Config, logger logger.Logger) *Server {
 	return &Server{
 		HTTPServer: &http.Server{
 			Addr:              serverConfig.Address,
@@ -24,10 +25,11 @@ func NewServer(handler http.Handler, serverConfig config.Config, errorLog *log.L
 			MaxHeaderBytes:    0,
 			TLSNextProto:      nil,
 			ConnState:         nil,
-			ErrorLog:          errorLog,
+			ErrorLog:          nil,
 			BaseContext:       nil,
 			ConnContext:       nil,
 		},
+		Logger: logger,
 	}
 }
 
@@ -39,5 +41,5 @@ func (s *Server) StartListening() {
 }
 
 func (s Server) Log(data any) {
-	s.HTTPServer.ErrorLog.Println(data)
+	s.Logger.Println(data)
 }
