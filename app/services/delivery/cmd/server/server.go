@@ -11,9 +11,7 @@ type Server struct {
 	HTTPServer *http.Server
 }
 
-func NewServer(handler http.Handler, errorLog *log.Logger) *Server {
-	serverConfig := config.GetConfig()
-
+func NewServer(handler http.Handler, serverConfig config.Config, errorLog *log.Logger) *Server {
 	return &Server{
 		HTTPServer: &http.Server{
 			Addr:              serverConfig.Address,
