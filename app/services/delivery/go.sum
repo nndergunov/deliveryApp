@@ -1,2 +1,4 @@
 github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220329110511-27b6a4494a95 h1:G8pwuqGoNFARz4kEETSe4Uqfk9ioknjpRpm7qwycbCA=
 github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220329110511-27b6a4494a95/go.mod h1:neybUdnqqebNndqV6SU71U+aUMW2r1npoaY1b8N9tRE=
+github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220330102008-bed363e92b47 h1:oAqqN4Yp9TjTKytdQQ67j8LZaPI0dizEljBRwhPscCw=
+github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220330102008-bed363e92b47/go.mod h1:neybUdnqqebNndqV6SU71U+aUMW2r1npoaY1b8N9tRE=
