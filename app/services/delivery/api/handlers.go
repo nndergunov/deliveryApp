@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 
@@ -9,7 +10,7 @@ import (
 
 func (a *API) handlerInit() {
 	a.mux.HandleFunc("/status", a.statusHandler)
-	a.mux.HandleFunc("/func1", a.func1Handler) // TODO normal endpoints.
+	a.mux.HandleFunc("/needCourier", a.needCourierHandler)
 }
 
 func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -22,14 +23,18 @@ func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) 
 
 	_, err = io.WriteString(responseWriter, string(status))
 	if err != nil {
-		a.log.Printf("status write: %v", err)
+		a.log.Println(fmt.Sprintf("status write: %v", err))
 
 		return
 	}
 
-	a.log.Printf("gave status %s", data.IsUp)
+	a.log.Println(fmt.Sprintf("gave status %s", data.IsUp))
 }
 
-func (a API) func1Handler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "func1 operational")
+func (a API) needCourierHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		// TODO return error "unsupported method".
+	}
+
+	// TODO logic.
 }
