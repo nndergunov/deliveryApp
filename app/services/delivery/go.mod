@@ -2,7 +2,7 @@ module github.com/nndergunov/deliveryApp/app/services/delivery
 
 go 1.18
 
-require github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220330102008-bed363e92b47
+require github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220331181337-9bc7003ae2ef
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
