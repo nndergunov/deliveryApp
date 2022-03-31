@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/nndergunov/deliveryApp/app/libs/logger"
@@ -8,13 +9,13 @@ import (
 )
 
 type Server struct {
-	HTTPServer *http.Server
-	Logger     logger.Logger
+	httpServer *http.Server
+	logger     *logger.Logger
 }
 
-func NewServer(handler http.Handler, serverConfig config.Config, logger logger.Logger) *Server {
+func NewServer(handler http.Handler, serverConfig *config.Config, logger *logger.Logger) *Server {
 	return &Server{
-		HTTPServer: &http.Server{
+		httpServer: &http.Server{
 			Addr:              serverConfig.Address,
 			Handler:           handler,
 			TLSConfig:         nil,
@@ -29,17 +30,26 @@ func NewServer(handler http.Handler, serverConfig config.Config, logger logger.L
 			BaseContext:       nil,
 			ConnContext:       nil,
 		},
-		Logger: logger,
+		logger: logger,
 	}
 }
 
-func (s *Server) StartListening() {
-	err := http.ListenAndServe(s.HTTPServer.Addr, s.HTTPServer.Handler)
-	if err != nil {
-		s.Log(err)
+func (s *Server) StartListening(stopChan chan interface{}) {
+	go func() {
+		if err := s.httpServer.ListenAndServe(); err != nil {
+			s.log(err)
+		}
+
+		close(stopChan)
+	}()
+}
+
+func (s *Server) Shutdown() {
+	if err := s.httpServer.Shutdown(context.TODO()); err != nil {
+		s.log(err)
 	}
 }
 
-func (s Server) Log(data any) {
-	s.Logger.Println(data)
+func (s Server) log(data any) {
+	s.logger.Println(data)
 }

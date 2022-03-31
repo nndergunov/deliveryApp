@@ -1,26 +1,27 @@
 package api
 
 import (
-	"log"
 	"net/http"
+
+	"github.com/nndergunov/deliveryApp/app/libs/logger"
 )
 
 type API struct {
 	mux *http.ServeMux
-	log *log.Logger
+	log *logger.Logger
 }
 
-func NewAPI(log *log.Logger) *API {
+func NewAPI(log *logger.Logger) *API {
 	mux := http.NewServeMux()
 
-	a := &API{
+	api := &API{
 		mux: mux,
 		log: log,
 	}
 
-	a.handlerInit()
+	api.handlerInit()
 
-	return a
+	return api
 }
 
 func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
