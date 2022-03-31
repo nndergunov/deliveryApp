@@ -13,6 +13,8 @@ github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220329110511-27b6a449
 github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220329110511-27b6a4494a95/go.mod h1:neybUdnqqebNndqV6SU71U+aUMW2r1npoaY1b8N9tRE=
 github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220330102008-bed363e92b47 h1:oAqqN4Yp9TjTKytdQQ67j8LZaPI0dizEljBRwhPscCw=
 github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220330102008-bed363e92b47/go.mod h1:neybUdnqqebNndqV6SU71U+aUMW2r1npoaY1b8N9tRE=
+github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220331181337-9bc7003ae2ef h1:ykLHKOtkHFulf0125QLuSfV3ePEe+yl0AqngK/W8BU4=
+github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220331181337-9bc7003ae2ef/go.mod h1:neybUdnqqebNndqV6SU71U+aUMW2r1npoaY1b8N9tRE=
 github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhECwM=
 github.com/pelletier/go-toml v1.9.4/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
