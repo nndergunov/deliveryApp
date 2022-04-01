@@ -15,7 +15,7 @@ import (
 func main() {
 	mainLogger := logger.NewLogger(os.Stdout, "main")
 
-	apiLogger := logger.NewLogger(os.Stdout, "delivery api")
+	apiLogger := logger.NewLogger(os.Stdout, "api")
 	serverAPI := api.NewAPI(apiLogger)
 
 	serverConfig, err := getServerConfig()
@@ -23,23 +23,11 @@ func main() {
 		mainLogger.Println(err)
 	}
 
-	serverLogger := logger.NewLogger(os.Stdout, "service server")
+	serverLogger := logger.NewLogger(os.Stdout, "server")
 	serviceServer := server.NewServer(serverAPI, serverConfig, serverLogger)
 	serverStopChan := make(chan interface{})
 
 	serviceServer.StartListening(serverStopChan)
-
-	err = write("press Enter to stop server\n")
-	if err != nil {
-		mainLogger.Println(err)
-	}
-
-	_, err = fmt.Scanln()
-	if err != nil {
-		mainLogger.Println(err)
-	}
-
-	serviceServer.Shutdown()
 
 	<-serverStopChan
 }
@@ -66,13 +54,4 @@ func getServerConfig() (*config.Config, error) {
 		IdleTimeout:       idleTime,
 		ReadHeaderTimeout: readerHeaderTime,
 	}, nil
-}
-
-func write(s string) error {
-	_, err := os.Stdout.WriteString(s)
-	if err != nil {
-		return fmt.Errorf("writing to stdout: %w", err)
-	}
-
-	return nil
 }
