@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  app:
+    container_name: client-service
+    build: .
+    ports:
+      - 8081:8081
+    restart: on-failure
