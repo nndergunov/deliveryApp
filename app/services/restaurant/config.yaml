@@ -1,0 +1,6 @@
+server:
+  address: ":8086"
+  readTime: 5
+  writeTime: 5
+  idleTime: 300
+  readerHeaderTime: 5
