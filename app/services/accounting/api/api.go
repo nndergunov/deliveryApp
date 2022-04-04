@@ -11,11 +11,15 @@ type API struct {
 	log *logger.Logger
 }
 
-func NewAPI(endpointHandler *http.ServeMux, log *logger.Logger) *API {
+func NewAPI(log *logger.Logger) *API {
+	mux := http.NewServeMux()
+
 	api := &API{
-		mux: endpointHandler,
+		mux: mux,
 		log: log,
 	}
+
+	api.handlerInit()
 
 	return api
 }

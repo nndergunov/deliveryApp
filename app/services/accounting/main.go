@@ -15,11 +15,8 @@ import (
 func main() {
 	mainLogger := logger.NewLogger(os.Stdout, "main")
 
-	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	endpointHandler := api.NewEndpointHandler(handlerLogger)
-
 	apiLogger := logger.NewLogger(os.Stdout, "api")
-	serverAPI := api.NewAPI(endpointHandler, apiLogger)
+	serverAPI := api.NewAPI(apiLogger)
 
 	serverConfig, err := getServerConfig()
 	if err != nil {
