@@ -1,7 +1,7 @@
 status-check:
 	curl http://localhost:8084/status
 
-run:
+cl-start:
 	go run main.go
 
 docker-build:
@@ -23,5 +23,8 @@ docker-stop:
 
 update-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
-	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/apilib
+	make gomod-tidy
+
+gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18

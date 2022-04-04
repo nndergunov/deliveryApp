@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 

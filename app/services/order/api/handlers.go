@@ -4,17 +4,36 @@ import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/services/order/api/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
-func (a *API) handlerInit() {
-	a.mux.HandleFunc("/status", a.statusHandler)
-	a.mux.HandleFunc("/orderRestaurants", a.orderRestaurantsHandler)
-	a.mux.HandleFunc("/orderMenu", a.orderMenuHandler)
-	a.mux.HandleFunc("/finishedOrder", a.finishedOrderHandler)
+type endpointHandler struct {
+	mux *http.ServeMux
+	log *logger.Logger
 }
 
-func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	handler := endpointHandler{
+		mux: mux,
+		log: log,
+	}
+
+	handler.handlerInit()
+
+	return handler.mux
+}
+
+func (e *endpointHandler) handlerInit() {
+	e.mux.HandleFunc("/status", e.statusHandler)
+	e.mux.HandleFunc("/orderRestaurants", e.orderRestaurantsHandler)
+	e.mux.HandleFunc("/orderMenu", e.orderMenuHandler)
+	e.mux.HandleFunc("/finishedOrder", e.finishedOrderHandler)
+}
+
+func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
 		Service: "order",
 		IsUp:    "up",
@@ -22,20 +41,20 @@ func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) 
 
 	status, err := v1.EncodeIndent(data, "", " ")
 	if err != nil {
-		a.log.Println(err)
+		e.log.Println(err)
 	}
 
 	_, err = io.WriteString(responseWriter, string(status))
 	if err != nil {
-		a.log.Printf("status write: %v", err)
+		e.log.Printf("status write: %v", err)
 
 		return
 	}
 
-	a.log.Printf("gave status %s", data.IsUp)
+	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (a API) orderRestaurantsHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) orderRestaurantsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}
@@ -43,7 +62,7 @@ func (a API) orderRestaurantsHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (a API) orderMenuHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) orderMenuHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}
@@ -51,7 +70,7 @@ func (a API) orderMenuHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (a API) finishedOrderHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) finishedOrderHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}

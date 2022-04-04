@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	apilib "github.com/nndergunov/deliveryApp/app/pkg/api"
+	"github.com/nndergunov/deliveryApp/app/pkg/apilib"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/api"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/cmd/server"

@@ -3,8 +3,8 @@ module github.com/nndergunov/deliveryApp/app/services/accounting
 go 1.18
 
 require (
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220404095712-b39eaedd35c8
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404095712-b39eaedd35c8
+	github.com/nndergunov/deliveryApp/app/pkg/apilib v0.0.0-20220404104032-f0e65f33aad5
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404104032-f0e65f33aad5
 	github.com/spf13/viper v1.10.1
 )
 

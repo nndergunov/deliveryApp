@@ -3,7 +3,8 @@ module github.com/nndergunov/deliveryApp/app/services/kitchen
 go 1.18
 
 require (
-	github.com/nndergunov/deliveryApp/app/libs/logger v0.0.0-20220331181337-9bc7003ae2ef
+	github.com/nndergunov/deliveryApp/app/pkg/apilib v0.0.0-20220404104032-f0e65f33aad5
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404104032-f0e65f33aad5
 	github.com/spf13/viper v1.10.1
 )
 
