@@ -1,4 +1,4 @@
-module github.com/nndergunov/deliveryApp/app/pkg/api
+module github.com/nndergunov/deliveryApp/app/pkg/apilib
 
 go 1.18
 

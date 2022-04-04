@@ -1,4 +1,4 @@
-package api
+package apilib
 
 import (
 	"net/http"
