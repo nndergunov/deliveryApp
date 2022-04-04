@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Encode parses any data to JSON.
 func Encode(data any) ([]byte, error) {
 	encData, err := json.Marshal(data)
 	if err != nil {
@@ -14,6 +15,7 @@ func Encode(data any) ([]byte, error) {
 	return encData, nil
 }
 
+// EncodeIndent parses any data to JSON with specified indentation.
 func EncodeIndent(data any, prefix, indent string) ([]byte, error) {
 	encData, err := json.MarshalIndent(data, prefix, indent)
 	if err != nil {
