@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
-	"github.com/nndergunov/deliveryApp/app/libs/logger"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/cmd/server/config"
 )
 
@@ -36,7 +37,7 @@ func NewServer(handler http.Handler, serverConfig *config.Config, logger *logger
 
 func (s *Server) StartListening(stopChan chan interface{}) {
 	go func() {
-		if err := s.httpServer.ListenAndServe(); err != nil {
+		if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			s.log(err)
 		}
 

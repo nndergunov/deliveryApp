@@ -5,7 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/nndergunov/deliveryApp/app/libs/logger"
+	"github.com/nndergunov/deliveryApp/app/pkg/apilib"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/cmd/server"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/cmd/server/config"
@@ -15,8 +16,11 @@ import (
 func main() {
 	mainLogger := logger.NewLogger(os.Stdout, "main")
 
-	apiLogger := logger.NewLogger(os.Stdout, "api")
-	serverAPI := api.NewAPI(apiLogger)
+	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
+	endpointHandler := api.NewEndpointHandler(handlerLogger)
+
+	apiLogger := logger.NewLogger(os.Stdout, "apilib")
+	serverAPI := apilib.NewAPI(endpointHandler, apiLogger)
 
 	serverConfig, err := getServerConfig()
 	if err != nil {

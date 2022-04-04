@@ -4,16 +4,35 @@ import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/services/delivery/api/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
-func (a *API) handlerInit() {
-	a.mux.HandleFunc("/status", a.statusHandler)
-	a.mux.HandleFunc("/needCourier", a.needCourierHandler)
-	a.mux.HandleFunc("/deliveryHistory", a.deliveryHistoryHandler)
+type endpointHandler struct {
+	mux *http.ServeMux
+	log *logger.Logger
 }
 
-func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	handler := endpointHandler{
+		mux: mux,
+		log: log,
+	}
+
+	handler.handlerInit()
+
+	return handler.mux
+}
+
+func (e *endpointHandler) handlerInit() {
+	e.mux.HandleFunc("/status", e.statusHandler)
+	e.mux.HandleFunc("/needCourier", e.needCourierHandler)
+	e.mux.HandleFunc("/deliveryHistory", e.deliveryHistoryHandler)
+}
+
+func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
 		Service: "delivery",
 		IsUp:    "up",
@@ -21,20 +40,20 @@ func (a API) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) 
 
 	status, err := v1.EncodeIndent(data, "", " ")
 	if err != nil {
-		a.log.Println(err)
+		e.log.Println(err)
 	}
 
 	_, err = io.WriteString(responseWriter, string(status))
 	if err != nil {
-		a.log.Printf("status write: %v", err)
+		e.log.Printf("status write: %v", err)
 
 		return
 	}
 
-	a.log.Printf("gave status %s", data.IsUp)
+	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (a API) needCourierHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) needCourierHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}
@@ -42,7 +61,7 @@ func (a API) needCourierHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (a API) deliveryHistoryHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) deliveryHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}
