@@ -39,22 +39,22 @@ docker-rebuild-all:
 
 docker-start-all:
 	cd ./services ; \
-    	cd ./accounting/ ; make docker-start & cd ../ ; \
-    	cd ./client/ 	 ; make docker-start & cd ../ ; \
-    	cd ./courier/ 	 ; make docker-start & cd ../ ; \
-   		cd ./delivery/   ; make docker-start & cd ../ ; \
-    	cd ./kitchen/    ; make docker-start & cd ../ ; \
-    	cd ./order/ 	 ; make docker-start & cd ../ ; \
+    	cd ./accounting/ ; make docker-start ; cd ../ ; \
+    	cd ./client/ 	 ; make docker-start ; cd ../ ; \
+    	cd ./courier/ 	 ; make docker-start ; cd ../ ; \
+    	cd ./delivery/   ; make docker-start ; cd ../ ; \
+    	cd ./kitchen/    ; make docker-start ; cd ../ ; \
+    	cd ./order/ 	 ; make docker-start ; cd ../ ; \
     	cd ./restaurant/ ; make docker-start
 
 docker-stop-all:
 	cd ./services ; \
-    	cd ./accounting/ ; make docker-stop & cd ../ ; \
-    	cd ./client/ 	 ; make docker-stop & cd ../ ; \
-    	cd ./courier/    ; make docker-stop & cd ../ ; \
-    	cd ./delivery/   ; make docker-stop & cd ../ ; \
-    	cd ./kitchen/    ; make docker-stop & cd ../ ; \
-    	cd ./order/ 	 ; make docker-stop & cd ../ ; \
+    	cd ./accounting/ ; make docker-stop ; cd ../ ; \
+    	cd ./client/ 	 ; make docker-stop ; cd ../ ; \
+    	cd ./courier/    ; make docker-stop ; cd ../ ; \
+    	cd ./delivery/   ; make docker-stop ; cd ../ ; \
+    	cd ./kitchen/    ; make docker-stop ; cd ../ ; \
+    	cd ./order/ 	 ; make docker-stop ; cd ../ ; \
     	cd ./restaurant/ ; make docker-stop
 
 cl-start-all:
