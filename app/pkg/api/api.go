@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/nndergunov/deliveryApp/app/libs/logger"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 type API struct {
