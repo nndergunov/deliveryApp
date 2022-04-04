@@ -1,10 +1,10 @@
-package api
+package handlers
 
 import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
@@ -28,13 +28,14 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 
 func (e *endpointHandler) handlerInit() {
 	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/order", e.orderHandler)
+	e.mux.HandleFunc("/pay", e.payHandler)
+	e.mux.HandleFunc("/deliveryStatus", e.deliveryStatusHandler)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		Service: "kitchen",
-		IsUp:    "up",
+		ServiceName: "client",
+		IsUp:        "up",
 	}
 
 	status, err := v1.EncodeIndent(data, "", " ")
@@ -52,7 +53,15 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) orderHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) payHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		// TODO return error "unsupported method".
+	}
+
+	// TODO logic.
+}
+
+func (e endpointHandler) deliveryStatusHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}

@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"os"
 	"time"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/apilib"
+	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/api"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/cmd/server"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/cmd/server/config"
+	"github.com/nndergunov/deliveryApp/app/pkg/server"
+	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/handlers"
 	"github.com/spf13/viper"
 )
 
@@ -17,18 +19,19 @@ func main() {
 	mainLogger := logger.NewLogger(os.Stdout, "main")
 
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	endpointHandler := api.NewEndpointHandler(handlerLogger)
+	endpointHandler := handlers.NewEndpointHandler(handlerLogger)
 
 	apiLogger := logger.NewLogger(os.Stdout, "apilib")
-	serverAPI := apilib.NewAPI(endpointHandler, apiLogger)
+	serverAPI := api.NewAPI(endpointHandler, apiLogger)
 
-	serverConfig, err := getServerConfig()
+	serverLogger := logger.NewLogger(os.Stdout, "server")
+
+	serverConfig, err := getServerConfig(serverAPI, nil, serverLogger)
 	if err != nil {
 		mainLogger.Println(err)
 	}
 
-	serverLogger := logger.NewLogger(os.Stdout, "server")
-	serviceServer := server.NewServer(serverAPI, serverConfig, serverLogger)
+	serviceServer := server.NewServer(serverConfig)
 	serverStopChan := make(chan interface{})
 
 	serviceServer.StartListening(serverStopChan)
@@ -36,7 +39,7 @@ func main() {
 	<-serverStopChan
 }
 
-func getServerConfig() (*config.Config, error) {
+func getServerConfig(handler http.Handler, errorLog *log.Logger, serverLogger *logger.Logger) (*config.Config, error) {
 	viper.SetConfigFile("config.yaml")
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -57,5 +60,8 @@ func getServerConfig() (*config.Config, error) {
 		WriteTimeout:      writeTime,
 		IdleTimeout:       idleTime,
 		ReadHeaderTimeout: readerHeaderTime,
+		ErrorLog:          errorLog,
+		ServerLogger:      serverLogger,
+		Handler:           handler,
 	}, nil
 }

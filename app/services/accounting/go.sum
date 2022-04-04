@@ -10,10 +10,12 @@ github.com/magiconair/properties v1.8.5 h1:b6kJs+EmPFMYGkow9GiUyCyOvIwYetYJ3fSaW
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mitchellh/mapstructure v1.4.3 h1:OVowDSCllw/YjdLkam3/sm7wEtOy59d8ndGgCcyj8cs=
 github.com/mitchellh/mapstructure v1.4.3/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
-github.com/nndergunov/deliveryApp/app/pkg/apilib v0.0.0-20220404104032-f0e65f33aad5 h1:CsytXVnM1RjVDdVqgx6PFgKyO0MKy079NguJIqbQsZM=
-github.com/nndergunov/deliveryApp/app/pkg/apilib v0.0.0-20220404104032-f0e65f33aad5/go.mod h1:fpHHPIllBENjfTbICGlbKMuE6TtWAaGtilh8W1I4C/g=
-github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404104032-f0e65f33aad5 h1:FdPtVSE1BvJYtD3k4zZagzpKVq2MJGMq06cTNEafgRk=
-github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404104032-f0e65f33aad5/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220404145317-19066fdaa911 h1:xMizvKEMWDEVCyucjknSYjMdm1rg+LpxBLCUbm20iMQ=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220404145317-19066fdaa911/go.mod h1:UgHBMF0S1ifjJz8hLvj83UyGXiJmwxzCskwpPmw6GQA=
+github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404145317-19066fdaa911 h1:HRsi9QYrRUpFCssQdd+dDrHr417LrGOGCHkGGZYeZDg=
+github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404145317-19066fdaa911/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
+github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220404145317-19066fdaa911 h1:zXMw7KTVAwyG6yvkZWxyBPXtrIiZsKNPUA0Ix5P9z38=
+github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220404145317-19066fdaa911/go.mod h1:WAH42bbh7Ifv24FY0gS4LaA7U2chuDxUG7LRmbvPdX8=
 github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhECwM=
 github.com/pelletier/go-toml v1.9.4/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

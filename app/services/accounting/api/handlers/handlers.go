@@ -1,10 +1,10 @@
-package api
+package handlers
 
 import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
@@ -28,15 +28,13 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 
 func (e *endpointHandler) handlerInit() {
 	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/paid", e.paidHandler)
-	e.mux.HandleFunc("/activeCouriers", e.activeCouriersHandler)
-	e.mux.HandleFunc("/deliveryInfo", e.deliveryInfoHandler)
+	e.mux.HandleFunc("/countCosts", e.countCostsHandler)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		Service: "courier",
-		IsUp:    "up",
+		ServiceName: "accounting",
+		IsUp:        "up",
 	}
 
 	status, err := v1.EncodeIndent(data, "", " ")
@@ -46,31 +44,15 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 
 	_, err = io.WriteString(responseWriter, string(status))
 	if err != nil {
-		e.log.Printf("status write: %v", err)
+		e.log.Printf("\nstatus write: %v", err)
 
 		return
 	}
 
-	e.log.Printf("gave status %s", data.IsUp)
+	e.log.Printf("\ngave status %s", data.IsUp)
 }
 
-func (e endpointHandler) paidHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		// TODO return error "unsupported method".
-	}
-
-	// TODO logic.
-}
-
-func (e endpointHandler) activeCouriersHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// TODO return error "unsupported method".
-	}
-
-	// TODO logic.
-}
-
-func (e endpointHandler) deliveryInfoHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) countCostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}

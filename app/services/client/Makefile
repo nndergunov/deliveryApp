@@ -22,9 +22,15 @@ docker-stop:
 	docker container stop client-service
 
 update-gomod:
-	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
-	go get -u github.com/nndergunov/deliveryApp/app/pkg/apilib
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/api
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger	
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	make gomod-tidy
+
+download-gomod:
+	go get github.com/nndergunov/deliveryApp/app/pkg/api
+	go get github.com/nndergunov/deliveryApp/app/pkg/logger
+	go get github.com/nndergunov/deliveryApp/app/pkg/server
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18

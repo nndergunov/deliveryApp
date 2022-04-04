@@ -77,6 +77,16 @@ update-gomod-all:
     	cd ./order/ 	 ; make update-gomod ; cd ../ ; \
     	cd ./restaurant/ ; make update-gomod
 
+download-gomod-all:
+	cd ./services ; \
+    	cd ./accounting/ ; make download-gomod ; cd ../ ; \
+    	cd ./client/	 ; make download-gomod ; cd ../ ; \
+    	cd ./courier/ 	 ; make download-gomod ; cd ../ ; \
+    	cd ./delivery/   ; make download-gomod ; cd ../ ; \
+    	cd ./kitchen/ 	 ; make download-gomod ; cd ../ ; \
+    	cd ./order/ 	 ; make download-gomod ; cd ../ ; \
+    	cd ./restaurant/ ; make download-gomod
+
 gomod-tidy-all:
 	cd ./services ; \
         cd ./accounting/ ; make gomod-tidy ; cd ../ ; \

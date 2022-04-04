@@ -1,10 +1,10 @@
-package api
+package handlers
 
 import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
@@ -28,15 +28,15 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 
 func (e *endpointHandler) handlerInit() {
 	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/orderRestaurants", e.orderRestaurantsHandler)
-	e.mux.HandleFunc("/orderMenu", e.orderMenuHandler)
-	e.mux.HandleFunc("/finishedOrder", e.finishedOrderHandler)
+	e.mux.HandleFunc("/paid", e.paidHandler)
+	e.mux.HandleFunc("/activeCouriers", e.activeCouriersHandler)
+	e.mux.HandleFunc("/deliveryInfo", e.deliveryInfoHandler)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		Service: "order",
-		IsUp:    "up",
+		ServiceName: "courier",
+		IsUp:        "up",
 	}
 
 	status, err := v1.EncodeIndent(data, "", " ")
@@ -54,7 +54,15 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) orderRestaurantsHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) paidHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		// TODO return error "unsupported method".
+	}
+
+	// TODO logic.
+}
+
+func (e endpointHandler) activeCouriersHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}
@@ -62,15 +70,7 @@ func (e endpointHandler) orderRestaurantsHandler(w http.ResponseWriter, r *http.
 	// TODO logic.
 }
 
-func (e endpointHandler) orderMenuHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// TODO return error "unsupported method".
-	}
-
-	// TODO logic.
-}
-
-func (e endpointHandler) finishedOrderHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) deliveryInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}

@@ -1,10 +1,10 @@
-package api
+package handlers
 
 import (
 	"io"
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/apilib/v1"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
@@ -34,8 +34,8 @@ func (e *endpointHandler) handlerInit() {
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		Service: "restaurant",
-		IsUp:    "up",
+		ServiceName: "restaurant",
+		IsUp:        "up",
 	}
 
 	status, err := v1.EncodeIndent(data, "", " ")
