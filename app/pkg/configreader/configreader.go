@@ -9,7 +9,7 @@ import (
 
 // SetConfigFile defines path and name of the desired config file.
 func SetConfigFile(path string) error {
-	viper.SetConfigFile("config.yaml")
+	viper.SetConfigFile(path)
 
 	if err := viper.ReadInConfig(); err != nil {
 		return fmt.Errorf("config read: %w", err)
