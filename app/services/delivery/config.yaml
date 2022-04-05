@@ -1,6 +1,6 @@
 server:
   address: ":8083"
-  readTime: 5
-  writeTime: 5
-  idleTime: 300
-  readerHeaderTime: 5
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"

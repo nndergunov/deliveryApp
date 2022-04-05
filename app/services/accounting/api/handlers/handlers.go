@@ -13,6 +13,7 @@ type endpointHandler struct {
 	log *logger.Logger
 }
 
+// NewEndpointHandler returns new http multiplexer with configured endpoints.
 func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 	mux := http.NewServeMux()
 

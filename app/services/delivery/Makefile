@@ -12,7 +12,7 @@ docker-delete:
 	docker image rm delivery_app
 
 docker-rebuild:
-	make docker-delete 
+	make docker-delete
 	make docker-build
 
 docker-start:
@@ -23,12 +23,14 @@ docker-stop:
 
 update-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/api
-	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger	
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/configreader
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	make gomod-tidy
 
 download-gomod:
 	go get github.com/nndergunov/deliveryApp/app/pkg/api
+	go get github.com/nndergunov/deliveryApp/app/pkg/configreader
 	go get github.com/nndergunov/deliveryApp/app/pkg/logger
 	go get github.com/nndergunov/deliveryApp/app/pkg/server
 

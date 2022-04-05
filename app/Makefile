@@ -1,11 +1,11 @@
 check-all:
-	curl http://localhost:8080/status & \
-	curl http://localhost:8081/status & \
-	curl http://localhost:8082/status & \
-	curl http://localhost:8083/status & \
-	curl http://localhost:8084/status & \
-	curl http://localhost:8085/status & \
-	curl http://localhost:8086/status
+	-curl http://localhost:8080/status
+	-curl http://localhost:8081/status
+	-curl http://localhost:8082/status
+	-curl http://localhost:8083/status
+	-curl http://localhost:8084/status
+	-curl http://localhost:8085/status
+	-curl http://localhost:8086/status
 
 docker-build-all:
 	cd ./services; \

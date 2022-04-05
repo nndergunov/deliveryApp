@@ -3,10 +3,10 @@ module github.com/nndergunov/deliveryApp/app/services/client
 go 1.18
 
 require (
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220404145317-19066fdaa911
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404145317-19066fdaa911
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220404145317-19066fdaa911
-	github.com/spf13/viper v1.10.1
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220405093204-228dabbb0f24
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220405093204-228dabbb0f24
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220405093204-228dabbb0f24
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220405093204-228dabbb0f24
 )
 
 require (
@@ -19,8 +19,9 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/viper v1.10.1 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f // indirect
+	golang.org/x/sys v0.0.0-20220405052023-b1e9470b6e64 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
