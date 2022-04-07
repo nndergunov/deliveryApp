@@ -28,14 +28,16 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 }
 
 func (e *endpointHandler) handlerInit() {
-	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/openRestaurants", e.openRestaurantsHandler)
-	e.mux.HandleFunc("/menu", e.menuHandler)
+	e.mux.HandleFunc("/v1/status", e.statusHandler)
+	e.mux.HandleFunc("/v1/order", e.orderHandler)
+	e.mux.HandleFunc("/v1/order/status", e.orderStatusHandler)
+	e.mux.HandleFunc("/v1/courier", e.courierHandler)
+	e.mux.HandleFunc("/v1/courier/info", e.courierInfoHandler)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		ServiceName: "restaurant",
+		ServiceName: "kitchen",
 		IsUp:        "up",
 	}
 
@@ -54,7 +56,26 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) openRestaurantsHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) orderHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		// TODO return error "unsupported method".
+	}
+
+	// TODO logic.
+}
+
+func (e endpointHandler) orderStatusHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPut:
+		// TODO logic.
+	case http.MethodGet:
+		// TODO logic.
+	default:
+		// TODO return error "unsupported method".
+	}
+}
+
+func (e endpointHandler) courierHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}
@@ -62,8 +83,8 @@ func (e endpointHandler) openRestaurantsHandler(w http.ResponseWriter, r *http.R
 	// TODO logic.
 }
 
-func (e endpointHandler) menuHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+func (e endpointHandler) courierInfoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}
 

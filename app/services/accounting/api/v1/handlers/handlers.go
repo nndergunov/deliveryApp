@@ -28,14 +28,13 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 }
 
 func (e *endpointHandler) handlerInit() {
-	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/needCourier", e.needCourierHandler)
-	e.mux.HandleFunc("/deliveryHistory", e.deliveryHistoryHandler)
+	e.mux.HandleFunc("/v1/status", e.statusHandler)
+	e.mux.HandleFunc("/v1/payment", e.paymentHandler)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		ServiceName: "delivery",
+		ServiceName: "accounting",
 		IsUp:        "up",
 	}
 
@@ -46,23 +45,15 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 
 	_, err = io.WriteString(responseWriter, string(status))
 	if err != nil {
-		e.log.Printf("status write: %v", err)
+		e.log.Printf("\nstatus write: %v", err)
 
 		return
 	}
 
-	e.log.Printf("gave status %s", data.IsUp)
+	e.log.Printf("\ngave status %s", data.IsUp)
 }
 
-func (e endpointHandler) needCourierHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		// TODO return error "unsupported method".
-	}
-
-	// TODO logic.
-}
-
-func (e endpointHandler) deliveryHistoryHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) paymentHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}

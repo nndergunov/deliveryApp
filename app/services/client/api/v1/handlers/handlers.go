@@ -28,15 +28,16 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 }
 
 func (e *endpointHandler) handlerInit() {
-	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/paid", e.paidHandler)
-	e.mux.HandleFunc("/activeCouriers", e.activeCouriersHandler)
-	e.mux.HandleFunc("/deliveryInfo", e.deliveryInfoHandler)
+	e.mux.HandleFunc("/v1/status", e.statusHandler)
+	e.mux.HandleFunc("/v1/restaurants", e.restaurantsHandler)
+	e.mux.HandleFunc("/v1/menu", e.menuHandler)
+	e.mux.HandleFunc("/v1/order", e.orderHandler)
+	e.mux.HandleFunc("/v1/order/status", e.orderStatusHandler)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		ServiceName: "courier",
+		ServiceName: "client",
 		IsUp:        "up",
 	}
 
@@ -55,15 +56,7 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) paidHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		// TODO return error "unsupported method".
-	}
-
-	// TODO logic.
-}
-
-func (e endpointHandler) activeCouriersHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) restaurantsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		// TODO return error "unsupported method".
 	}
@@ -71,10 +64,29 @@ func (e endpointHandler) activeCouriersHandler(w http.ResponseWriter, r *http.Re
 	// TODO logic.
 }
 
-func (e endpointHandler) deliveryInfoHandler(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) menuHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		// TODO return error "unsupported method".
+	}
+
+	// TODO logic.
+}
+
+func (e endpointHandler) orderHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		// TODO return error "unsupported method".
 	}
 
 	// TODO logic.
+}
+
+func (e endpointHandler) orderStatusHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPut:
+		// TODO logic.
+	case http.MethodPatch:
+		// TODO logic.
+	default:
+		// TODO return error "unsupported method".
+	}
 }

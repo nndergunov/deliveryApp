@@ -11,7 +11,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-	"github.com/nndergunov/deliveryApp/app/services/client/api/handlers"
+	"github.com/nndergunov/deliveryApp/app/services/client/api/v1/handlers"
 )
 
 const configFile = "config.yaml"
