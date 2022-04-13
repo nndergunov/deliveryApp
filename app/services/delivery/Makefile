@@ -1,5 +1,5 @@
 status-check:
-	curl http://localhost:8083/status
+	-curl http://localhost:8081/status
 
 cl-start:
 	go run main.go

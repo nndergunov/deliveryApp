@@ -28,7 +28,7 @@ func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
 }
 
 func (e *endpointHandler) handlerInit() {
-	e.mux.HandleFunc("/v1/status", e.statusHandler)
+	e.mux.HandleFunc("/status", e.statusHandler)
 	e.mux.HandleFunc("/v1/сourier", e.courierHandler)
 	e.mux.HandleFunc("/v1/сourier/info", e.courierInfoHandler)
 	e.mux.HandleFunc("/v1]/delivery/cost", e.deliveryCostHandler)

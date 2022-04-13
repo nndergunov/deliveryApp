@@ -1,8 +1,8 @@
 check-all:
-	-curl http://localhost:8080/status
-	-curl http://localhost:8081/status
-	-curl http://localhost:8082/status
-	-curl http://localhost:8083/status
+	cd ./accounting/ ; make status-check ; cd ../ ; \
+    cd ./delivery/   ; make status-check ; cd ../ ; \
+    cd ./kitchen/ 	 ; make status-check ; cd ../ ; \
+    cd ./order/ 	 ; make status-check
 
 docker-build-all:
 	cd ./accounting/ ; make docker-build ; cd ../ ; \
