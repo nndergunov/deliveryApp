@@ -4,5 +4,5 @@ services:
     container_name: order-service
     build: .
     ports:
-      - 8085:8085
+      - 8083:8083
     restart: on-failure

@@ -4,5 +4,5 @@ services:
     container_name: kitchen-service
     build: .
     ports:
-      - 8084:8084
+      - 8082:8082
     restart: on-failure
