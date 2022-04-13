@@ -3,10 +3,10 @@ module github.com/nndergunov/deliveryApp/app/services/accounting
 go 1.18
 
 require (
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220405141539-a09e3f9d8e42
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220405141539-a09e3f9d8e42
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220405141539-a09e3f9d8e42
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220405141539-a09e3f9d8e42
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220413120950-f9eed6a18479
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220413120950-f9eed6a18479
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413120950-f9eed6a18479
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220413120950-f9eed6a18479
 )
 
 require (
