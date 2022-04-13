@@ -3,10 +3,10 @@ module github.com/nndergunov/deliveryApp/app/services/order
 go 1.18
 
 require (
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220405093204-228dabbb0f24
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220405093204-228dabbb0f24
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220405093204-228dabbb0f24
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220405093204-228dabbb0f24
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220405141539-a09e3f9d8e42
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220405141539-a09e3f9d8e42
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220405141539-a09e3f9d8e42
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220405141539-a09e3f9d8e42
 )
 
 require (

@@ -1,5 +1,5 @@
 server:
-  address: ":8083"
+  address: ":8081"
   readTime: "5s"
   writeTime: "5s"
   idleTime: "5m"
