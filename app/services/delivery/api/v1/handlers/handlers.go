@@ -4,34 +4,36 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 type endpointHandler struct {
-	mux *http.ServeMux
-	log *logger.Logger
+	serveMux *mux.Router
+	log      *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
-	mux := http.NewServeMux()
+func NewEndpointHandler(log *logger.Logger) *mux.Router {
+	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
-		mux: mux,
-		log: log,
+		serveMux: serveMux,
+		log:      log,
 	}
 
 	handler.handlerInit()
 
-	return handler.mux
+	return handler.serveMux
 }
 
 func (e *endpointHandler) handlerInit() {
-	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/v1/сourier", e.courierHandler)
-	e.mux.HandleFunc("/v1/сourier/info", e.courierInfoHandler)
-	e.mux.HandleFunc("/v1]/delivery/cost", e.deliveryCostHandler)
+	e.serveMux.HandleFunc("/status", e.statusHandler)
+	e.serveMux.HandleFunc("/v1/couriers/courier-for-delivery", e.findCourier).Methods(http.MethodGet)
+	e.serveMux.HandleFunc("/v1/couriers/{id}/info", e.returnCourierInfo).Methods(http.MethodGet)
+	e.serveMux.HandleFunc("/v1/couriers/{id}/info", e.updateCourierInfo).Methods(http.MethodPut)
+	e.serveMux.HandleFunc("/v1/deliveries/{id}/cost", e.returnDeliveryCost).Methods(http.MethodGet)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -55,29 +57,20 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) courierHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// TODO return error "unsupported method".
-	}
-
+func (e endpointHandler) findCourier(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (e endpointHandler) courierInfoHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		// TODO logic.
-	case http.MethodPatch:
-		// TODO logic.
-	default:
-		// TODO return error "unsupported method".
-	}
+func (e endpointHandler) returnCourierInfo(w http.ResponseWriter, r *http.Request) {
+	// TODO logic.
+
 }
 
-func (e endpointHandler) deliveryCostHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// TODO return error "unsupported method".
-	}
+func (e endpointHandler) updateCourierInfo(w http.ResponseWriter, r *http.Request) {
+	// TODO logic.
 
+}
+
+func (e endpointHandler) returnDeliveryCost(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }

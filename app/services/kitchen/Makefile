@@ -22,17 +22,15 @@ docker-stop:
 	docker container stop kitchen-service
 
 update-gomod:
+	make download-gomod
+	make gomod-tidy
+
+download-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/api
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/configreader
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
-	make gomod-tidy
-
-download-gomod:
-	go get github.com/nndergunov/deliveryApp/app/pkg/api
-	go get github.com/nndergunov/deliveryApp/app/pkg/configreader
-	go get github.com/nndergunov/deliveryApp/app/pkg/logger
-	go get github.com/nndergunov/deliveryApp/app/pkg/server
+	go get -u github.com/gorilla/mux
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18

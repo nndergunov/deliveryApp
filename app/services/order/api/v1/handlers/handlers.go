@@ -4,35 +4,36 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 type endpointHandler struct {
-	mux *http.ServeMux
-	log *logger.Logger
+	serveMux *mux.Router
+	log      *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(log *logger.Logger) *http.ServeMux {
-	mux := http.NewServeMux()
+func NewEndpointHandler(log *logger.Logger) *mux.Router {
+	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
-		mux: mux,
-		log: log,
+		serveMux: serveMux,
+		log:      log,
 	}
 
 	handler.handlerInit()
 
-	return handler.mux
+	return handler.serveMux
 }
 
 func (e *endpointHandler) handlerInit() {
-	e.mux.HandleFunc("/status", e.statusHandler)
-	e.mux.HandleFunc("/v1/restaurants", e.restaurantsHandler)
-	e.mux.HandleFunc("/v1/menus", e.menuHandler)
-	e.mux.HandleFunc("/v1/orders", e.orderHandler)
-	e.mux.HandleFunc("/v1/orders/status", e.orderStatusHandler)
+	e.serveMux.HandleFunc("/status", e.statusHandler)
+	e.serveMux.HandleFunc("/v1/orders", e.createOrder).Methods(http.MethodPost)
+	e.serveMux.HandleFunc("/v1/orders/{id}/status", e.returnOrderStatus).Methods(http.MethodGet)
+	e.serveMux.HandleFunc("/v1/orders/{id}/status", e.updateOrderList).Methods(http.MethodPut)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -56,38 +57,14 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) restaurantsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// TODO return error "unsupported method".
-	}
-
+func (e endpointHandler) createOrder(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (e endpointHandler) menuHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// TODO return error "unsupported method".
-	}
-
+func (e endpointHandler) returnOrderStatus(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (e endpointHandler) orderHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		// TODO return error "unsupported method".
-	}
-
+func (e endpointHandler) updateOrderList(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
-}
-
-func (e endpointHandler) orderStatusHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPut:
-		// TODO logic.
-	case http.MethodPatch:
-		// TODO logic.
-
-	default:
-		// TODO return error "unsupported method".
-	}
 }
