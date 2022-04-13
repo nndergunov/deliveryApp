@@ -1,2 +1,2 @@
-github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404104032-f0e65f33aad5 h1:FdPtVSE1BvJYtD3k4zZagzpKVq2MJGMq06cTNEafgRk=
-github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220404104032-f0e65f33aad5/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
+github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220405141539-a09e3f9d8e42 h1:NBRk+l9c43NyC3tZJdM0EOfB7OIKJwkTnAORDsQQtQ0=
+github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220405141539-a09e3f9d8e42/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
