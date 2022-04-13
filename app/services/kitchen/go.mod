@@ -3,15 +3,15 @@ module github.com/nndergunov/deliveryApp/app/services/kitchen
 go 1.18
 
 require (
+	github.com/gorilla/mux v1.8.0
 	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220413140719-1ba1ff7f9aa3
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220413140719-1ba1ff7f9aa3
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413140719-1ba1ff7f9aa3
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413161759-d5149b5006d1
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220413140719-1ba1ff7f9aa3
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect

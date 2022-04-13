@@ -139,8 +139,8 @@ github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220413140719-1ba1ff7f9aa3
 github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220413140719-1ba1ff7f9aa3/go.mod h1:SYE2jcr20Ze0M3TaF1Y6l0RGzxtA73oS8Sz3WXFHgXE=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220413140719-1ba1ff7f9aa3 h1:Ur6MJ79Tscmp8hiR0aHW64QACTxKhBQ0iSSlbJv/U4M=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220413140719-1ba1ff7f9aa3/go.mod h1:ZUwhDklV6a8zUSmHhlHE9I7viwpewNgQOFY93kjJtRc=
-github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413140719-1ba1ff7f9aa3 h1:DsCKt+/uky+MssmuSkDLdp2SV9vqVXnqEmF1bw5SW6c=
-github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413140719-1ba1ff7f9aa3/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
+github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413161759-d5149b5006d1 h1:o7xmAcSuxIjFUgpODHRi6zp420QHfffnpEgkD/fHYR8=
+github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413161759-d5149b5006d1/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
 github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220413140719-1ba1ff7f9aa3 h1:+7fiwR38zRnMULYSoKXtFk/6S2HKx+wzOfI/5M2IE7A=
 github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220413140719-1ba1ff7f9aa3/go.mod h1:HZMeI1o7LwjvfxEbNBaugmI4esrs82L2YkxNL47ioYs=
 github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhECwM=
