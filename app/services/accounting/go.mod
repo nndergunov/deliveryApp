@@ -4,10 +4,10 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220413140719-1ba1ff7f9aa3
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220413140719-1ba1ff7f9aa3
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413161759-d5149b5006d1
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220413140719-1ba1ff7f9aa3
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220413162621-f899076be1a7
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220413162621-f899076be1a7
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220413162621-f899076be1a7
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220413162621-f899076be1a7
 )
 
 require (
