@@ -5,23 +5,25 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/app"
 )
 
 type endpointHandler struct {
-	serveMux *mux.Router
-	log      *logger.Logger
+	appInstance *app.App
+	serveMux    *mux.Router
+	log         *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(log *logger.Logger) *mux.Router {
+func NewEndpointHandler(appInstance *app.App, log *logger.Logger) *mux.Router {
 	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
-		serveMux: serveMux,
-		log:      log,
+		appInstance: appInstance,
+		serveMux:    serveMux,
+		log:         log,
 	}
 
 	handler.handlerInit()

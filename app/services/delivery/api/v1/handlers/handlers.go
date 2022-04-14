@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/app"
 )
 
 type endpointHandler struct {
@@ -31,9 +32,7 @@ func NewEndpointHandler(log *logger.Logger) *mux.Router {
 func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
 	e.serveMux.HandleFunc("/v1/couriers/courier-for-delivery", e.findCourier).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/couriers/{id}/info", e.returnCourierInfo).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/couriers/{id}/info", e.updateCourierInfo).Methods(http.MethodPut)
-	e.serveMux.HandleFunc("/v1/deliveries/{id}/cost", e.returnDeliveryCost).Methods(http.MethodGet)
+	e.serveMux.HandleFunc("/v1/deliveries/cost", e.returnDeliveryCost).Methods(http.MethodGet)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -61,16 +60,14 @@ func (e endpointHandler) findCourier(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
-func (e endpointHandler) returnCourierInfo(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
-
-}
-
-func (e endpointHandler) updateCourierInfo(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
-
-}
-
 func (e endpointHandler) returnDeliveryCost(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+	data, err := v1.Encode(app.CalculateDeliveryPrice())
+	if err != nil {
+		e.log.Println(err)
+	}
+
+	_, err = w.Write(data)
+	if err != nil {
+		e.log.Println(err)
+	}
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/api/v1/handlers"
+	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/app"
 )
 
 const configFile = "config.yaml"
@@ -19,8 +20,9 @@ const configFile = "config.yaml"
 func main() {
 	mainLogger := logger.NewLogger(os.Stdout, "main")
 
+	appInstance := app.NewApp()
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	endpointHandler := handlers.NewEndpointHandler(handlerLogger)
+	endpointHandler := handlers.NewEndpointHandler(appInstance, handlerLogger)
 
 	apiLogger := logger.NewLogger(os.Stdout, "api")
 	serverAPI := api.NewAPI(endpointHandler, apiLogger)
