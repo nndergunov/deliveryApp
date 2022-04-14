@@ -1,4 +1,4 @@
-package kitchen
+package kitchenapi
 
 type RestaurantList struct {
 	List []struct {

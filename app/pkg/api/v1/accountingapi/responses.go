@@ -1,4 +1,4 @@
-package accounting
+package accountingapi
 
 type PaymentSum struct {
 	Sum int

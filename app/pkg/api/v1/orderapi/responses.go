@@ -1,4 +1,4 @@
-package order
+package orderapi
 
 type ReturnOrders struct {
 	Orders []struct {

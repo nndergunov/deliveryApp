@@ -1,4 +1,4 @@
-package order
+package orderapi
 
 type CreateOrder struct {
 	FromUserID       int

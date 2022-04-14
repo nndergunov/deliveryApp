@@ -1,4 +1,4 @@
-package delivery
+package deliveryapi
 
 import (
 	"encoding/json"

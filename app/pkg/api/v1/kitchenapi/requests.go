@@ -1,4 +1,4 @@
-package kitchen
+package kitchenapi
 
 type CreateRestaurant struct {
 	Name   string

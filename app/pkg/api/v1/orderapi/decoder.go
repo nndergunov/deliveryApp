@@ -1,4 +1,4 @@
-package order
+package orderapi
 
 import (
 	"encoding/json"
@@ -22,6 +22,28 @@ func DecodeOrderStatusUpdate(data []byte) (*OrderStatusUpdate, error) {
 	err := json.Unmarshal(data, req)
 	if err != nil {
 		return nil, fmt.Errorf("DecodeCreateOrder: %w", err)
+	}
+
+	return req, nil
+}
+
+func DecodeReturnOrders(data []byte) (*ReturnOrders, error) {
+	var req *ReturnOrders
+
+	err := json.Unmarshal(data, req)
+	if err != nil {
+		return nil, fmt.Errorf("DecodeReturnOrders: %w", err)
+	}
+
+	return req, nil
+}
+
+func DecodeReturnOrderStatus(data []byte) (*ReturnOrderStatus, error) {
+	var req *ReturnOrderStatus
+
+	err := json.Unmarshal(data, req)
+	if err != nil {
+		return nil, fmt.Errorf("DecodeReturnOrderStatus: %w", err)
 	}
 
 	return req, nil
