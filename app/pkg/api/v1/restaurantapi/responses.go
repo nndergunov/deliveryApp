@@ -2,6 +2,7 @@ package restaurantapi
 
 type ReturnRestaurantList struct {
 	List []struct {
+		ID     int
 		Name   string
 		City   string
 		Street string
