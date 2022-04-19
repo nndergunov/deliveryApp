@@ -1,4 +1,4 @@
-package kitchenapi
+package restaurantapi
 
 import (
 	"encoding/json"

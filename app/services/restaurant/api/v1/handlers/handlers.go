@@ -34,14 +34,16 @@ func NewEndpointHandler(appInstance *app.App, log *logger.Logger) *mux.Router {
 func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
 	e.serveMux.HandleFunc("/v1/restaurants", e.returnRestaurantList).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/restaurants", e.returnRestaurantList).Methods(http.MethodPost)
-	e.serveMux.HandleFunc("/v1/restaurants/{id}/menu.", e.returnMenu).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/restaurants/{id}/menu.", e.updateMenu).Methods(http.MethodPut)
+	e.serveMux.HandleFunc("/v1/restaurants", e.createRestaurant).Methods(http.MethodPost)
+	e.serveMux.HandleFunc("/v1/restaurants", e.updateRestaurant).Methods(http.MethodPut)
+	e.serveMux.HandleFunc("/v1/restaurants/{id}/menu", e.returnMenu).Methods(http.MethodGet)
+	e.serveMux.HandleFunc("/v1/restaurants/{id}/menu", e.createMenu).Methods(http.MethodPost)
+	e.serveMux.HandleFunc("/v1/restaurants/{id}/menu", e.updateMenu).Methods(http.MethodPut)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		ServiceName: "kitchen",
+		ServiceName: "restaurant",
 		IsUp:        "up",
 	}
 
@@ -64,11 +66,19 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, r *http.Req
 	// TODO logic.
 }
 
-func (e endpointHandler) createRestaurantList(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {
+	// TODO logic.
+}
+
+func (e endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
 func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
+	// TODO logic.
+}
+
+func (e endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 

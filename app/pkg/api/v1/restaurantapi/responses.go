@@ -1,4 +1,4 @@
-package kitchenapi
+package restaurantapi
 
 type RestaurantList struct {
 	List []struct {
@@ -8,8 +8,9 @@ type RestaurantList struct {
 	}
 }
 
-type Menu struct {
+type ReturnMenu struct {
 	ItemsByCourse map[string][]struct {
+		ID   int
 		Name string
 		// Photo []byte
 	}
