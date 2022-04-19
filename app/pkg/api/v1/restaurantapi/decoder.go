@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-func DecodeCreateRestaurant(data []byte) (*CreateRestaurant, error) {
-	var req *CreateRestaurant
+func DecodeRestaurantData(data []byte) (*RestaurantData, error) {
+	var req *RestaurantData
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
@@ -16,8 +16,8 @@ func DecodeCreateRestaurant(data []byte) (*CreateRestaurant, error) {
 	return req, nil
 }
 
-func DecodeCreateMenu(data []byte) (*CreateMenu, error) {
-	var req *CreateMenu
+func DecodeMenuData(data []byte) (*MenuData, error) {
+	var req *MenuData
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
@@ -27,23 +27,12 @@ func DecodeCreateMenu(data []byte) (*CreateMenu, error) {
 	return req, nil
 }
 
-func DecodeRestaurantList(data []byte) (*RestaurantList, error) {
-	var req *RestaurantList
+func DecodeMenuItem(data []byte) (*MenuItemData, error) {
+	var req *MenuItemData
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
-		return nil, fmt.Errorf("DecodeRestaurantList: %w", err)
-	}
-
-	return req, nil
-}
-
-func DecodeMenu(data []byte) (*Menu, error) {
-	var req *Menu
-
-	err := json.Unmarshal(data, req)
-	if err != nil {
-		return nil, fmt.Errorf("DecodeMenu: %w", err)
+		return nil, fmt.Errorf("DecodeCreateMenu: %w", err)
 	}
 
 	return req, nil
