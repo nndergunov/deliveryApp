@@ -1,6 +1,6 @@
 package restaurantapi
 
-type RestaurantList struct {
+type ReturnRestaurantList struct {
 	List []struct {
 		Name   string
 		City   string
