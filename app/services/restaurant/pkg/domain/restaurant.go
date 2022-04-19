@@ -1,7 +1,7 @@
 package domain
 
 type Restaurant struct {
-	Id       int
+	ID       int
 	Name     string
 	Menu     Menu
 	Location string
