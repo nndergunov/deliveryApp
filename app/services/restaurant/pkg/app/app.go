@@ -23,11 +23,13 @@ func (a *App) ReturnAllRestaurants() []domain.Restaurant {
 	return a.restaurants
 }
 
-func (a *App) CreateNewRestaurant(rest domain.Restaurant) {
+func (a *App) CreateNewRestaurant(rest domain.Restaurant) error {
 	currID := len(a.restaurants)
 	rest.ID = currID
 
 	a.restaurants = append(a.restaurants, rest)
+
+	return nil
 }
 
 func (a *App) UpdateNewRestaurant(rest domain.Restaurant) {

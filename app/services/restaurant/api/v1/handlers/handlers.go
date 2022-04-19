@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/app"
+	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
 )
 
 type endpointHandler struct {
@@ -63,11 +66,27 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 }
 
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
 }
 
 func (e endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+	req, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		e.log.Println(err)
+	}
+
+	restaurantData, err := restaurantapi.DecodeCreateRestaurant(req)
+	if err != nil {
+		e.log.Println(err)
+	}
+
+	rest := domain.Restaurant{
+		Name: restaurantData.Name,
+	}
+
+	err = e.app.CreateNewRestaurant(rest)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
