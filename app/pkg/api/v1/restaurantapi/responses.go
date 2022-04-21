@@ -1,18 +1,23 @@
 package restaurantapi
 
+type ReturnRestaurant struct {
+	ID      int
+	Name    string
+	City    string
+	Address string
+}
+
 type ReturnRestaurantList struct {
-	List []struct {
-		ID      int
-		Name    string
-		City    string
-		Address string
-	}
+	List []ReturnRestaurant
 }
 
 type ReturnMenu struct {
-	ItemsByCourse map[string][]struct {
-		ID   int
-		Name string
-		// Photo []byte
-	}
+	RestaurantID int
+	Items        []ReturnMenuItem
+}
+
+type ReturnMenuItem struct {
+	ID   int
+	Name string
+	// Photo []byte
 }
