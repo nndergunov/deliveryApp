@@ -43,17 +43,23 @@ func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
 
 	e.serveMux.HandleFunc("/v1/restaurants", e.returnRestaurantList).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/restaurants", e.createRestaurant).Methods(http.MethodPost)
-	e.serveMux.HandleFunc("/v1/restaurants", e.updateRestaurant).Methods(http.MethodPut)
 
 	e.serveMux.HandleFunc("/v1/restaurants/{"+restaurantIDKey+"}/menu", e.returnMenu).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/restaurants/{"+restaurantIDKey+"}/menu", e.createMenu).Methods(http.MethodPost)
-	e.serveMux.HandleFunc("/v1/restaurants/{"+restaurantIDKey+"}/menu", e.addMenuItem).Methods(http.MethodPut)
+
+	e.serveMux.HandleFunc("/v1/admin/restaurants", e.createRestaurant).Methods(http.MethodPost)
+	e.serveMux.HandleFunc("/v1/admin/restaurants", e.updateRestaurant).Methods(http.MethodPut)
 
 	e.serveMux.HandleFunc(
-		"/v1/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}", e.updateMenuItem).Methods(http.MethodPatch)
+		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu", e.createMenu).Methods(http.MethodPost)
 	e.serveMux.HandleFunc(
-		"/v1/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}", e.deleteMenuItem).Methods(http.MethodDelete)
+		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu", e.addMenuItem).Methods(http.MethodPut)
+
+	e.serveMux.HandleFunc(
+		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}",
+		e.updateMenuItem).Methods(http.MethodPatch)
+	e.serveMux.HandleFunc(
+		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}",
+		e.deleteMenuItem).Methods(http.MethodDelete)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -65,19 +71,43 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	status, err := v1.EncodeIndent(data, "", " ")
 	if err != nil {
 		e.log.Println(err)
-	}
 
-	_, err = io.WriteString(responseWriter, string(status))
-	if err != nil {
-		e.log.Printf("status write: %v", err)
+		responseWriter.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
 
+	_, err = io.WriteString(responseWriter, string(status))
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	responseWriter.WriteHeader(http.StatusOK)
+
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, r *http.Request) {
+func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
+	restaurants := e.app.ReturnAllRestaurants()
+	response := RestaurantListToResponse(restaurants)
+
+	data, err := v1.Encode(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	_, err = w.Write(data)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	// TODO logic.
 }
 
@@ -85,13 +115,19 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	restaurantData, err := restaurantapi.DecodeRestaurantData(req)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	rest := requestToRestaurant(0, restaurantData)
@@ -99,27 +135,41 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	err = e.app.CreateNewRestaurant(rest)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusInternalServerError)
+
+		return
 	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	restaurantData, err := restaurantapi.DecodeRestaurantData(req)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	rest := requestToRestaurant(restaurantID, restaurantData)
@@ -130,33 +180,44 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 
 		if errors.Is(err, app.ErrIsNotInMap) {
 			w.WriteHeader(http.StatusBadRequest)
+
+			return
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
+
+			return
 		}
 	}
-}
 
-func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+	w.WriteHeader(http.StatusOK)
 }
 
 func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuData, err := restaurantapi.DecodeMenuData(req)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menu := requestToMenu(restaurantID, menuData)
@@ -167,29 +228,44 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 
 		if errors.Is(err, app.ErrIsNotInMap) {
 			w.WriteHeader(http.StatusBadRequest)
+
+			return
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
+
+			return
 		}
 	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuItemData, err := restaurantapi.DecodeMenuItem(req)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuItem := requestToMenuItem(0, menuItemData)
@@ -200,35 +276,53 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 
 		if errors.Is(err, app.ErrIsNotInMap) {
 			w.WriteHeader(http.StatusBadRequest)
+
+			return
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
+
+			return
 		}
 	}
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuItemData, err := restaurantapi.DecodeMenuItem(req)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuItem := requestToMenuItem(menuItemID, menuItemData)
@@ -239,23 +333,35 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 
 		if errors.Is(err, app.ErrIsNotInMap) {
 			w.WriteHeader(http.StatusBadRequest)
+
+			return
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
+
+			return
 		}
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
 		e.log.Println(err)
+
 		w.WriteHeader(http.StatusBadRequest)
+
+		return
 	}
 
 	err = e.app.DeleteMenuItem(restaurantID, menuItemID)
@@ -264,8 +370,14 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 
 		if errors.Is(err, app.ErrIsNotInMap) {
 			w.WriteHeader(http.StatusBadRequest)
+
+			return
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
+
+			return
 		}
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
