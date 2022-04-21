@@ -1,9 +1,9 @@
 package restaurantapi
 
 type RestaurantData struct {
-	Name   string
-	City   string
-	Street string
+	Name    string
+	City    string
+	Address string
 }
 
 type MenuData struct {
