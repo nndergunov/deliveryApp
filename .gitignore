@@ -1,8 +1,10 @@
 ### sql ###
-.sql
+*.sql
 
-### dotenv ###
-.env
+### Configuration files ###
+*.env
+*.toml
+*.yaml
 
 ### Go ###
 # Binaries for programs and plugins

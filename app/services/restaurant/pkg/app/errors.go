@@ -2,4 +2,7 @@ package app
 
 import "errors"
 
-var ErrIsNotInMap = errors.New("requested id is not in map")
+var (
+	ErrIsNotInDatabase = errors.New("requested id is not in the database")
+	ErrIsInDatabase    = errors.New("requested element is already in the database")
+)

@@ -92,7 +92,15 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 }
 
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
-	restaurants := e.app.ReturnAllRestaurants()
+	restaurants, err := e.app.ReturnAllRestaurants()
+	if err != nil {
+		e.log.Println(err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
 	response := restaurantListToResponse(restaurants)
 
 	e.respond(response, w)
@@ -103,7 +111,7 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e.log.Println(err)
 
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
@@ -187,7 +195,7 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		e.log.Println(err)
 
-		if errors.Is(err, app.ErrIsNotInMap) {
+		if errors.Is(err, app.ErrIsNotInDatabase) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			return
@@ -235,7 +243,7 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e.log.Println(err)
 
-		if errors.Is(err, app.ErrIsNotInMap) {
+		if errors.Is(err, app.ErrIsNotInDatabase) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			return
@@ -283,7 +291,7 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e.log.Println(err)
 
-		if errors.Is(err, app.ErrIsNotInMap) {
+		if errors.Is(err, app.ErrIsNotInDatabase) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			return
@@ -298,15 +306,6 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
-	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
-	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
-
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
 		e.log.Println(err)
@@ -336,11 +335,11 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 
 	menuItem := requestToMenuItem(menuItemID, menuItemData)
 
-	err = e.app.UpdateMenuItem(restaurantID, menuItem)
+	err = e.app.UpdateMenuItem(menuItem)
 	if err != nil {
 		e.log.Println(err)
 
-		if errors.Is(err, app.ErrIsNotInMap) {
+		if errors.Is(err, app.ErrIsNotInDatabase) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			return
@@ -355,15 +354,6 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 }
 
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
-	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
-	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
-
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
 		e.log.Println(err)
@@ -373,11 +363,11 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = e.app.DeleteMenuItem(restaurantID, menuItemID)
+	err = e.app.DeleteMenuItem(menuItemID)
 	if err != nil {
 		e.log.Println(err)
 
-		if errors.Is(err, app.ErrIsNotInMap) {
+		if errors.Is(err, app.ErrIsNotInDatabase) {
 			w.WriteHeader(http.StatusBadRequest)
 
 			return

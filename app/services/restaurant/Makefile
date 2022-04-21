@@ -30,6 +30,7 @@ download-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/configreader
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
+	go get -u github.com/volatiletech/sqlboiler/v4
 	go get -u github.com/gorilla/mux
 
 gomod-tidy:

@@ -3,107 +3,89 @@ package app
 import (
 	"fmt"
 
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
 // App is a main service logic.
 type App struct {
-	restaurants map[int]*domain.Restaurant
-	menus       map[int]*domain.Menu
+	database *db.Database
 }
 
-func NewApp() *App {
-	rests := make(map[int]*domain.Restaurant)
-	menus := make(map[int]*domain.Menu)
-
+func NewApp(database *db.Database) *App {
 	return &App{
-		restaurants: rests,
-		menus:       menus,
+		database: database,
 	}
 }
 
-func (a *App) ReturnAllRestaurants() []domain.Restaurant {
-	restaurants := make([]domain.Restaurant, 0, len(a.restaurants))
-
-	for _, restaurant := range a.restaurants {
-		restaurants = append(restaurants, *restaurant)
+func (a App) ReturnAllRestaurants() ([]domain.Restaurant, error) {
+	restaurants, err := a.database.ReturnAllRestaurants()
+	if err != nil {
+		return nil, fmt.Errorf("ReturnAllRestaurants: %w", err)
 	}
 
-	return restaurants
+	return restaurants, nil
 }
 
-func (a *App) CreateNewRestaurant(restaurant domain.Restaurant) error {
-	currID := 123 // To be changed to database id.
-
-	a.restaurants[currID] = &restaurant
+func (a App) CreateNewRestaurant(restaurant domain.Restaurant) error {
+	err := a.database.CreateNewRestaurant(restaurant)
+	if err != nil {
+		return fmt.Errorf("CreateNewRestaurant: %w", err)
+	}
 
 	return nil
 }
 
-func (a *App) UpdateRestaurant(restaurant domain.Restaurant) error {
-	if _, ok := a.restaurants[restaurant.ID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, restaurant.ID)
+func (a App) UpdateRestaurant(restaurant domain.Restaurant) error {
+	err := a.database.UpdateRestaurant(restaurant)
+	if err != nil {
+		return fmt.Errorf("UpdateRestaurant: %w", err)
 	}
-
-	a.restaurants[restaurant.ID] = &restaurant
 
 	return nil
 }
 
-func (a *App) ReturnMenu(restaurantID int) (*domain.Menu, error) {
-	if _, ok := a.restaurants[restaurantID]; !ok {
-		return nil, fmt.Errorf("%w: id: %d", ErrIsNotInMap, restaurantID)
+func (a App) ReturnMenu(restaurantID int) (*domain.Menu, error) {
+	menu, err := a.database.ReturnMenu(restaurantID)
+	if err != nil {
+		return nil, fmt.Errorf("ReturnMenu: %w", err)
 	}
 
-	return a.menus[restaurantID], nil
+	return menu, nil
 }
 
-func (a *App) CreateMenu(menu domain.Menu) error {
-	if _, ok := a.restaurants[menu.RestaurantID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, menu.RestaurantID)
+func (a App) CreateMenu(menu domain.Menu) error {
+	err := a.database.CreateMenu(menu)
+	if err != nil {
+		return fmt.Errorf("CreateMenu: %w", err)
 	}
-
-	a.menus[menu.RestaurantID] = &menu
 
 	return nil
 }
 
-func (a *App) AddMenuItem(restaurantID int, menuItem domain.MenuItem) error {
-	if _, ok := a.restaurants[restaurantID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, restaurantID)
+func (a App) AddMenuItem(restaurantID int, menuItem domain.MenuItem) error {
+	err := a.database.AddMenuItem(restaurantID, menuItem)
+	if err != nil {
+		return fmt.Errorf("AddMenuItem: %w", err)
 	}
-
-	next := 123 // To be replaced by the database index.
-
-	a.menus[restaurantID].Items[next] = menuItem
 
 	return nil
 }
 
-func (a *App) UpdateMenuItem(restaurantID int, updatedMenuItem domain.MenuItem) error {
-	if _, ok := a.restaurants[restaurantID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, restaurantID)
+func (a App) UpdateMenuItem(menuItem domain.MenuItem) error {
+	err := a.database.UpdateMenuItem(menuItem)
+	if err != nil {
+		return fmt.Errorf("UpdateMenuItem: %w", err)
 	}
-
-	if _, ok := a.menus[restaurantID].Items[updatedMenuItem.ID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, updatedMenuItem.ID)
-	}
-
-	a.menus[restaurantID].Items[updatedMenuItem.ID] = updatedMenuItem
 
 	return nil
 }
 
-func (a *App) DeleteMenuItem(restaurantID, menuItemID int) error {
-	if _, ok := a.restaurants[restaurantID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, restaurantID)
+func (a App) DeleteMenuItem(menuItemID int) error {
+	err := a.database.DeleteMenuItem(menuItemID)
+	if err != nil {
+		return fmt.Errorf("DeleteMenuItem: %w", err)
 	}
-
-	if _, ok := a.menus[restaurantID].Items[menuItemID]; !ok {
-		return fmt.Errorf("%w: id: %d", ErrIsNotInMap, menuItemID)
-	}
-
-	delete(a.menus[restaurantID].Items, menuItemID)
 
 	return nil
 }
