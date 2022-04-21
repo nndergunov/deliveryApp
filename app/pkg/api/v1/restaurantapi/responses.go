@@ -17,7 +17,8 @@ type ReturnMenu struct {
 }
 
 type ReturnMenuItem struct {
-	ID   int
-	Name string
+	ID     int
+	Name   string
+	Course string
 	// Photo []byte
 }
