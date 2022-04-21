@@ -10,7 +10,7 @@ import (
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/app"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/app"
 )
 
 const (

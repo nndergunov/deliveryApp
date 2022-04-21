@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
-	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
 func RestaurantListToResponse(restaurants []domain.Restaurant) restaurantapi.ReturnRestaurantList {

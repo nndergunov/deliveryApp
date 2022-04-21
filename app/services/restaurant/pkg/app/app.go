@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 
-	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
 // App is a main service logic.

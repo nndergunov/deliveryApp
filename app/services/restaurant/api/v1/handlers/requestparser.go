@@ -7,7 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
-	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
 func getIDFromEndpoint(code string, r *http.Request) (int, error) {
