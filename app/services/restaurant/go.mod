@@ -4,14 +4,14 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220421141323-675df3b6968c
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220421141323-675df3b6968c
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220421141323-675df3b6968c
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220421141323-675df3b6968c
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220421145851-e53b986249f1
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220421145851-e53b986249f1
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220421145851-e53b986249f1
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220421145851-e53b986249f1
 )
 
 require (
-	github.com/fsnotify/fsnotify v1.5.2 // indirect
+	github.com/fsnotify/fsnotify v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect

@@ -50,18 +50,12 @@ func (a *App) UpdateRestaurant(restaurant domain.Restaurant) error {
 	return nil
 }
 
-func (a *App) ReturnMenu(restaurantID int) ([]domain.MenuItem, error) {
+func (a *App) ReturnMenu(restaurantID int) (*domain.Menu, error) {
 	if _, ok := a.restaurants[restaurantID]; !ok {
 		return nil, fmt.Errorf("%w: id: %d", ErrIsNotInMap, restaurantID)
 	}
 
-	menu := make([]domain.MenuItem, 0, len(a.menus[restaurantID].Items))
-
-	for _, item := range a.menus[restaurantID].Items {
-		menu = append(menu, item)
-	}
-
-	return menu, nil
+	return a.menus[restaurantID], nil
 }
 
 func (a *App) CreateMenu(menu domain.Menu) error {

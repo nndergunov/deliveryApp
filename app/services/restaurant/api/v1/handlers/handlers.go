@@ -93,22 +93,31 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
 	restaurants := e.app.ReturnAllRestaurants()
-	response := RestaurantListToResponse(restaurants)
+	response := restaurantListToResponse(restaurants)
 
-	data, err := v1.Encode(response)
+	e.respond(response, w)
+}
+
+func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
+	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
+	if err != nil {
+		e.log.Println(err)
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	menu, err := e.app.ReturnMenu(restaurantID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
 
-	_, err = w.Write(data)
+	response := menuToResponse(*menu)
 
-	w.WriteHeader(http.StatusOK)
-}
-
-func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+	e.respond(response, w)
 }
 
 func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {

@@ -31,7 +31,7 @@ func requestToRestaurant(restID int, req *restaurantapi.RestaurantData) domain.R
 		ID:      restID,
 		Name:    req.Name,
 		City:    req.City,
-		Address: req.Street,
+		Address: req.Address,
 	}
 }
 
