@@ -5,21 +5,36 @@ cl-start:
 	go run main.go
 
 docker-build:
+	cd database
+	make docker-build
+	cd ../
 	docker-compose up -d
 
 docker-delete:
+	cd database
+	make docker-delete
+	cd ../
 	docker-compose down --remove-orphans --volumes
-	docker image rm kitchen_app
+	docker image rm restaurant_app
 
 docker-rebuild:
+	cd database
+	make docker-rebuild
+	cd ../
 	make docker-delete
 	make docker-build
 
 docker-start:
-	docker container start kitchen-service
+	cd database
+	make docker-start
+	cd ../
+	docker container start restaurant-service
 
 docker-stop:
-	docker container stop kitchen-service
+	cd database
+	make docker-stop
+	cd ../
+	docker container stop restaurant-service
 
 update-gomod:
 	make download-gomod
