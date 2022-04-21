@@ -53,7 +53,7 @@ func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc(
 		"/v1/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}", e.updateMenuItem).Methods(http.MethodPatch)
 	e.serveMux.HandleFunc(
-		"/v1/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}", e.updateMenuItem).Methods(http.MethodDelete)
+		"/v1/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}", e.deleteMenuItem).Methods(http.MethodDelete)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
