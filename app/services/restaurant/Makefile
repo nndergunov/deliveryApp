@@ -2,12 +2,11 @@ status-check:
 	-curl http://localhost:8082/status
 
 cl-start:
+	make -C database docker-build
 	go run main.go
 
 docker-build:
-	cd database
-	make docker-build
-	cd ../
+	make -C database docker-build
 	docker-compose up -d
 
 docker-delete:
@@ -47,6 +46,7 @@ download-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	go get -u github.com/volatiletech/sqlboiler/v4
 	go get -u github.com/gorilla/mux
+	go get -u github.com/lib/pq
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18

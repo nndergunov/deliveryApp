@@ -4,7 +4,6 @@
 package models
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"reflect"
@@ -103,7 +102,7 @@ type (
 	// This should almost always be used instead of []Restaurant.
 	RestaurantSlice []*Restaurant
 	// RestaurantHook is the signature for custom Restaurant hook methods
-	RestaurantHook func(context.Context, boil.ContextExecutor, *Restaurant) error
+	RestaurantHook func(boil.Executor, *Restaurant) error
 
 	restaurantQuery struct {
 		*queries.Query
@@ -146,13 +145,9 @@ var restaurantBeforeUpsertHooks []RestaurantHook
 var restaurantAfterUpsertHooks []RestaurantHook
 
 // doAfterSelectHooks executes all "after Select" hooks.
-func (o *Restaurant) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doAfterSelectHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -161,13 +156,9 @@ func (o *Restaurant) doAfterSelectHooks(ctx context.Context, exec boil.ContextEx
 }
 
 // doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Restaurant) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doBeforeInsertHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -176,13 +167,9 @@ func (o *Restaurant) doBeforeInsertHooks(ctx context.Context, exec boil.ContextE
 }
 
 // doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Restaurant) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doAfterInsertHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -191,13 +178,9 @@ func (o *Restaurant) doAfterInsertHooks(ctx context.Context, exec boil.ContextEx
 }
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Restaurant) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doBeforeUpdateHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -206,13 +189,9 @@ func (o *Restaurant) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextE
 }
 
 // doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Restaurant) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doAfterUpdateHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -221,13 +200,9 @@ func (o *Restaurant) doAfterUpdateHooks(ctx context.Context, exec boil.ContextEx
 }
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Restaurant) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doBeforeDeleteHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -236,13 +211,9 @@ func (o *Restaurant) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextE
 }
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Restaurant) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doAfterDeleteHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -251,13 +222,9 @@ func (o *Restaurant) doAfterDeleteHooks(ctx context.Context, exec boil.ContextEx
 }
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Restaurant) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doBeforeUpsertHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -266,13 +233,9 @@ func (o *Restaurant) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextE
 }
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Restaurant) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
+func (o *Restaurant) doAfterUpsertHooks(exec boil.Executor) (err error) {
 	for _, hook := range restaurantAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
+		if err := hook(exec, o); err != nil {
 			return err
 		}
 	}
@@ -305,12 +268,12 @@ func AddRestaurantHook(hookPoint boil.HookPoint, restaurantHook RestaurantHook) 
 }
 
 // One returns a single restaurant record from the query.
-func (q restaurantQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Restaurant, error) {
+func (q restaurantQuery) One(exec boil.Executor) (*Restaurant, error) {
 	o := &Restaurant{}
 
 	queries.SetLimit(q.Query, 1)
 
-	err := q.Bind(ctx, exec, o)
+	err := q.Bind(nil, exec, o)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
@@ -318,7 +281,7 @@ func (q restaurantQuery) One(ctx context.Context, exec boil.ContextExecutor) (*R
 		return nil, errors.Wrap(err, "models: failed to execute a one query for restaurants")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
+	if err := o.doAfterSelectHooks(exec); err != nil {
 		return o, err
 	}
 
@@ -326,17 +289,17 @@ func (q restaurantQuery) One(ctx context.Context, exec boil.ContextExecutor) (*R
 }
 
 // All returns all Restaurant records from the query.
-func (q restaurantQuery) All(ctx context.Context, exec boil.ContextExecutor) (RestaurantSlice, error) {
+func (q restaurantQuery) All(exec boil.Executor) (RestaurantSlice, error) {
 	var o []*Restaurant
 
-	err := q.Bind(ctx, exec, &o)
+	err := q.Bind(nil, exec, &o)
 	if err != nil {
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Restaurant slice")
 	}
 
 	if len(restaurantAfterSelectHooks) != 0 {
 		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
+			if err := obj.doAfterSelectHooks(exec); err != nil {
 				return o, err
 			}
 		}
@@ -346,13 +309,13 @@ func (q restaurantQuery) All(ctx context.Context, exec boil.ContextExecutor) (Re
 }
 
 // Count returns the count of all Restaurant records in the query.
-func (q restaurantQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q restaurantQuery) Count(exec boil.Executor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
 	queries.SetCount(q.Query)
 
-	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
+	err := q.Query.QueryRow(exec).Scan(&count)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: failed to count restaurants rows")
 	}
@@ -361,14 +324,14 @@ func (q restaurantQuery) Count(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Exists checks if the row exists in the table.
-func (q restaurantQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q restaurantQuery) Exists(exec boil.Executor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
 	queries.SetCount(q.Query)
 	queries.SetLimit(q.Query, 1)
 
-	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
+	err := q.Query.QueryRow(exec).Scan(&count)
 	if err != nil {
 		return false, errors.Wrap(err, "models: failed to check if restaurants exists")
 	}
@@ -389,7 +352,7 @@ func (o *Restaurant) Menu(mods ...qm.QueryMod) menuQuery {
 
 // LoadMenu allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-1 relationship.
-func (restaurantL) LoadMenu(ctx context.Context, e boil.ContextExecutor, singular bool, maybeRestaurant interface{}, mods queries.Applicator) error {
+func (restaurantL) LoadMenu(e boil.Executor, singular bool, maybeRestaurant interface{}, mods queries.Applicator) error {
 	var slice []*Restaurant
 	var object *Restaurant
 
@@ -434,7 +397,7 @@ func (restaurantL) LoadMenu(ctx context.Context, e boil.ContextExecutor, singula
 		mods.Apply(query)
 	}
 
-	results, err := query.QueryContext(ctx, e)
+	results, err := query.Query(e)
 	if err != nil {
 		return errors.Wrap(err, "failed to eager load Menu")
 	}
@@ -453,7 +416,7 @@ func (restaurantL) LoadMenu(ctx context.Context, e boil.ContextExecutor, singula
 
 	if len(restaurantAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+			if err := obj.doAfterSelectHooks(e); err != nil {
 				return err
 			}
 		}
@@ -491,13 +454,13 @@ func (restaurantL) LoadMenu(ctx context.Context, e boil.ContextExecutor, singula
 // SetMenu of the restaurant to the related item.
 // Sets o.R.Menu to related.
 // Adds o to related.R.Restaurant.
-func (o *Restaurant) SetMenu(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Menu) error {
+func (o *Restaurant) SetMenu(exec boil.Executor, insert bool, related *Menu) error {
 	var err error
 
 	if insert {
 		related.RestaurantID = o.ID
 
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = related.Insert(exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	} else {
@@ -508,12 +471,11 @@ func (o *Restaurant) SetMenu(ctx context.Context, exec boil.ContextExecutor, ins
 		)
 		values := []interface{}{o.ID, related.ID}
 
-		if boil.IsDebug(ctx) {
-			writer := boil.DebugWriterFrom(ctx)
-			fmt.Fprintln(writer, updateQuery)
-			fmt.Fprintln(writer, values)
+		if boil.DebugMode {
+			fmt.Fprintln(boil.DebugWriter, updateQuery)
+			fmt.Fprintln(boil.DebugWriter, values)
 		}
-		if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+		if _, err = exec.Exec(updateQuery, values...); err != nil {
 			return errors.Wrap(err, "failed to update foreign table")
 		}
 
@@ -551,7 +513,7 @@ func Restaurants(mods ...qm.QueryMod) restaurantQuery {
 
 // FindRestaurant retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindRestaurant(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Restaurant, error) {
+func FindRestaurant(exec boil.Executor, iD int, selectCols ...string) (*Restaurant, error) {
 	restaurantObj := &Restaurant{}
 
 	sel := "*"
@@ -564,7 +526,7 @@ func FindRestaurant(ctx context.Context, exec boil.ContextExecutor, iD int, sele
 
 	q := queries.Raw(query, iD)
 
-	err := q.Bind(ctx, exec, restaurantObj)
+	err := q.Bind(nil, exec, restaurantObj)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
@@ -572,7 +534,7 @@ func FindRestaurant(ctx context.Context, exec boil.ContextExecutor, iD int, sele
 		return nil, errors.Wrap(err, "models: unable to select from restaurants")
 	}
 
-	if err = restaurantObj.doAfterSelectHooks(ctx, exec); err != nil {
+	if err = restaurantObj.doAfterSelectHooks(exec); err != nil {
 		return restaurantObj, err
 	}
 
@@ -581,14 +543,14 @@ func FindRestaurant(ctx context.Context, exec boil.ContextExecutor, iD int, sele
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Restaurant) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (o *Restaurant) Insert(exec boil.Executor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no restaurants provided for insertion")
 	}
 
 	var err error
 
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
+	if err := o.doBeforeInsertHooks(exec); err != nil {
 		return err
 	}
 
@@ -633,16 +595,15 @@ func (o *Restaurant) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 	value := reflect.Indirect(reflect.ValueOf(o))
 	vals := queries.ValuesFromMapping(value, cache.valueMapping)
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, cache.query)
+		fmt.Fprintln(boil.DebugWriter, vals)
 	}
 
 	if len(cache.retMapping) != 0 {
-		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(queries.PtrsFromMapping(value, cache.retMapping)...)
+		err = exec.QueryRow(cache.query, vals...).Scan(queries.PtrsFromMapping(value, cache.retMapping)...)
 	} else {
-		_, err = exec.ExecContext(ctx, cache.query, vals...)
+		_, err = exec.Exec(cache.query, vals...)
 	}
 
 	if err != nil {
@@ -655,15 +616,15 @@ func (o *Restaurant) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		restaurantInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return o.doAfterInsertHooks(exec)
 }
 
 // Update uses an executor to update the Restaurant.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Restaurant) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (o *Restaurant) Update(exec boil.Executor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
+	if err = o.doBeforeUpdateHooks(exec); err != nil {
 		return 0, err
 	}
 	key := makeCacheKey(columns, nil)
@@ -696,13 +657,12 @@ func (o *Restaurant) Update(ctx context.Context, exec boil.ContextExecutor, colu
 
 	values := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), cache.valueMapping)
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, values)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, cache.query)
+		fmt.Fprintln(boil.DebugWriter, values)
 	}
 	var result sql.Result
-	result, err = exec.ExecContext(ctx, cache.query, values...)
+	result, err = exec.Exec(cache.query, values...)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: unable to update restaurants row")
 	}
@@ -718,14 +678,14 @@ func (o *Restaurant) Update(ctx context.Context, exec boil.ContextExecutor, colu
 		restaurantUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, o.doAfterUpdateHooks(exec)
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q restaurantQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q restaurantQuery) UpdateAll(exec boil.Executor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
-	result, err := q.Query.ExecContext(ctx, exec)
+	result, err := q.Query.Exec(exec)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: unable to update all for restaurants")
 	}
@@ -739,7 +699,7 @@ func (q restaurantQuery) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o RestaurantSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (o RestaurantSlice) UpdateAll(exec boil.Executor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -769,12 +729,11 @@ func (o RestaurantSlice) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 		strmangle.SetParamNames("\"", "\"", 1, colNames),
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), len(colNames)+1, restaurantPrimaryKeyColumns, len(o)))
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, sql)
+		fmt.Fprintln(boil.DebugWriter, args...)
 	}
-	result, err := exec.ExecContext(ctx, sql, args...)
+	result, err := exec.Exec(sql, args...)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: unable to update all in restaurant slice")
 	}
@@ -788,12 +747,12 @@ func (o RestaurantSlice) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *Restaurant) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
+func (o *Restaurant) Upsert(exec boil.Executor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no restaurants provided for upsert")
 	}
 
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
+	if err := o.doBeforeUpsertHooks(exec); err != nil {
 		return err
 	}
 
@@ -876,18 +835,17 @@ func (o *Restaurant) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 		returns = queries.PtrsFromMapping(value, cache.retMapping)
 	}
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, cache.query)
+		fmt.Fprintln(boil.DebugWriter, vals)
 	}
 	if len(cache.retMapping) != 0 {
-		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
+		err = exec.QueryRow(cache.query, vals...).Scan(returns...)
 		if errors.Is(err, sql.ErrNoRows) {
 			err = nil // Postgres doesn't return anything when there's no update
 		}
 	} else {
-		_, err = exec.ExecContext(ctx, cache.query, vals...)
+		_, err = exec.Exec(cache.query, vals...)
 	}
 	if err != nil {
 		return errors.Wrap(err, "models: unable to upsert restaurants")
@@ -899,29 +857,28 @@ func (o *Restaurant) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 		restaurantUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
+	return o.doAfterUpsertHooks(exec)
 }
 
 // Delete deletes a single Restaurant record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (o *Restaurant) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (o *Restaurant) Delete(exec boil.Executor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Restaurant provided for delete")
 	}
 
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
+	if err := o.doBeforeDeleteHooks(exec); err != nil {
 		return 0, err
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), restaurantPrimaryKeyMapping)
 	sql := "DELETE FROM \"restaurants\" WHERE \"id\"=$1"
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, sql)
+		fmt.Fprintln(boil.DebugWriter, args...)
 	}
-	result, err := exec.ExecContext(ctx, sql, args...)
+	result, err := exec.Exec(sql, args...)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: unable to delete from restaurants")
 	}
@@ -931,7 +888,7 @@ func (o *Restaurant) Delete(ctx context.Context, exec boil.ContextExecutor) (int
 		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for restaurants")
 	}
 
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
+	if err := o.doAfterDeleteHooks(exec); err != nil {
 		return 0, err
 	}
 
@@ -939,14 +896,14 @@ func (o *Restaurant) Delete(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // DeleteAll deletes all matching rows.
-func (q restaurantQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q restaurantQuery) DeleteAll(exec boil.Executor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no restaurantQuery provided for delete all")
 	}
 
 	queries.SetDelete(q.Query)
 
-	result, err := q.Query.ExecContext(ctx, exec)
+	result, err := q.Query.Exec(exec)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: unable to delete all from restaurants")
 	}
@@ -960,14 +917,14 @@ func (q restaurantQuery) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (o RestaurantSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (o RestaurantSlice) DeleteAll(exec boil.Executor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
 
 	if len(restaurantBeforeDeleteHooks) != 0 {
 		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
+			if err := obj.doBeforeDeleteHooks(exec); err != nil {
 				return 0, err
 			}
 		}
@@ -982,12 +939,11 @@ func (o RestaurantSlice) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 	sql := "DELETE FROM \"restaurants\" WHERE " +
 		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, restaurantPrimaryKeyColumns, len(o))
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, sql)
+		fmt.Fprintln(boil.DebugWriter, args)
 	}
-	result, err := exec.ExecContext(ctx, sql, args...)
+	result, err := exec.Exec(sql, args...)
 	if err != nil {
 		return 0, errors.Wrap(err, "models: unable to delete all from restaurant slice")
 	}
@@ -999,7 +955,7 @@ func (o RestaurantSlice) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 
 	if len(restaurantAfterDeleteHooks) != 0 {
 		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
+			if err := obj.doAfterDeleteHooks(exec); err != nil {
 				return 0, err
 			}
 		}
@@ -1010,8 +966,8 @@ func (o RestaurantSlice) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (o *Restaurant) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindRestaurant(ctx, exec, o.ID)
+func (o *Restaurant) Reload(exec boil.Executor) error {
+	ret, err := FindRestaurant(exec, o.ID)
 	if err != nil {
 		return err
 	}
@@ -1022,7 +978,7 @@ func (o *Restaurant) Reload(ctx context.Context, exec boil.ContextExecutor) erro
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (o *RestaurantSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
+func (o *RestaurantSlice) ReloadAll(exec boil.Executor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}
@@ -1039,7 +995,7 @@ func (o *RestaurantSlice) ReloadAll(ctx context.Context, exec boil.ContextExecut
 
 	q := queries.Raw(sql, args...)
 
-	err := q.Bind(ctx, exec, &slice)
+	err := q.Bind(nil, exec, &slice)
 	if err != nil {
 		return errors.Wrap(err, "models: unable to reload all in RestaurantSlice")
 	}
@@ -1050,16 +1006,15 @@ func (o *RestaurantSlice) ReloadAll(ctx context.Context, exec boil.ContextExecut
 }
 
 // RestaurantExists checks if the Restaurant row exists.
-func RestaurantExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+func RestaurantExists(exec boil.Executor, iD int) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"restaurants\" where \"id\"=$1 limit 1)"
 
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, sql)
+		fmt.Fprintln(boil.DebugWriter, iD)
 	}
-	row := exec.QueryRowContext(ctx, sql, iD)
+	row := exec.QueryRow(sql, iD)
 
 	err := row.Scan(&exists)
 	if err != nil {

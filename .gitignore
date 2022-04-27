@@ -6,6 +6,9 @@
 *.toml
 *.yaml
 
+### Project-specific files ###
+cleardatabase
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe
