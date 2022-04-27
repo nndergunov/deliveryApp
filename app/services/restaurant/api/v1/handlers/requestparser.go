@@ -36,14 +36,16 @@ func requestToRestaurant(restID int, req *restaurantapi.RestaurantData) domain.R
 }
 
 func requestToMenu(restaurantID int, req *restaurantapi.MenuData) domain.Menu {
-	menuItems := make(map[int]domain.MenuItem)
+	menuItems := make([]domain.MenuItem, 0, len(req.MenuItems))
 
 	for _, item := range req.MenuItems {
-		menuItems[item.ID] = domain.MenuItem{
+		currItem := domain.MenuItem{
 			ID:     item.ID,
 			Name:   item.Name,
 			Course: item.Course,
 		}
+
+		menuItems = append(menuItems, currItem)
 	}
 
 	return domain.Menu{

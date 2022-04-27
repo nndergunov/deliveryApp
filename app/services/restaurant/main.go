@@ -12,8 +12,8 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/handlers"
-	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/app"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/service"
 )
 
 const configFile = "config.yaml"
@@ -38,7 +38,7 @@ func main() {
 		mainLogger.Fatalln(err)
 	}
 
-	appInstance := app.NewApp(database)
+	appInstance := service.NewService(database)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
 	endpointHandler := handlers.NewEndpointHandler(appInstance, handlerLogger)
 
