@@ -10,29 +10,21 @@ docker-build:
 	docker-compose up -d
 
 docker-delete:
-	cd database
-	make docker-delete
-	cd ../
+	make -C database docker-delete
 	docker-compose down --remove-orphans --volumes
 	docker image rm restaurant_app
 
 docker-rebuild:
-	cd database
-	make docker-rebuild
-	cd ../
+	make -C database docker-rebuild
 	make docker-delete
 	make docker-build
 
 docker-start:
-	cd database
-	make docker-start
-	cd ../
+	make -C database docker-start
 	docker container start restaurant-service
 
 docker-stop:
-	cd database
-	make docker-stop
-	cd ../
+	make -C database docker-stop
 	docker container stop restaurant-service
 
 update-gomod:
