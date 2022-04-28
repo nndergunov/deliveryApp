@@ -2,8 +2,6 @@ module github.com/nndergunov/deliveryApp/app/services/restaurant
 
 go 1.18
 
-replace github.com/nndergunov/deliveryApp/app/pkg/api => C:\Users\Mykyta_Derhunov\Desktop\Code\deliveryApp\app\pkg\api
-
 require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
