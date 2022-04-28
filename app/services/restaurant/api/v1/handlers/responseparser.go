@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
+	v1 "github.com/nndergunov/deliveryApp/service/pkg/api/v1"
 )
 
 func (e endpointHandler) respond(response any, w http.ResponseWriter) {

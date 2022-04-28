@@ -38,9 +38,9 @@ func main() {
 		mainLogger.Fatalln(err)
 	}
 
-	appInstance := service.NewService(database)
+	serviceInstance := service.NewService(database)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	endpointHandler := handlers.NewEndpointHandler(appInstance, handlerLogger)
+	endpointHandler := handlers.NewEndpointHandler(serviceInstance, handlerLogger)
 
 	apiLogger := logger.NewLogger(os.Stdout, "api")
 	serverAPI := api.NewAPI(endpointHandler, apiLogger)

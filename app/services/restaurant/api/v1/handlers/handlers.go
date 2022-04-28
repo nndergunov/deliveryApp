@@ -19,17 +19,17 @@ const (
 )
 
 type endpointHandler struct {
-	app      *service.Service
+	service  *service.Service
 	serveMux *mux.Router
 	log      *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(appInstance *service.Service, log *logger.Logger) *mux.Router {
+func NewEndpointHandler(serviceInstance *service.Service, log *logger.Logger) *mux.Router {
 	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
-		app:      appInstance,
+		service:  serviceInstance,
 		serveMux: serveMux,
 		log:      log,
 	}
@@ -95,7 +95,7 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 }
 
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
-	restaurants, err := e.app.ReturnAllRestaurants()
+	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
 		e.log.Println(err)
 
@@ -114,12 +114,12 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		e.log.Println(err)
 
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 
 		return
 	}
 
-	menu, err := e.app.ReturnMenu(restaurantID)
+	menu, err := e.service.ReturnMenu(restaurantID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 
@@ -152,7 +152,7 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 
 	rest := requestToRestaurant(0, restaurantData)
 
-	createdRest, err := e.app.CreateNewRestaurant(rest)
+	createdRest, err := e.service.CreateNewRestaurant(rest)
 	if err != nil {
 		e.log.Println(err)
 
@@ -196,7 +196,7 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 
 	rest := requestToRestaurant(restaurantID, restaurantData)
 
-	updatedRestaurant, err := e.app.UpdateRestaurant(rest)
+	updatedRestaurant, err := e.service.UpdateRestaurant(rest)
 	if err != nil {
 		e.log.Println(err)
 
@@ -222,7 +222,7 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = e.app.DeleteRestaurant(restaurantID)
+	err = e.service.DeleteRestaurant(restaurantID)
 	if err != nil {
 		e.log.Println(err)
 
@@ -266,7 +266,7 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 
 	menu := requestToMenu(restaurantID, menuData)
 
-	createdMenu, err := e.app.CreateMenu(menu)
+	createdMenu, err := e.service.CreateMenu(menu)
 	if err != nil {
 		e.log.Println(err)
 
@@ -312,7 +312,7 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 
 	menuItem := requestToMenuItem(0, menuItemData)
 
-	addedMenuItem, err := e.app.AddMenuItem(restaurantID, menuItem)
+	addedMenuItem, err := e.service.AddMenuItem(restaurantID, menuItem)
 	if err != nil {
 		e.log.Println(err)
 
@@ -365,7 +365,7 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 
 	menuItem := requestToMenuItem(menuItemID, menuItemData)
 
-	updatedMenuItem, err := e.app.UpdateMenuItem(restaurantID, menuItem)
+	updatedMenuItem, err := e.service.UpdateMenuItem(restaurantID, menuItem)
 	if err != nil {
 		e.log.Println(err)
 
@@ -400,7 +400,7 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = e.app.DeleteMenuItem(restaurantID, menuItemID)
+	err = e.service.DeleteMenuItem(restaurantID, menuItemID)
 	if err != nil {
 		e.log.Println(err)
 
