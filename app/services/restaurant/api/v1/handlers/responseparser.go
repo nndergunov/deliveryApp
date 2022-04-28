@@ -57,12 +57,7 @@ func menuToResponse(menu domain.Menu) restaurantapi.ReturnMenu {
 	items := make([]restaurantapi.ReturnMenuItem, 0, len(menu.Items))
 
 	for _, menuItem := range menu.Items {
-		currItem := restaurantapi.ReturnMenuItem{
-			ID:   menuItem.ID,
-			Name: menuItem.Name,
-		}
-
-		items = append(items, currItem)
+		items = append(items, menuItemToResponse(menuItem))
 	}
 
 	return restaurantapi.ReturnMenu{
@@ -73,7 +68,8 @@ func menuToResponse(menu domain.Menu) restaurantapi.ReturnMenu {
 
 func menuItemToResponse(menuItem domain.MenuItem) restaurantapi.ReturnMenuItem {
 	return restaurantapi.ReturnMenuItem{
-		ID:   menuItem.ID,
-		Name: menuItem.Name,
+		ID:     menuItem.ID,
+		Name:   menuItem.Name,
+		Course: menuItem.Course,
 	}
 }

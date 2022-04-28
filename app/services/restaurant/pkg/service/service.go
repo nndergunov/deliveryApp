@@ -86,8 +86,18 @@ func (s Service) AddMenuItem(restaurantID int, menuItem domain.MenuItem) (*domai
 	return &menuItem, nil
 }
 
-func (s Service) UpdateMenuItem(menuItem domain.MenuItem) (*domain.MenuItem, error) {
-	err := s.storage.UpdateMenuItem(menuItem)
+func (s Service) UpdateMenuItem(restaurantID int, menuItem domain.MenuItem) (*domain.MenuItem, error) {
+	isInMenu, err := s.checkIfItemIsInMenu(restaurantID, menuItem.ID)
+	if err != nil {
+		return nil, fmt.Errorf("UpdateMenuItem: %w", err)
+	}
+
+	if !isInMenu {
+		return nil, fmt.Errorf("UpdateMenuItem: %w, restaurantID: %d, menuItemID: %d",
+			ErrItemIsNotInMenu, restaurantID, menuItem.ID)
+	}
+
+	err = s.storage.UpdateMenuItem(menuItem)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateMenuItem: %w", err)
 	}
@@ -95,11 +105,36 @@ func (s Service) UpdateMenuItem(menuItem domain.MenuItem) (*domain.MenuItem, err
 	return &menuItem, nil
 }
 
-func (s Service) DeleteMenuItem(menuItemID int) error {
-	err := s.storage.DeleteMenuItem(menuItemID)
+func (s Service) DeleteMenuItem(restaurantID, menuItemID int) error {
+	isInMenu, err := s.checkIfItemIsInMenu(restaurantID, menuItemID)
+	if err != nil {
+		return fmt.Errorf("DeleteMenuItem: %w", err)
+	}
+
+	if !isInMenu {
+		return fmt.Errorf("DeleteMenuItem: %w, restaurantID: %d, menuItemID: %d",
+			ErrItemIsNotInMenu, restaurantID, menuItemID)
+	}
+
+	err = s.storage.DeleteMenuItem(menuItemID)
 	if err != nil {
 		return fmt.Errorf("DeleteMenuItem: %w", err)
 	}
 
 	return nil
+}
+
+func (s Service) checkIfItemIsInMenu(restaurantID, menuItemID int) (bool, error) {
+	menu, err := s.storage.GetMenu(restaurantID)
+	if err != nil {
+		return false, fmt.Errorf("DeleteMenuItem: %w", err)
+	}
+
+	for _, menuItem := range menu.Items {
+		if menuItem.ID == menuItemID {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }

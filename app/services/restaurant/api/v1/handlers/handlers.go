@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -53,9 +54,9 @@ func (e *endpointHandler) handlerInit() {
 
 	e.serveMux.HandleFunc(
 		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu", e.createMenu).Methods(http.MethodPost)
+
 	e.serveMux.HandleFunc(
 		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu", e.addMenuItem).Methods(http.MethodPut)
-
 	e.serveMux.HandleFunc(
 		"/v1/admin/restaurants/{"+restaurantIDKey+"}/menu/{"+menuIDKey+"}",
 		e.updateMenuItem).Methods(http.MethodPatch)
@@ -326,6 +327,15 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
+	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
+	if err != nil {
+		e.log.Println(err)
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
 		e.log.Println(err)
@@ -355,7 +365,7 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 
 	menuItem := requestToMenuItem(menuItemID, menuItemData)
 
-	updatedMenuItem, err := e.app.UpdateMenuItem(menuItem)
+	updatedMenuItem, err := e.app.UpdateMenuItem(restaurantID, menuItem)
 	if err != nil {
 		e.log.Println(err)
 
@@ -372,6 +382,15 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 }
 
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
+	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
+	if err != nil {
+		e.log.Println(err)
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
 		e.log.Println(err)
@@ -381,9 +400,15 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = e.app.DeleteMenuItem(menuItemID)
+	err = e.app.DeleteMenuItem(restaurantID, menuItemID)
 	if err != nil {
 		e.log.Println(err)
+
+		if errors.Is(err, service.ErrItemIsNotInMenu) {
+			w.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

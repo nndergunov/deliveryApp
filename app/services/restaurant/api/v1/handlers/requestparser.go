@@ -41,6 +41,7 @@ func requestToMenu(restaurantID int, req *restaurantapi.MenuData) domain.Menu {
 	for _, item := range req.MenuItems {
 		currItem := domain.MenuItem{
 			ID:     item.ID,
+			MenuID: 0,
 			Name:   item.Name,
 			Course: item.Course,
 		}
@@ -57,6 +58,7 @@ func requestToMenu(restaurantID int, req *restaurantapi.MenuData) domain.Menu {
 func requestToMenuItem(itemID int, req *restaurantapi.MenuItemData) domain.MenuItem {
 	return domain.MenuItem{
 		ID:     itemID,
+		MenuID: 0,
 		Name:   req.Name,
 		Course: req.Course,
 	}
