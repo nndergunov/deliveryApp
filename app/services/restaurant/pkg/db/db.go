@@ -131,6 +131,11 @@ func (d Database) UpdateRestaurant(restaurant domain.Restaurant) error {
 }
 
 func (d Database) DeleteRestaurant(restaurantID int) error {
+	err := d.DeleteMenu(restaurantID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return fmt.Errorf("DeleteRestaurant: %w", err)
+	}
+
 	dbRestaurant, err := models.Restaurants(qm.Where("id=?", restaurantID)).One(d.db)
 	if err != nil {
 		return fmt.Errorf("DeleteRestaurant: %w", err)
@@ -181,18 +186,13 @@ func (d Database) InsertMenu(menu domain.Menu) (int, []domain.MenuItem, error) {
 		return 0, nil, fmt.Errorf("InsertMenu: %w", err)
 	}
 
-	for _, item := range menu.Items {
+	for key, item := range menu.Items {
 		itemID, err := d.InsertMenuItem(menu.RestaurantID, item)
 		if err != nil {
 			return 0, nil, fmt.Errorf("InsertMenu: %w", err)
 		}
 
-		item.ID = itemID
-	}
-
-	menuID, err = d.getMenuID(menu.RestaurantID)
-	if err != nil {
-		return 0, nil, fmt.Errorf("InsertMenu: %w", err)
+		menu.Items[key].ID = itemID
 	}
 
 	return menuID, menu.Items, nil
@@ -312,7 +312,7 @@ func (d Database) getMenuItemID(menuItem domain.MenuItem) (int, error) {
 func (d Database) getMenuItemByID(menuItemID int) (*models.MenuItem, error) {
 	menuItem, err := models.MenuItems(qm.Where("id=?", menuItemID)).One(d.db)
 	if err != nil {
-		return nil, fmt.Errorf("getRestaurantByID: %w", err)
+		return nil, fmt.Errorf("getMenuItemByID: %w", err)
 	}
 
 	return menuItem, nil
@@ -328,8 +328,10 @@ func (d Database) InsertMenuItem(restaurantID int, menuItem domain.MenuItem) (in
 		return 0, fmt.Errorf("InsertMenuItem: %w for table models", errNotExistsInDatabase)
 	}
 
+	menuItem.MenuID = menuID
+
 	menuItemID, err := d.getMenuItemID(menuItem)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return 0, fmt.Errorf("InsertMenuItem: %w", err)
 	}
 
