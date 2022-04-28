@@ -1,10 +1,6 @@
-package orderapi
+package domain
 
-type ReturnOrderList struct {
-	Orders []ReturnOrder
-}
-
-type ReturnOrder struct {
+type Order struct {
 	OrderID      int
 	FromUserID   int
 	RestaurantID int

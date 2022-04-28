@@ -2,28 +2,35 @@ package handlers
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"github.com/nndergunov/deliveryApp/app/services/order/pkg/app"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
+)
+
+const (
+	orderID      = "orderID"
+	restaurantID = "restaurantID"
 )
 
 type endpointHandler struct {
-	appInstance *app.App
-	serveMux    *mux.Router
-	log         *logger.Logger
+	serviceInstance *service.Service
+	serveMux        *mux.Router
+	log             *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(appInstance *app.App, log *logger.Logger) *mux.Router {
+func NewEndpointHandler(serviceInstance *service.Service, log *logger.Logger) *mux.Router {
 	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
-		appInstance: appInstance,
-		serveMux:    serveMux,
-		log:         log,
+		serviceInstance: serviceInstance,
+		serveMux:        serveMux,
+		log:             log,
 	}
 
 	handler.handlerInit()
@@ -33,9 +40,13 @@ func NewEndpointHandler(appInstance *app.App, log *logger.Logger) *mux.Router {
 
 func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
+
 	e.serveMux.HandleFunc("/v1/orders", e.createOrder).Methods(http.MethodPost)
-	e.serveMux.HandleFunc("/v1/orders/{id}/status", e.returnOrderStatus).Methods(http.MethodGet)
-	e.serveMux.HandleFunc("/v1/orders/{id}/status", e.updateOrderList).Methods(http.MethodPut)
+	e.serveMux.HandleFunc("/v1/orders/{"+orderID+"}", e.returnOrder).Methods(http.MethodGet)
+	e.serveMux.HandleFunc("/v1/orders/{"+orderID+"}", e.updateOrder).Methods(http.MethodPut)
+
+	e.serveMux.HandleFunc("/v1/admin/restaurants/{"+restaurantID+"}/orders/incomplete",
+		e.returnIncompleteOrderList).Methods(http.MethodGet)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -59,14 +70,123 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) createOrder(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, r *http.Request) {
+	req, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	orderData, err := orderapi.DecodeOrderData(req)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	order := requestToOrder(*orderData)
+
+	createdOrder, err := e.serviceInstance.CreateOrder(order)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	e.respond(orderToResponse(*createdOrder), responseWriter)
 }
 
-func (e endpointHandler) returnOrderStatus(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, r *http.Request) {
+	returnOrderID, err := getIDFromEndpoint(orderID, r)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	order, err := e.serviceInstance.ReturnOrder(returnOrderID)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	e.respond(orderToResponse(*order), responseWriter)
 }
 
-func (e endpointHandler) updateOrderList(w http.ResponseWriter, r *http.Request) {
-	// TODO logic.
+func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, r *http.Request) {
+	updateOrderID, err := getIDFromEndpoint(orderID, r)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	req, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	orderData, err := orderapi.DecodeOrderData(req)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	order := requestToOrder(*orderData)
+
+	order.OrderID = updateOrderID
+
+	updatedOrder, err := e.serviceInstance.UpdateOrder(order)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	e.respond(orderToResponse(*updatedOrder), responseWriter)
+}
+
+func (e endpointHandler) returnIncompleteOrderList(responseWriter http.ResponseWriter, r *http.Request) {
+	restID, err := getIDFromEndpoint(restaurantID, r)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	orderList, err := e.serviceInstance.ReturnIncompleteOrderList(restID)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	e.respond(orderListToResponse(orderList), responseWriter)
 }
