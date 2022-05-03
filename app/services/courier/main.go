@@ -2,16 +2,18 @@ package main
 
 import (
 	"context"
-	"courier/app"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"courier/app"
+	"courier/internal/handlers"
+	"courier/internal/services"
+	"courier/internal/storage"
+
 	"courier/conf"
 	"courier/database"
-	"courier/handler"
-	"courier/service"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
@@ -37,12 +39,19 @@ func run(log *logger.Logger) error {
 	}
 	defer db.Close()
 
-	log.Println("starting service", "version", configreader.GetString("buildmode"))
+	log.Println("starting services", "version", configreader.GetString("buildmode"))
 	defer log.Println("shutdown complete")
 
-	newCourierService, err := service.NewCourierService(service.Params{
-		DB:     db,
-		Logger: logger.NewLogger(os.Stdout, "courier-service"),
+	newCourierStorage, err := storage.NewCourierStorage(storage.Params{
+		DB: db,
+	})
+	if err != nil {
+		return err
+	}
+
+	courierService, err := services.NewCourierService(services.Params{
+		CourierStorage: newCourierStorage,
+		Logger:         logger.NewLogger(os.Stdout, "courier-service"),
 	})
 	if err != nil {
 		return err
@@ -58,10 +67,10 @@ func run(log *logger.Logger) error {
 		Shutdown: shutdown,
 	})
 
-	// Construct a server to service the requests against the mux.
-	handler.NewCourierHandler(handler.Params{
+	// Construct a server to services the requests against the mux.
+	handlers.NewCourierHandler(handlers.Params{
 		Logger:         logger.NewLogger(os.Stdout, "courier-handler"),
-		CourierService: newCourierService,
+		CourierService: courierService,
 		Route:          router,
 		Shutdown:       shutdown,
 	})
@@ -70,7 +79,7 @@ func run(log *logger.Logger) error {
 	// buffered channel so the goroutine can exit if we don't collect this error.
 	serverErrors := make(chan error, 1)
 
-	// Start the service listening for requests.
+	// Start the services listening for requests.
 	go func() {
 		log.Printf("main : API listening on %s", server.Addr)
 		serverErrors <- server.ListenAndServe()

@@ -1,21 +1,22 @@
 package app
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
-// Params is the input parameter struct for the handler module.
+// Params is the input parameter struct for the handlers module.
 type Params struct {
 	Logger   *logger.Logger
 	Shutdown chan os.Signal
 }
 
-//NewHandlerServer create new mux and server
+// NewHandlerServer create new mux and server
 func NewHandlerServer(p Params) (router *mux.Router, server *http.Server, err error) {
 	router = mux.NewRouter()
 
@@ -33,5 +34,4 @@ func NewHandlerServer(p Params) (router *mux.Router, server *http.Server, err er
 	}
 
 	return router, server, nil
-
 }

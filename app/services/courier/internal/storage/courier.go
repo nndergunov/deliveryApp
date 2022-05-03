@@ -1,47 +1,43 @@
-package service
+package storage
 
 import (
 	"fmt"
 
-	"courier/models"
+	"courier/internal/models"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// CourierService is the interface for the user service.
-type CourierService interface {
+// CourierStorage is the interface for the courier storage.
+type CourierStorage interface {
 	InsertCourier(courier models.Courier) (*models.Courier, error)
 	RemoveCourier(id uint64) error
 	UpdateCourier(courier models.Courier) (*models.Courier, error)
 	GetAllCourier() ([]*models.Courier, error)
-	GetCourier(id uint64, username string) (*models.Courier, error)
+	GetCourier(id uint64, username, status string) (*models.Courier, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	DB     *sqlx.DB
-	Logger *logger.Logger
+	DB *sqlx.DB
 }
 
-type courierService struct {
-	db     *sqlx.DB
-	logger *logger.Logger
+type courierStorage struct {
+	db *sqlx.DB
 }
 
-// NewCourierService constructs a new NewCourierService.
-func NewCourierService(p Params) (CourierService, error) {
-	courierServiceItem := &courierService{
-		db:     p.DB,
-		logger: p.Logger,
+// NewCourierStorage constructs a new NewCourierStorage.
+func NewCourierStorage(p Params) (CourierStorage, error) {
+	courierStorageItem := &courierStorage{
+		db: p.DB,
 	}
 
-	return courierServiceItem, nil
+	return courierStorageItem, nil
 }
 
 // InsertCourier inserts a new courier into the database.
-func (c courierService) InsertCourier(courier models.Courier) (*models.Courier, error) {
+func (c courierStorage) InsertCourier(courier models.Courier) (*models.Courier, error) {
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(courier.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return &models.Courier{}, fmt.Errorf("generating password hash: %w", err)
@@ -63,7 +59,7 @@ func (c courierService) InsertCourier(courier models.Courier) (*models.Courier, 
 	return &newCourier, nil
 }
 
-func (c courierService) RemoveCourier(id uint64) error {
+func (c courierStorage) RemoveCourier(id uint64) error {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -79,12 +75,11 @@ func (c courierService) RemoveCourier(id uint64) error {
 	}
 
 	removedCourier.Password = ""
-	c.logger.Println("Removed courier:", removedCourier)
 
 	return nil
 }
 
-func (c courierService) UpdateCourier(courier models.Courier) (*models.Courier, error) {
+func (c courierStorage) UpdateCourier(courier models.Courier) (*models.Courier, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -114,7 +109,7 @@ func (c courierService) UpdateCourier(courier models.Courier) (*models.Courier, 
 	return &updatedCourier, nil
 }
 
-func (c courierService) GetAllCourier() ([]*models.Courier, error) {
+func (c courierStorage) GetAllCourier() ([]*models.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE status = 'active'
@@ -129,7 +124,6 @@ func (c courierService) GetAllCourier() ([]*models.Courier, error) {
 	for rows.Next() {
 		var courier models.Courier
 		if err := rows.Scan(courier.Fields()...); err != nil {
-			c.logger.Println(err)
 			break
 		}
 		courier.Password = ""
@@ -139,18 +133,18 @@ func (c courierService) GetAllCourier() ([]*models.Courier, error) {
 	return allCourier, nil
 }
 
-func (c courierService) GetCourier(id uint64, username string) (*models.Courier, error) {
+func (c courierStorage) GetCourier(id uint64, username, status string) (*models.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
-			WHERE 
-			      status = 'active'
-			AND 
-			      (id = $1
-			OR 
-			      username = $2)
 	`
+	where := `WHERE (id = $1 OR username = $2)`
 
-	var courier models.Courier
+	if status != "" {
+		where = where + "AND status = '" + status + "'"
+	}
+	sql = sql + where
+
+	courier := models.Courier{}
 
 	if err := c.db.QueryRow(sql, id, username).Scan(courier.Fields()...); err != nil {
 		return nil, err
