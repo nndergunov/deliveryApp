@@ -1,34 +1,9 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
-	v1 "github.com/nndergunov/deliveryApp/service/pkg/api/v1"
 )
-
-func (e endpointHandler) respond(response any, w http.ResponseWriter) {
-	data, err := v1.Encode(response)
-	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, err = w.Write(data)
-	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-}
 
 func restaurantToResponse(restaurant domain.Restaurant) restaurantapi.ReturnRestaurant {
 	return restaurantapi.ReturnRestaurant{
