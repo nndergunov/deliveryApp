@@ -2,18 +2,20 @@
 package handler
 
 import (
-	"courier/models"
-	"courier/service"
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
 	"syscall"
+
+	"courier/models"
+	"courier/service"
+
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 type Params struct {
@@ -54,12 +56,10 @@ func NewCarrierHandler(p Params) *App {
 
 // ServeHTTP implements the http.Handler interface.
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
 	a.srv.ServeHTTP(w, r)
 }
 
 func (a *App) new(rw http.ResponseWriter, r *http.Request) {
-
 	var courier models.Courier
 
 	if err := BindJson(r, &courier); err != nil {
@@ -194,7 +194,6 @@ func (a *App) update(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) getAll(rw http.ResponseWriter, r *http.Request) {
-
 	allCourier, err := a.courierService.GetAll()
 	if err != nil {
 		if err := Respond(rw, err, http.StatusInternalServerError); err != nil {
@@ -210,6 +209,7 @@ func (a *App) getAll(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
 func (a *App) get(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]

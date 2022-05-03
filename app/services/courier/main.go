@@ -3,6 +3,12 @@ package main
 //go:generate sqlboiler postgres
 import (
 	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"courier/conf"
 	"courier/database"
 	"courier/handler"
@@ -10,15 +16,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "carrier-api")
 
@@ -47,7 +47,6 @@ func run(log *logger.Logger) error {
 		DB:     db,
 		Logger: log,
 	})
-
 	if err != nil {
 		return err
 	}

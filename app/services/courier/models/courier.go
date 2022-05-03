@@ -18,7 +18,7 @@ type Courier struct {
 	Available bool      `json:"available" yaml:"available"`
 }
 
-//Fields will return all fields of this type
+// Fields will return all fields of this type
 func (c *Courier) Fields() []interface{} {
 	return []interface{}{
 		&c.ID,

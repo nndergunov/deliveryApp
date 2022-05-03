@@ -1,8 +1,10 @@
 package service
 
 import (
-	"courier/models"
 	"fmt"
+
+	"courier/models"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
@@ -30,19 +32,16 @@ type courierService struct {
 
 // NewCourierService constructs a new NewCourierService.
 func NewCourierService(p Params) (CourierService, error) {
-
 	courierServiceItem := &courierService{
 		db:     p.DB,
 		logger: p.Logger,
 	}
 
 	return courierServiceItem, nil
-
 }
 
 // Insert inserts a new courier into the database.
 func (c courierService) Insert(courier models.Courier) (*models.Courier, error) {
-
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(courier.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return &models.Courier{}, fmt.Errorf("generating password hash: %w", err)
@@ -84,6 +83,7 @@ func (c courierService) Remove(id uint64) error {
 
 	return nil
 }
+
 func (c courierService) Update(courier models.Courier) (*models.Courier, error) {
 	sql := `UPDATE 
 				courier
@@ -106,7 +106,6 @@ func (c courierService) Update(courier models.Courier) (*models.Courier, error) 
 	if err := c.db.QueryRow(sql, courier.Username, courier.Firstname, courier.Lastname,
 		courier.Email, courier.Phone, courier.Available,
 		courier.ID).Scan(updatedCourier.Fields()...); err != nil {
-
 		return &models.Courier{}, err
 	}
 
@@ -114,6 +113,7 @@ func (c courierService) Update(courier models.Courier) (*models.Courier, error) 
 
 	return &updatedCourier, nil
 }
+
 func (c courierService) GetAll() ([]*models.Courier, error) {
 	sql := `SELECT * FROM 
 				courier

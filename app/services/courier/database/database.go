@@ -8,7 +8,6 @@ import (
 
 // Open knows how to open a database connection based on the configuration.
 func Open(dbUrl string) (*sqlx.DB, error) {
-
 	db, err := sqlx.Open("postgres", dbUrl)
 	if err != nil {
 		return nil, err

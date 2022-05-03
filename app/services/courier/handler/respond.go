@@ -7,7 +7,6 @@ import (
 
 // Respond converts a Go value to JSON and sends it to the client.
 func Respond(w http.ResponseWriter, data any, statusCode int) error {
-
 	// If there is nothing to marshal then set status code and return.
 	if statusCode == http.StatusNoContent {
 		w.WriteHeader(statusCode)
