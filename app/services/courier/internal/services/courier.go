@@ -43,26 +43,16 @@ func NewCourierService(p Params) (CourierService, error) {
 
 // InsertNewCourier prepare and send data to courierStorage services.
 func (c courierService) InsertNewCourier(courier models.Courier) (data any, statusCode int) {
-	foundCourier, err := c.courierStorage.GetCourier(0, courier.Username, "")
+
+	if len(courier.Username) < 4 || len(courier.Password) < 8 {
+		return "username or password don't meet requirement", http.StatusBadRequest
+	}
+	foundCourier, err := c.courierStorage.GetCourier(0, courier.Username, "active")
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", http.StatusInternalServerError
 	}
 	if foundCourier != nil {
-		return "courier with this username already exist", http.StatusBadRequest
-	}
-
-	if len(courier.Username) < 4 || len(courier.Password) < 8 {
-		return "username or password don't meet requirement", http.StatusBadRequest
-	}
-
-	returnedCourier, err := c.courierStorage.GetCourier(0, courier.Username, "active")
-	if err != nil && err != sql.ErrNoRows {
-		c.logger.Println(err)
-		return "", http.StatusInternalServerError
-	}
-
-	if returnedCourier != nil {
 		return "courier with this username already exist", http.StatusBadRequest
 	}
 
