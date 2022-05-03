@@ -9,7 +9,7 @@ import (
 func Encode(data any) ([]byte, error) {
 	encData, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("json encoding fail: %w", err)
+		return nil, fmt.Errorf("v1.Encode: %w", err)
 	}
 
 	return encData, nil
@@ -19,7 +19,7 @@ func Encode(data any) ([]byte, error) {
 func EncodeIndent(data any, prefix, indent string) ([]byte, error) {
 	encData, err := json.MarshalIndent(data, prefix, indent)
 	if err != nil {
-		return nil, fmt.Errorf("json encoding fail: %w", err)
+		return nil, fmt.Errorf("v1.EncodeIndent: %w", err)
 	}
 
 	return encData, nil
