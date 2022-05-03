@@ -1,9 +1,8 @@
 package main
 
-//go:generate sqlboiler postgres
 import (
 	"context"
-	"net/http"
+	"courier/app"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,14 +12,13 @@ import (
 	"courier/database"
 	"courier/handler"
 	"courier/service"
-	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 func main() {
 	// Construct the application logger.
-	log := logger.NewLogger(os.Stdout, "carrier-api")
+	log := logger.NewLogger(os.Stdout, "courier-api")
 
 	// Perform the startup and shutdown sequence.
 	if err := run(log); err != nil {
@@ -29,12 +27,11 @@ func main() {
 }
 
 func run(log *logger.Logger) error {
-	dbConf, err := conf.GetConf("DB.dev")
-	if err != nil {
+	if err := conf.SetConfPath(); err != nil {
 		return err
 	}
 
-	db, err := database.Open(dbConf)
+	db, err := database.Open(configreader.GetString("DB.dev"))
 	if err != nil {
 		return err
 	}
@@ -43,9 +40,9 @@ func run(log *logger.Logger) error {
 	log.Println("starting service", "version", configreader.GetString("buildmode"))
 	defer log.Println("shutdown complete")
 
-	newCarrierService, err := service.NewCourierService(service.Params{
+	newCourierService, err := service.NewCourierService(service.Params{
 		DB:     db,
-		Logger: log,
+		Logger: logger.NewLogger(os.Stdout, "courier-service"),
 	})
 	if err != nil {
 		return err
@@ -56,20 +53,18 @@ func run(log *logger.Logger) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
-	// Construct a server to service the requests against the mux.
-	app := handler.NewCarrierHandler(handler.Params{
-		Logger:         log,
-		CourierService: newCarrierService,
-		Srv:            mux.NewRouter(),
-		Shutdown:       shutdown,
+	router, server, err := app.NewHandlerServer(app.Params{
+		Logger:   log,
+		Shutdown: shutdown,
 	})
 
-	api := http.Server{
-		Addr:         "localhost:7070",
-		Handler:      app,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
-	}
+	// Construct a server to service the requests against the mux.
+	handler.NewCourierHandler(handler.Params{
+		Logger:         logger.NewLogger(os.Stdout, "courier-handler"),
+		CourierService: newCourierService,
+		Route:          router,
+		Shutdown:       shutdown,
+	})
 
 	// Make a channel to listen for errors coming from the listener. Use a
 	// buffered channel so the goroutine can exit if we don't collect this error.
@@ -77,8 +72,8 @@ func run(log *logger.Logger) error {
 
 	// Start the service listening for requests.
 	go func() {
-		log.Printf("main : API listening on %s", api.Addr)
-		serverErrors <- api.ListenAndServe()
+		log.Printf("main : API listening on %s", server.Addr)
+		serverErrors <- server.ListenAndServe()
 	}()
 
 	// Blocking main and waiting for shutdown.
@@ -95,10 +90,10 @@ func run(log *logger.Logger) error {
 		defer cancel()
 
 		// Asking listener to shutdown and load shed.
-		err := api.Shutdown(ctx)
+		err := server.Shutdown(ctx)
 		if err != nil {
 			log.Printf("main : Graceful shutdown did not complete in %v : %v", timeout, err)
-			err = api.Close()
+			err = server.Close()
 		}
 
 		if err != nil {

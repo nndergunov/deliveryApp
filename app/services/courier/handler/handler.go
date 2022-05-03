@@ -2,10 +2,8 @@
 package handler
 
 import (
+	"courier/pkg/decoder"
 	"database/sql"
-	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -21,48 +19,51 @@ import (
 type Params struct {
 	Logger         *logger.Logger
 	CourierService service.CourierService
-	Srv            *mux.Router
+	Route          *mux.Router
 	Shutdown       chan os.Signal
 }
 
-// App is the entrypoint into our application
-type App struct {
-	srv            *mux.Router
+// CourierHandler is the entrypoint into our application
+type CourierHandler struct {
+	rout           *mux.Router
 	log            *logger.Logger
 	courierService service.CourierService
 	shutdown       chan os.Signal
 }
 
-// NewCarrierHandler creates an App value that handle a set of routes for the application.
-func NewCarrierHandler(p Params) *App {
-	app := &App{
+// Handler is the interface for the carrier handler.
+type Handler interface {
+	insertNewCourier(rw http.ResponseWriter, r *http.Request)
+	removeCourier(rw http.ResponseWriter, r *http.Request)
+	updateCourier(rw http.ResponseWriter, r *http.Request)
+	getAllCourier(rw http.ResponseWriter, r *http.Request)
+	getCourier(rw http.ResponseWriter, r *http.Request)
+}
+
+// NewCourierHandler creates an CourierHandler value that handle a set of routes for the application.
+func NewCourierHandler(p Params) Handler {
+	handler := &CourierHandler{
 		log:            p.Logger,
-		srv:            p.Srv,
+		rout:           p.Route,
 		courierService: p.CourierService,
 		shutdown:       p.Shutdown,
 	}
 	const version = "/v1"
 	const courier = "/courier"
 
-	app.srv.HandleFunc(version+courier+"/new", app.new).Methods(http.MethodPost)
-	app.srv.HandleFunc(version+courier+"/remove/{id}", app.remove).Methods(http.MethodPost)
-	app.srv.HandleFunc(version+courier+"/update", app.update).Methods(http.MethodPut)
-	app.srv.HandleFunc(version+courier+"/get-all", app.getAll).Methods(http.MethodGet)
-	app.srv.HandleFunc(version+courier+"/get/{id}", app.get).Methods(http.MethodGet)
-	app.srv.HandleFunc(version+courier+"/status", app.status).Methods(http.MethodGet)
+	p.Route.HandleFunc(version+courier+"/new", handler.insertNewCourier).Methods(http.MethodPost)
+	p.Route.HandleFunc(version+courier+"/remove/{id}", handler.removeCourier).Methods(http.MethodPost)
+	p.Route.HandleFunc(version+courier+"/update", handler.updateCourier).Methods(http.MethodPut)
+	p.Route.HandleFunc(version+courier+"/get-all", handler.getAllCourier).Methods(http.MethodGet)
+	p.Route.HandleFunc(version+courier+"/get/{id}", handler.getCourier).Methods(http.MethodGet)
 
-	return app
+	return handler
 }
 
-// ServeHTTP implements the http.Handler interface.
-func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.srv.ServeHTTP(w, r)
-}
-
-func (a *App) new(rw http.ResponseWriter, r *http.Request) {
+func (a *CourierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Request) {
 	var courier models.Courier
 
-	if err := BindJson(r, &courier); err != nil {
+	if err := decoder.BindJson(r, &courier); err != nil {
 		if err := Respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
@@ -80,7 +81,7 @@ func (a *App) new(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	returnedCourier, err := a.courierService.Get(0, courier.Username)
+	returnedCourier, err := a.courierService.GetCourier(0, courier.Username)
 	if err != nil && err != sql.ErrNoRows {
 		if err := Respond(rw, "", http.StatusInternalServerError); err != nil {
 			a.log.Println(err)
@@ -100,7 +101,7 @@ func (a *App) new(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newCourier, err := a.courierService.Insert(courier)
+	newCourier, err := a.courierService.InsertCourier(courier)
 	if err != nil {
 		if err := Respond(rw, err, http.StatusBadRequest); err != nil {
 			a.log.Println(err)
@@ -117,7 +118,7 @@ func (a *App) new(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *App) remove(rw http.ResponseWriter, r *http.Request) {
+func (a *CourierHandler) removeCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
@@ -141,7 +142,7 @@ func (a *App) remove(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = a.courierService.Remove(idUint); err != nil {
+	if err = a.courierService.RemoveCourier(idUint); err != nil {
 		if err := Respond(rw, err, http.StatusInternalServerError); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
@@ -156,10 +157,10 @@ func (a *App) remove(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *App) update(rw http.ResponseWriter, r *http.Request) {
+func (a *CourierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) {
 	var courier models.Courier
 
-	if err := BindJson(r, &courier); err != nil {
+	if err := decoder.BindJson(r, &courier); err != nil {
 		if err := Respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
@@ -168,7 +169,7 @@ func (a *App) update(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedCourier, err := a.courierService.Update(courier)
+	updatedCourier, err := a.courierService.UpdateCourier(courier)
 	if err != nil && err == sql.ErrNoRows {
 		if err := Respond(rw, "this courier doesn't exist", http.StatusOK); err != nil {
 			a.SignalShutdown()
@@ -193,8 +194,8 @@ func (a *App) update(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *App) getAll(rw http.ResponseWriter, r *http.Request) {
-	allCourier, err := a.courierService.GetAll()
+func (a *CourierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) {
+	allCourier, err := a.courierService.GetAllCourier()
 	if err != nil {
 		if err := Respond(rw, err, http.StatusInternalServerError); err != nil {
 			a.log.Println(err)
@@ -210,7 +211,7 @@ func (a *App) getAll(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *App) get(rw http.ResponseWriter, r *http.Request) {
+func (a *CourierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
@@ -234,7 +235,7 @@ func (a *App) get(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	courier, err := a.courierService.Get(idUint, "")
+	courier, err := a.courierService.GetCourier(idUint, "")
 	if err != nil && err == sql.ErrNoRows {
 		if err := Respond(rw, "no courier found", http.StatusOK); err != nil {
 			a.log.Println(err)
@@ -258,29 +259,8 @@ func (a *App) get(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a *App) status(rw http.ResponseWriter, r *http.Request) {
-	rw.WriteHeader(http.StatusOK)
-}
-
-func BindJson(req *http.Request, obj interface{}) error {
-	if req == nil || req.Body == nil {
-		return fmt.Errorf("invalid request")
-	}
-	return decodeJSON(req.Body, obj)
-}
-
-func decodeJSON(r io.Reader, obj interface{}) error {
-	decoder := json.NewDecoder(r)
-	decoder.DisallowUnknownFields()
-
-	if err := decoder.Decode(obj); err != nil {
-		return err
-	}
-	return nil
-}
-
 // SignalShutdown is used to gracefully shut down the app when an integrity
 // issue is identified.
-func (a *App) SignalShutdown() {
+func (a *CourierHandler) SignalShutdown() {
 	a.shutdown <- syscall.SIGTERM
 }

@@ -6,15 +6,15 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 )
 
-func GetConf(name string) (string, error) {
+func SetConfPath() error {
 	confPath, err := os.Getwd()
 	if err != nil {
-		return "", err
+		return err
 	}
 	err = configreader.SetConfigFile(confPath + "/conf.json")
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return configreader.GetString(name), nil
+	return nil
 }

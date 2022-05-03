@@ -12,11 +12,11 @@ import (
 
 // CourierService is the interface for the user service.
 type CourierService interface {
-	Insert(courier models.Courier) (*models.Courier, error)
-	Remove(id uint64) error
-	Update(courier models.Courier) (*models.Courier, error)
-	GetAll() ([]*models.Courier, error)
-	Get(id uint64, username string) (*models.Courier, error)
+	InsertCourier(courier models.Courier) (*models.Courier, error)
+	RemoveCourier(id uint64) error
+	UpdateCourier(courier models.Courier) (*models.Courier, error)
+	GetAllCourier() ([]*models.Courier, error)
+	GetCourier(id uint64, username string) (*models.Courier, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -40,8 +40,8 @@ func NewCourierService(p Params) (CourierService, error) {
 	return courierServiceItem, nil
 }
 
-// Insert inserts a new courier into the database.
-func (c courierService) Insert(courier models.Courier) (*models.Courier, error) {
+// InsertCourier inserts a new courier into the database.
+func (c courierService) InsertCourier(courier models.Courier) (*models.Courier, error) {
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(courier.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return &models.Courier{}, fmt.Errorf("generating password hash: %w", err)
@@ -63,7 +63,7 @@ func (c courierService) Insert(courier models.Courier) (*models.Courier, error) 
 	return &newCourier, nil
 }
 
-func (c courierService) Remove(id uint64) error {
+func (c courierService) RemoveCourier(id uint64) error {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -84,7 +84,7 @@ func (c courierService) Remove(id uint64) error {
 	return nil
 }
 
-func (c courierService) Update(courier models.Courier) (*models.Courier, error) {
+func (c courierService) UpdateCourier(courier models.Courier) (*models.Courier, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -114,7 +114,7 @@ func (c courierService) Update(courier models.Courier) (*models.Courier, error) 
 	return &updatedCourier, nil
 }
 
-func (c courierService) GetAll() ([]*models.Courier, error) {
+func (c courierService) GetAllCourier() ([]*models.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE status = 'active'
@@ -139,7 +139,7 @@ func (c courierService) GetAll() ([]*models.Courier, error) {
 	return allCourier, nil
 }
 
-func (c courierService) Get(id uint64, username string) (*models.Courier, error) {
+func (c courierService) GetCourier(id uint64, username string) (*models.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE 
