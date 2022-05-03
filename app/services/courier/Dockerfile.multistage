@@ -1,0 +1,32 @@
+#syntax=docker/dockerfile:1
+
+FROM golang:1.18-buster AS build
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+COPY conf.json ./conf.json
+
+RUN go build -o /courier-server
+
+EXPOSE 8080
+
+FROM gcr.io/distroless/base-debian10:latest
+
+WORKDIR /app
+
+COPY --from=build /courier-server /courier-server
+
+COPY /conf.json ./conf.json
+
+EXPOSE 8080
+
+USER root:root
+
+ENTRYPOINT ["/courier-server"]
