@@ -1,31 +1,29 @@
 #syntax=docker/dockerfile:1
 
-FROM golang:1.18-buster AS build
+FROM golang:alpine AS build
 
 WORKDIR /app
 
 COPY go.mod ./
 COPY go.sum ./
+COPY conf.json ./
 
 RUN go mod download
 
 COPY . .
 
-COPY conf.json ./conf.json
-
 RUN go build -o /courier-server
 
-EXPOSE 8080
+EXPOSE 7070
 
-FROM gcr.io/distroless/base-debian10:latest
+FROM golang:alpine
 
 WORKDIR /app
 
 COPY --from=build /courier-server /courier-server
+COPY --from=build app/conf.json /app/conf.json
 
-COPY /conf.json ./conf.json
-
-EXPOSE 8080
+EXPOSE 7070
 
 USER root:root
 

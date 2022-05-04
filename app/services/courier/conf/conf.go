@@ -11,6 +11,7 @@ func SetConfPath() error {
 	if err != nil {
 		return err
 	}
+
 	err = configreader.SetConfigFile(confPath + "/conf.json")
 	if err != nil {
 		return err
