@@ -106,7 +106,10 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 
 	response := restaurantListToResponse(restaurants)
 
-	e.respond(response, w)
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +131,10 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 
 	response := menuToResponse(*menu)
 
-	e.respond(response, w)
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {
@@ -161,9 +167,12 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp := restaurantToResponse(*createdRest)
+	response := restaurantToResponse(*createdRest)
 
-	e.respond(resp, w)
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
@@ -207,9 +216,12 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	resp := restaurantToResponse(*updatedRestaurant)
+	response := restaurantToResponse(*updatedRestaurant)
 
-	e.respond(resp, w)
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Request) {
@@ -233,7 +245,10 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	e.respond(nil, w)
+	err = v1.Respond(nil, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
@@ -277,9 +292,12 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	resp := menuToResponse(*createdMenu)
+	response := menuToResponse(*createdMenu)
 
-	e.respond(resp, w)
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
@@ -323,7 +341,12 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	e.respond(addedMenuItem, w)
+	response := menuItemToResponse(*addedMenuItem)
+
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
@@ -376,9 +399,12 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	resp := menuItemToResponse(*updatedMenuItem)
+	response := menuItemToResponse(*updatedMenuItem)
 
-	e.respond(resp, w)
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
 }
 
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
