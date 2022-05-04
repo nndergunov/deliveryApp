@@ -1,13 +1,12 @@
 package services
 
 import (
+	"courier/internal/database/storage"
 	"database/sql"
 	"net/http"
 	"strconv"
 
 	"courier/internal/models"
-	"courier/internal/storage"
-
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
@@ -42,7 +41,7 @@ func NewCourierService(p Params) (CourierService, error) {
 }
 
 // InsertNewCourier prepare and send data to courierStorage services.
-func (c courierService) InsertNewCourier(courier models.Courier) (data any, statusCode int) {
+func (c *courierService) InsertNewCourier(courier models.Courier) (data any, statusCode int) {
 
 	if len(courier.Username) < 4 || len(courier.Password) < 8 {
 		return "username or password don't meet requirement", http.StatusBadRequest
@@ -66,7 +65,7 @@ func (c courierService) InsertNewCourier(courier models.Courier) (data any, stat
 }
 
 // RemoveCourier prepare courier data for removing.
-func (c courierService) RemoveCourier(id string) (data any, statusCode int) {
+func (c *courierService) RemoveCourier(id string) (data any, statusCode int) {
 	idUint, err := strconv.ParseUint(string(id), 10, 64)
 	if err != nil {
 		c.logger.Println(err)
@@ -91,7 +90,7 @@ func (c courierService) RemoveCourier(id string) (data any, statusCode int) {
 }
 
 // UpdateCourier prepare data for updating.
-func (c courierService) UpdateCourier(courier models.Courier) (data any, statusCode int) {
+func (c *courierService) UpdateCourier(courier models.Courier) (data any, statusCode int) {
 	foundCourier, err := c.courierStorage.GetCourier(0, courier.Username, "")
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
@@ -115,7 +114,7 @@ func (c courierService) UpdateCourier(courier models.Courier) (data any, statusC
 }
 
 // GetAllCourier prepare data to get it from courierStorage.
-func (c courierService) GetAllCourier() (data any, statusCode int) {
+func (c *courierService) GetAllCourier() (data any, statusCode int) {
 	allCourier, err := c.courierStorage.GetAllCourier()
 	if err != nil {
 		c.logger.Println(err)
@@ -126,7 +125,7 @@ func (c courierService) GetAllCourier() (data any, statusCode int) {
 }
 
 // GetCourier prepare data to get it from courierStorage.
-func (c courierService) GetCourier(id string) (data any, statusCode int) {
+func (c *courierService) GetCourier(id string) (data any, statusCode int) {
 	idUint, err := strconv.ParseUint(string(id), 10, 64)
 	if err != nil {
 		c.logger.Println(err)

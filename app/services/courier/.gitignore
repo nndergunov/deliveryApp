@@ -1,4 +1,4 @@
 .idea
 sqlboiler.toml
-database/sql
+internal/database/sql
 conf.json

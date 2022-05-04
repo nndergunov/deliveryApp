@@ -1,7 +1,8 @@
 // Package handlers contains a small handlers framework extension.
-package handlers
+package courierhandler
 
 import (
+	"courier/internal/handlers"
 	"net/http"
 	"os"
 	"syscall"
@@ -63,7 +64,7 @@ func (a *CourierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 
 	if err := decoder.BindJson(r, &courier); err != nil {
 		a.log.Println(err)
-		if err := respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
+		if err := handlers.Respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
 		}
@@ -71,7 +72,7 @@ func (a *CourierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 	}
 
 	data, statusCode := a.courierService.InsertNewCourier(courier)
-	if err := respond(rw, data, statusCode); err != nil {
+	if err := handlers.Respond(rw, data, statusCode); err != nil {
 		a.log.Println(err)
 		a.SignalShutdown()
 		return
@@ -82,7 +83,7 @@ func (a *CourierHandler) removeCourier(rw http.ResponseWriter, r *http.Request) 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		if err := respond(rw, "id is not indicated", http.StatusInternalServerError); err != nil {
+		if err := handlers.Respond(rw, "id is not indicated", http.StatusInternalServerError); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
 		}
@@ -90,7 +91,7 @@ func (a *CourierHandler) removeCourier(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	data, statusCode := a.courierService.RemoveCourier(id)
-	if err := respond(rw, data, statusCode); err != nil {
+	if err := handlers.Respond(rw, data, statusCode); err != nil {
 		a.log.Println(err)
 		a.SignalShutdown()
 		return
@@ -102,7 +103,7 @@ func (a *CourierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 
 	if err := decoder.BindJson(r, &courier); err != nil {
 		a.log.Println(err)
-		if err := respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
+		if err := handlers.Respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
 		}
@@ -110,18 +111,18 @@ func (a *CourierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	data, statusCode := a.courierService.UpdateCourier(courier)
-	if err := respond(rw, data, statusCode); err != nil {
-		a.SignalShutdown()
+	if err := handlers.Respond(rw, data, statusCode); err != nil {
 		a.log.Println(err)
+		a.SignalShutdown()
 		return
 	}
 }
 
 func (a *CourierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) {
 	data, statusCode := a.courierService.GetAllCourier()
-	if err := respond(rw, data, statusCode); err != nil {
-		a.SignalShutdown()
+	if err := handlers.Respond(rw, data, statusCode); err != nil {
 		a.log.Println(err)
+		a.SignalShutdown()
 		return
 	}
 }
@@ -130,19 +131,18 @@ func (a *CourierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		if err := respond(rw, "id is missing in parameters", http.StatusInternalServerError); err != nil {
+		if err := handlers.Respond(rw, "id is missing in parameters", http.StatusInternalServerError); err != nil {
 			a.log.Println(err)
 			a.SignalShutdown()
 			return
 		}
-		a.log.Println("id is missing in parameters")
 		return
 	}
 
 	data, statusCode := a.courierService.GetCourier(id)
-	if err := respond(rw, data, statusCode); err != nil {
-		a.SignalShutdown()
+	if err := handlers.Respond(rw, data, statusCode); err != nil {
 		a.log.Println(err)
+		a.SignalShutdown()
 		return
 	}
 }

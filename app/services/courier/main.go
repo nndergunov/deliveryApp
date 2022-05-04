@@ -2,18 +2,17 @@ package main
 
 import (
 	"context"
+	"courier/internal/database"
+	"courier/internal/database/storage"
+	"courier/internal/handlers/courierhandler"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"courier/app"
-	"courier/internal/handlers"
-	"courier/internal/services"
-	"courier/internal/storage"
-
 	"courier/conf"
-	"courier/database"
+	"courier/internal/services"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
@@ -68,7 +67,7 @@ func run(log *logger.Logger) error {
 	})
 
 	// Construct a server to services the requests against the mux.
-	handlers.NewCourierHandler(handlers.Params{
+	courierhandler.NewCourierHandler(courierhandler.Params{
 		Logger:         logger.NewLogger(os.Stdout, "courier-handler"),
 		CourierService: courierService,
 		Route:          router,
