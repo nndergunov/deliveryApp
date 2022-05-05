@@ -32,6 +32,12 @@ func requestToOrder(orderData orderapi.OrderData) domain.Order {
 		FromUserID:   orderData.FromUserID,
 		RestaurantID: orderData.RestaurantID,
 		OrderItems:   orderData.OrderItems,
-		Status:       "",
+	}
+}
+
+func requestToStatus(statusData orderapi.OrderStatusData) domain.OrderStatus {
+	return domain.OrderStatus{
+		OrderID: 0,
+		Status:  statusData.Status,
 	}
 }

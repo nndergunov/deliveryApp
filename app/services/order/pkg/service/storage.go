@@ -10,4 +10,6 @@ type Storage interface {
 	GetOrder(orderID int) (*domain.Order, error)
 	UpdateOrder(order domain.Order) error
 	DeleteOrder(orderID int) error
+
+	UpdateOrderStatus(orderID int, status string) error
 }

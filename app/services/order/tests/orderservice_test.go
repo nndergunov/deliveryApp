@@ -29,7 +29,6 @@ func TestCreateOrder(t *testing.T) {
 				FromUserID:   6513,
 				RestaurantID: 5,
 				OrderItems:   []int{863866, 632, 821},
-				Status:       "complete",
 			},
 		},
 	}
@@ -110,7 +109,6 @@ func TestGetOrder(t *testing.T) {
 				FromUserID:   887,
 				RestaurantID: 25154,
 				OrderItems:   []int{20, 3},
-				Status:       "complete",
 			},
 		},
 	}
@@ -214,13 +212,11 @@ func TestUpdateOrder(t *testing.T) {
 				FromUserID:   9878,
 				RestaurantID: 7373552,
 				OrderItems:   []int{2516054},
-				Status:       "incomplete",
 			},
 			updOrder: orderapi.OrderData{
 				FromUserID:   3540,
 				RestaurantID: 714163,
 				OrderItems:   []int{2259},
-				Status:       "complete",
 			},
 		},
 	}
@@ -339,13 +335,6 @@ func TestGetIncompleteOrders(t *testing.T) {
 				FromUserID:   739,
 				RestaurantID: 61,
 				OrderItems:   []int{6, 708},
-				Status:       "incomplete",
-			},
-			completeOrder: orderapi.OrderData{
-				FromUserID:   910790,
-				RestaurantID: 61,
-				OrderItems:   []int{701299},
-				Status:       "complete",
 			},
 		},
 	}
@@ -366,18 +355,8 @@ func TestGetIncompleteOrders(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			completePostReq, err := v1.Encode(test.completeOrder)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = http.Post(baseAddr+"/v1/orders", "application/json", bytes.NewBuffer(completePostReq))
-			if err != nil {
-				t.Fatal(err)
-			}
-
 			getResp, err := http.Get(
-				baseAddr + "/v1/admin/restaurants/" + strconv.Itoa(test.restaurantID) + "/orders/incomplete")
+				baseAddr + "/v1/admin/orders/restaurant=" + strconv.Itoa(test.restaurantID) + "/incomplete")
 			if err != nil {
 				t.Fatal(err)
 			}

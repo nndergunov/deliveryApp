@@ -6,6 +6,14 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
+type ServiceApp interface {
+	CreateOrder(order domain.Order) (*domain.Order, error)
+	ReturnOrder(orderID int) (*domain.Order, error)
+	UpdateOrder(order domain.Order) (*domain.Order, error)
+	ReturnIncompleteOrderList(restaurantID int) ([]domain.Order, error)
+	UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error)
+}
+
 type Service struct {
 	storage Storage
 }
@@ -17,8 +25,6 @@ func NewService(storage Storage) *Service {
 }
 
 func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
-	order.Status = "Order placed"
-
 	orderID, err := s.storage.InsertOrder(order)
 	if err != nil {
 		return nil, fmt.Errorf("CreateOrder: %w", err)
@@ -54,4 +60,13 @@ func (s Service) ReturnIncompleteOrderList(restaurantID int) ([]domain.Order, er
 	}
 
 	return orders, nil
+}
+
+func (s Service) UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error) {
+	err := s.storage.UpdateOrderStatus(status.OrderID, status.Status)
+	if err != nil {
+		return nil, fmt.Errorf("CreateOrder: %w", err)
+	}
+
+	return &status, nil
 }

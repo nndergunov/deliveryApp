@@ -7,6 +7,5 @@ type OrderData struct {
 }
 
 type OrderStatusData struct {
-	OrderID int
-	Status  string
+	Status string
 }

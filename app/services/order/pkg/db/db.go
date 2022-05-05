@@ -30,7 +30,7 @@ func NewDatabase(dbURL string) (*Database, error) {
 
 func (d Database) getOrderID(order domain.Order) (int, error) {
 	dbOrder, err := models.Orders(qm.Where("customer_id=? and restaurant_id=? and order_items=? and status=?",
-		order.FromUserID, order.RestaurantID, intArrToInt64Arr(order.OrderItems), order.Status)).One(d.db)
+		order.FromUserID, order.RestaurantID, intArrToInt64Arr(order.OrderItems), order.Status.Status)).One(d.db)
 	if err != nil {
 		return 0, fmt.Errorf("getOrderID: %w", err)
 	}
@@ -61,7 +61,10 @@ func (d Database) GetAllOrders() ([]domain.Order, error) {
 			FromUserID:   dbOrder.CustomerID,
 			RestaurantID: dbOrder.RestaurantID,
 			OrderItems:   int64ArrToIntArr(dbOrder.OrderItems),
-			Status:       dbOrder.Status,
+			Status: domain.OrderStatus{
+				OrderID: dbOrder.ID,
+				Status:  dbOrder.Status,
+			},
 		}
 
 		orders = append(orders, order)
@@ -84,7 +87,10 @@ func (d Database) GetAllIncompleteOrdersFromRestaurant(restaurantID int) ([]doma
 			FromUserID:   dbOrder.CustomerID,
 			RestaurantID: dbOrder.RestaurantID,
 			OrderItems:   int64ArrToIntArr(dbOrder.OrderItems),
-			Status:       dbOrder.Status,
+			Status: domain.OrderStatus{
+				OrderID: dbOrder.ID,
+				Status:  dbOrder.Status,
+			},
 		}
 
 		orders = append(orders, order)
@@ -94,6 +100,8 @@ func (d Database) GetAllIncompleteOrdersFromRestaurant(restaurantID int) ([]doma
 }
 
 func (d Database) InsertOrder(order domain.Order) (int, error) {
+	order.Status.Status = "initialOrder created"
+
 	_, err := d.getOrderID(order)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
@@ -108,7 +116,7 @@ func (d Database) InsertOrder(order domain.Order) (int, error) {
 	dbOrder.CustomerID = order.FromUserID
 	dbOrder.RestaurantID = order.RestaurantID
 	dbOrder.OrderItems = intArrToInt64Arr(order.OrderItems)
-	dbOrder.Status = order.Status
+	dbOrder.Status = order.Status.Status
 
 	err = dbOrder.Insert(d.db, boil.Infer())
 	if err != nil {
@@ -134,7 +142,10 @@ func (d Database) GetOrder(orderID int) (*domain.Order, error) {
 		FromUserID:   dbOrder.CustomerID,
 		RestaurantID: dbOrder.RestaurantID,
 		OrderItems:   int64ArrToIntArr(dbOrder.OrderItems),
-		Status:       dbOrder.Status,
+		Status: domain.OrderStatus{
+			OrderID: dbOrder.ID,
+			Status:  dbOrder.Status,
+		},
 	}, nil
 }
 
@@ -147,7 +158,6 @@ func (d Database) UpdateOrder(order domain.Order) error {
 	dbOrder.CustomerID = order.FromUserID
 	dbOrder.RestaurantID = order.RestaurantID
 	dbOrder.OrderItems = intArrToInt64Arr(order.OrderItems)
-	dbOrder.Status = order.Status
 
 	_, err = dbOrder.Update(d.db, boil.Infer())
 	if err != nil {
@@ -166,6 +176,22 @@ func (d Database) DeleteOrder(orderID int) error {
 	_, err = dbOrder.Delete(d.db)
 	if err != nil {
 		return fmt.Errorf("DeleteOrder: %w", err)
+	}
+
+	return nil
+}
+
+func (d Database) UpdateOrderStatus(orderID int, status string) error {
+	dbOrder, err := d.getOrderByID(orderID)
+	if err != nil {
+		return fmt.Errorf("UpdateOrderStatus: %w", err)
+	}
+
+	dbOrder.Status = status
+
+	_, err = dbOrder.Update(d.db, boil.Infer())
+	if err != nil {
+		return fmt.Errorf("UpdateOrderStatus: %w", err)
 	}
 
 	return nil
