@@ -17,6 +17,8 @@ func NewService(storage Storage) *Service {
 }
 
 func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
+	order.Status = "Order placed"
+
 	orderID, err := s.storage.InsertOrder(order)
 	if err != nil {
 		return nil, fmt.Errorf("CreateOrder: %w", err)

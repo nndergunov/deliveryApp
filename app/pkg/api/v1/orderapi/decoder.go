@@ -16,6 +16,17 @@ func DecodeOrderData(data []byte) (*OrderData, error) {
 	return req, nil
 }
 
+func DecodeOrderStatusData(data []byte) (*OrderStatusData, error) {
+	req := new(OrderStatusData)
+
+	err := json.Unmarshal(data, req)
+	if err != nil {
+		return nil, fmt.Errorf("DecodeOrderStatusData: %w", err)
+	}
+
+	return req, nil
+}
+
 func DecodeReturnOrder(data []byte) (*ReturnOrder, error) {
 	req := new(ReturnOrder)
 

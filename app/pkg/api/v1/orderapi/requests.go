@@ -4,5 +4,9 @@ type OrderData struct {
 	FromUserID   int
 	RestaurantID int
 	OrderItems   []int
-	Status       string
+}
+
+type OrderStatusData struct {
+	OrderID int
+	Status  string
 }

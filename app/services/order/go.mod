@@ -2,14 +2,16 @@ module github.com/nndergunov/deliveryApp/app/services/order
 
 go 1.18
 
+replace github.com/nndergunov/deliveryApp/app/pkg/api => C:/Users/Mykyta_Derhunov/Desktop/Code/deliveryApp/app/pkg/api
+
 require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.5
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220421192017-5bea05ecd937
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220421192017-5bea05ecd937
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220421192017-5bea05ecd937
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220421192017-5bea05ecd937
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220503132556-de9b4711faca
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220503132556-de9b4711faca
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220503132556-de9b4711faca
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220503132556-de9b4711faca
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
 )
@@ -32,7 +34,7 @@ require (
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/null/v8 v8.1.2 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
-	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 // indirect
+	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
