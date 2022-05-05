@@ -37,7 +37,7 @@ func menuToResponse(menu domain.Menu) restaurantapi.ReturnMenu {
 
 	return restaurantapi.ReturnMenu{
 		RestaurantID: menu.RestaurantID,
-		Items:        items,
+		MenuItems:    items,
 	}
 }
 

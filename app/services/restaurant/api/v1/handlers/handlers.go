@@ -19,13 +19,13 @@ const (
 )
 
 type endpointHandler struct {
-	service  *service.Service
+	service  service.AppService
 	serveMux *mux.Router
 	log      *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(serviceInstance *service.Service, log *logger.Logger) *mux.Router {
+func NewEndpointHandler(serviceInstance service.AppService, log *logger.Logger) *mux.Router {
 	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
