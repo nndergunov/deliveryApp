@@ -2,7 +2,7 @@ package models
 
 type ConsumerLocation struct {
 	ID          uint64 `json:"id" yaml:"id"`
-	ConsumerID  uint64 `json:"consumer_ID" yaml:"consumer_ID"`
+	ConsumerID  uint64 `json:"consumerID" yaml:"consumer_ID"`
 	LocationAlt string `json:"locationAlt" yaml:"locationAlt"`
 	LocationLat string `json:"locationLat" yaml:"locationLat"`
 	Country     string `json:"country" yaml:"country"`
