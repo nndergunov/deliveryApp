@@ -19,6 +19,7 @@ func DecodeRestaurantData(data []byte) (*RestaurantData, error) {
 func DecodeMenuData(data []byte) (*MenuData, error) {
 	req := new(MenuData)
 
+
 	err := json.Unmarshal(data, req)
 	if err != nil {
 		return nil, fmt.Errorf("DecodeCreateMenu: %w", err)

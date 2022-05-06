@@ -5,45 +5,45 @@ import (
 	"fmt"
 )
 
-func DecodeCreateOrder(data []byte) (*CreateOrder, error) {
-	var req *CreateOrder
+func DecodeOrderData(data []byte) (*OrderData, error) {
+	req := new(OrderData)
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
-		return nil, fmt.Errorf("DecodeCreateOrder: %w", err)
+		return nil, fmt.Errorf("DecodeOrderData: %w", err)
 	}
 
 	return req, nil
 }
 
-func DecodeOrderStatusUpdate(data []byte) (*OrderStatusUpdate, error) {
-	var req *OrderStatusUpdate
+func DecodeOrderStatusData(data []byte) (*OrderStatusData, error) {
+	req := new(OrderStatusData)
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
-		return nil, fmt.Errorf("DecodeCreateOrder: %w", err)
+		return nil, fmt.Errorf("DecodeOrderStatusData: %w", err)
 	}
 
 	return req, nil
 }
 
-func DecodeReturnOrders(data []byte) (*ReturnOrders, error) {
-	var req *ReturnOrders
+func DecodeReturnOrder(data []byte) (*ReturnOrder, error) {
+	req := new(ReturnOrder)
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
-		return nil, fmt.Errorf("DecodeReturnOrders: %w", err)
+		return nil, fmt.Errorf("DecodeReturnOrder: %w", err)
 	}
 
 	return req, nil
 }
 
-func DecodeReturnOrderStatus(data []byte) (*ReturnOrderStatus, error) {
-	var req *ReturnOrderStatus
+func DecodeReturnOrderList(data []byte) (*ReturnOrderList, error) {
+	req := new(ReturnOrderList)
 
 	err := json.Unmarshal(data, req)
 	if err != nil {
-		return nil, fmt.Errorf("DecodeReturnOrderStatus: %w", err)
+		return nil, fmt.Errorf("DecodeReturnOrderList: %w", err)
 	}
 
 	return req, nil

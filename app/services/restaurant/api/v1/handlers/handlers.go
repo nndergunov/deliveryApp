@@ -159,6 +159,7 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	rest := requestToRestaurant(0, restaurantData)
 
 	createdRest, err := e.service.CreateNewRestaurant(rest)
+
 	if err != nil {
 		e.log.Println(err)
 
@@ -234,7 +235,7 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = e.service.DeleteRestaurant(restaurantID)
+  err = e.service.DeleteRestaurant(restaurantID)
 	if err != nil {
 		e.log.Println(err)
 

@@ -4,7 +4,10 @@
 ### Configuration files ###
 *.env
 *.toml
-*.yaml
+config.yaml
+
+### Project-specific files ###
+cleardatabase
 
 ### Project-specific files ###
 cleardatabase

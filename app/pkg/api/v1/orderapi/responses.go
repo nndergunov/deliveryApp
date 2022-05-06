@@ -1,14 +1,13 @@
 package orderapi
 
-type ReturnOrders struct {
-	Orders []struct {
-		FromUserID       int
-		DeliveryLocation string
-		SpecialRequests  string
-		Order            map[string]int
-	}
+type ReturnOrderList struct {
+	Orders []ReturnOrder
 }
 
-type ReturnOrderStatus struct {
-	Status string
+type ReturnOrder struct {
+	OrderID      int
+	FromUserID   int
+	RestaurantID int
+	OrderItems   []int
+	Status       string
 }

@@ -48,3 +48,11 @@ func menuItemToResponse(menuItem domain.MenuItem) restaurantapi.ReturnMenuItem {
 		Course: menuItem.Course,
 	}
 }
+
+func menuItemToResponse(menuItem domain.MenuItem) restaurantapi.ReturnMenuItem {
+	return restaurantapi.ReturnMenuItem{
+		ID:     menuItem.ID,
+		Name:   menuItem.Name,
+		Course: menuItem.Course,
+	}
+}

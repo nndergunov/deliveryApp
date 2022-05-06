@@ -1,14 +1,11 @@
 package orderapi
 
-type CreateOrder struct {
-	FromUserID       int
-	RestaurantID     int
-	DeliveryLocation string
-	SpecialRequests  string
-	Order            map[string]int
+type OrderData struct {
+	FromUserID   int
+	RestaurantID int
+	OrderItems   []int
 }
 
-type OrderStatusUpdate struct {
-	OrderID     int
-	OrderStatus string
+type OrderStatusData struct {
+	Status string
 }
