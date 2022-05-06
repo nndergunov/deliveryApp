@@ -24,7 +24,7 @@ create table IF NOT EXISTS consumer_location
     home_number  varchar,
     floor        varchar,
     door         varchar,
-    CONSTRAINT fk_customer
+    CONSTRAINT fk_consumer
         FOREIGN KEY (consumer_id)
             REFERENCES consumer (id)
 );
