@@ -12,7 +12,8 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/handlers"
-	"github.com/nndergunov/deliveryApp/app/services/order/pkg/app"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
 )
 
 const configFile = "config.yaml"
@@ -20,9 +21,26 @@ const configFile = "config.yaml"
 func main() {
 	mainLogger := logger.NewLogger(os.Stdout, "main")
 
-	appInstance := app.NewApp()
+	err := configreader.SetConfigFile(configFile)
+	if err != nil {
+		mainLogger.Println(err)
+	}
+
+	dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
+		" port=" + configreader.GetString("database.port") +
+		" user=" + configreader.GetString("database.user") +
+		" password=" + configreader.GetString("database.password") +
+		" dbname=" + configreader.GetString("database.dbName") +
+		" sslmode=" + configreader.GetString("database.sslmode"))
+
+	database, err := db.NewDatabase(dbURL)
+	if err != nil {
+		mainLogger.Fatalln(err)
+	}
+
+	serviceInstance := service.NewService(database)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	endpointHandler := handlers.NewEndpointHandler(appInstance, handlerLogger)
+	endpointHandler := handlers.NewEndpointHandler(serviceInstance, handlerLogger)
 
 	apiLogger := logger.NewLogger(os.Stdout, "api")
 	serverAPI := api.NewAPI(endpointHandler, apiLogger)
@@ -43,10 +61,6 @@ func main() {
 }
 
 func getServerConfig(handler http.Handler, errorLog *log.Logger, serverLogger *logger.Logger) (*config.Config, error) {
-	if err := configreader.SetConfigFile(configFile); err != nil {
-		return nil, fmt.Errorf("config read: %w", err)
-	}
-
 	var (
 		address          = configreader.GetString("server.address")
 		readTime         = configreader.GetDuration("server.readTime")

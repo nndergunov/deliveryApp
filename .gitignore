@@ -1,5 +1,13 @@
-### dotenv ###
-.env
+### sql ###
+*.sql
+
+### Configuration files ###
+*.env
+*.toml
+config.yaml
+
+### Project-specific files ###
+cleardatabase
 
 ### Go ###
 # Binaries for programs and plugins
