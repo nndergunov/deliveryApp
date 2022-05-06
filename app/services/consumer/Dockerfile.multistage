@@ -1,0 +1,30 @@
+#syntax=docker/dockerfile:1
+
+FROM golang:alpine AS build
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+COPY conf.json ./
+
+RUN go mod download
+
+COPY . .
+
+RUN go build -o /courier-server
+
+EXPOSE 7070
+
+FROM golang:alpine
+
+WORKDIR /app
+
+COPY --from=build /consumer-server /consumer-server
+COPY --from=build app/conf.json /app/conf.json
+
+EXPOSE 7070
+
+USER root:root
+
+ENTRYPOINT ["/courier-server"]
