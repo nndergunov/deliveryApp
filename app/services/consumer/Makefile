@@ -1,0 +1,1 @@
+migradte -path database/migration -database "postgresql://postgres:postgres@0.0.0.0:5433/courier_db?sslmode=disable" -verbose up
