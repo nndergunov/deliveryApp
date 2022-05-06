@@ -1,0 +1,31 @@
+# https://docs.docker.com/compose/compose-file
+# docker-compose up
+# docker-compose stop
+# docker-compose down
+version: '3'
+services:
+  container_courier_db:
+    image: postgres:latest
+    container_name: container_courier_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=courier_db
+    ports:
+      - '5433:5432'
+    expose:
+      - '5433'
+  courier_server:
+    container_name: courier_server
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage
+    ports:
+      - '7070:7070'
+    expose:
+      - '7070'
+    restart: on-failure
+    depends_on:
+      - container_courier_db
+    networks:
+      - default
