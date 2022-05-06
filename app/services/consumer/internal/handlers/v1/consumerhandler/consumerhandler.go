@@ -37,6 +37,8 @@ type Handler interface {
 	updateConsumer(rw http.ResponseWriter, r *http.Request)
 	getAllConsumer(rw http.ResponseWriter, r *http.Request)
 	getConsumer(rw http.ResponseWriter, r *http.Request)
+
+	updateConsumerLocation(rw http.ResponseWriter, r *http.Request)
 }
 
 // NewConsumerHandler creates an ConsumerHandler value that handle a set of routes for the application.
@@ -47,17 +49,17 @@ func NewConsumerHandler(p Params) Handler {
 		consumerService: p.ConsumerService,
 		shutdown:        p.Shutdown,
 	}
-	const version = "/v1"
+	const apiVersion = "/v1"
 	const consumer = "/consumer"
 	const consumerLocation = "/consumer-location"
 
-	p.Route.HandleFunc(version+consumer+"/new", handler.insertNewConsumer).Methods(http.MethodPost)
-	p.Route.HandleFunc(version+consumer+"/remove/{id}", handler.removeConsumer).Methods(http.MethodPost)
-	p.Route.HandleFunc(version+consumer+"/update", handler.updateConsumer).Methods(http.MethodPut)
-	p.Route.HandleFunc(version+consumer+"/get-all", handler.getAllConsumer).Methods(http.MethodGet)
-	p.Route.HandleFunc(version+consumer+"/get/{id}", handler.getConsumer).Methods(http.MethodGet)
+	p.Route.HandleFunc(apiVersion+consumer+"/new", handler.insertNewConsumer).Methods(http.MethodPost)
+	p.Route.HandleFunc(apiVersion+consumer+"/remove/{id}", handler.removeConsumer).Methods(http.MethodPost)
+	p.Route.HandleFunc(apiVersion+consumer+"/update", handler.updateConsumer).Methods(http.MethodPut)
+	p.Route.HandleFunc(apiVersion+consumer+"/get-all", handler.getAllConsumer).Methods(http.MethodGet)
+	p.Route.HandleFunc(apiVersion+consumer+"/get/{id}", handler.getConsumer).Methods(http.MethodGet)
 
-	p.Route.HandleFunc(version+consumerLocation+"/update", handler.updateConsumerLocation).Methods(http.MethodPut)
+	p.Route.HandleFunc(apiVersion+consumerLocation+"/update", handler.updateConsumerLocation).Methods(http.MethodPut)
 
 	return handler
 }
