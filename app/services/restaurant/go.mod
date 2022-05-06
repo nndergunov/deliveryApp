@@ -6,10 +6,10 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.5
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220503132556-de9b4711faca
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220503132556-de9b4711faca
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220503132556-de9b4711faca
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220503132556-de9b4711faca
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220506140628-c1fe9b0781b4
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220506140628-c1fe9b0781b4
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506135343-b98520baf981
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220506140628-c1fe9b0781b4
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
 )

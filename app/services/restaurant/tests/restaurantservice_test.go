@@ -537,7 +537,7 @@ func TestCreateMenu(t *testing.T) {
 			for _, menuItem := range test.menu.MenuItems {
 				var found bool
 
-				for _, createdMenuItem := range createdMenu.Items {
+				for _, createdMenuItem := range createdMenu.MenuItems {
 					if menuItem.Name == createdMenuItem.Name && menuItem.Course == createdMenuItem.Course {
 						found = true
 
@@ -551,7 +551,7 @@ func TestCreateMenu(t *testing.T) {
 				}
 			}
 
-			for _, createdMenuItem := range createdMenu.Items {
+			for _, createdMenuItem := range createdMenu.MenuItems {
 				var found bool
 
 				for _, menuItem := range test.menu.MenuItems {
@@ -692,7 +692,7 @@ func TestReturnMenu(t *testing.T) {
 			for _, menuItem := range test.menu.MenuItems {
 				var found bool
 
-				for _, createdMenuItem := range menu.Items {
+				for _, createdMenuItem := range menu.MenuItems {
 					if menuItem.Name == createdMenuItem.Name && menuItem.Course == createdMenuItem.Course {
 						found = true
 
@@ -706,7 +706,7 @@ func TestReturnMenu(t *testing.T) {
 				}
 			}
 
-			for _, createdMenuItem := range menu.Items {
+			for _, createdMenuItem := range menu.MenuItems {
 				var found bool
 
 				for _, menuItem := range test.menu.MenuItems {
@@ -869,7 +869,7 @@ func TestAddMenuItem(t *testing.T) {
 
 			var found bool
 
-			for _, createdMenuItem := range menu.Items {
+			for _, createdMenuItem := range menu.MenuItems {
 				if test.addMenuItem.Name == createdMenuItem.Name && test.addMenuItem.Course == createdMenuItem.Course {
 					found = true
 
@@ -990,7 +990,7 @@ func TestUpdateMenuItem(t *testing.T) {
 			}
 
 			restaurantID = createdMenu.RestaurantID
-			menuItemID := createdMenu.Items[0].ID
+			menuItemID := createdMenu.MenuItems[0].ID
 
 			// Updating menu item.
 			mockCLient := http.DefaultClient
@@ -1141,7 +1141,7 @@ func TestDeleteMenuItem(t *testing.T) {
 			}
 
 			restaurantID = createdMenu.RestaurantID
-			menuItemID := createdMenu.Items[0].ID
+			menuItemID := createdMenu.MenuItems[0].ID
 
 			// Updating menu item.
 			mockCLient := http.DefaultClient
