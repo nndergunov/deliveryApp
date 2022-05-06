@@ -226,10 +226,7 @@ func (d Database) UpdateMenu(menu domain.Menu) error {
 	}
 
 	for _, item := range menu.Items {
-		dbID, err := d.getMenuItemID(item)
-		if err != nil {
-			return fmt.Errorf("UpdateMenu: %w", err)
-		}
+		dbID := item.ID
 
 		if dbID != 0 {
 			err = d.UpdateMenuItem(item)

@@ -6,6 +6,18 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
+type AppService interface {
+	ReturnAllRestaurants() ([]domain.Restaurant, error)
+	CreateNewRestaurant(restaurant domain.Restaurant) (*domain.Restaurant, error)
+	UpdateRestaurant(restaurant domain.Restaurant) (*domain.Restaurant, error)
+	DeleteRestaurant(restaurantID int) error
+	ReturnMenu(restaurantID int) (*domain.Menu, error)
+	CreateMenu(menu domain.Menu) (*domain.Menu, error)
+	AddMenuItem(restaurantID int, menuItem domain.MenuItem) (*domain.MenuItem, error)
+	UpdateMenuItem(restaurantID int, menuItem domain.MenuItem) (*domain.MenuItem, error)
+	DeleteMenuItem(restaurantID int, menuItemID int) error
+}
+
 // Service is a main service logic.
 type Service struct {
 	storage Storage

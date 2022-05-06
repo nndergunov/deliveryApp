@@ -11,7 +11,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 )
 
-const baseAddr = "http://localhost:8082"
+const baseAddr = "http://localhost:8084"
 
 func TestCreateRestaurant(t *testing.T) {
 	t.Parallel()

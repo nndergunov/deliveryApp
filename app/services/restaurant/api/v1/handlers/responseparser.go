@@ -1,34 +1,9 @@
 package handlers
 
 import (
-	"net/http"
-
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
-
-func (e endpointHandler) respond(response any, w http.ResponseWriter) {
-	data, err := v1.Encode(response)
-	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-
-	_, err = w.Write(data)
-	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-}
 
 func restaurantToResponse(restaurant domain.Restaurant) restaurantapi.ReturnRestaurant {
 	return restaurantapi.ReturnRestaurant{
@@ -62,7 +37,15 @@ func menuToResponse(menu domain.Menu) restaurantapi.ReturnMenu {
 
 	return restaurantapi.ReturnMenu{
 		RestaurantID: menu.RestaurantID,
-		Items:        items,
+		MenuItems:    items,
+	}
+}
+
+func menuItemToResponse(menuItem domain.MenuItem) restaurantapi.ReturnMenuItem {
+	return restaurantapi.ReturnMenuItem{
+		ID:     menuItem.ID,
+		Name:   menuItem.Name,
+		Course: menuItem.Course,
 	}
 }
 

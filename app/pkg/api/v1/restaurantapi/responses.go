@@ -13,7 +13,7 @@ type ReturnRestaurantList struct {
 
 type ReturnMenu struct {
 	RestaurantID int
-	Items        []ReturnMenuItem
+	MenuItems    []ReturnMenuItem
 }
 
 type ReturnMenuItem struct {

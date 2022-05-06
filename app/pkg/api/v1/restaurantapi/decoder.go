@@ -8,7 +8,6 @@ import (
 func DecodeRestaurantData(data []byte) (*RestaurantData, error) {
 	req := new(RestaurantData)
 
-
 	err := json.Unmarshal(data, req)
 	if err != nil {
 		return nil, fmt.Errorf("DecodeCreateRestaurant: %w", err)
@@ -18,7 +17,8 @@ func DecodeRestaurantData(data []byte) (*RestaurantData, error) {
 }
 
 func DecodeMenuData(data []byte) (*MenuData, error) {
-  req := new(MenuData)
+	req := new(MenuData)
+
 
 	err := json.Unmarshal(data, req)
 	if err != nil {

@@ -9,6 +9,9 @@ config.yaml
 ### Project-specific files ###
 cleardatabase
 
+### Project-specific files ###
+cleardatabase
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe
