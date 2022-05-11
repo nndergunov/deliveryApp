@@ -6,10 +6,10 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.5
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220506140628-c1fe9b0781b4
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220506140628-c1fe9b0781b4
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506135343-b98520baf981
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220506140628-c1fe9b0781b4
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220506143302-2019639d5978
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220506143302-2019639d5978
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506143302-2019639d5978
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220506143302-2019639d5978
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
 )
@@ -20,7 +20,7 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

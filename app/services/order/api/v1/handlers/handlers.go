@@ -82,7 +82,9 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, r *http
 		return
 	}
 
-	orderData, err := orderapi.DecodeOrderData(req)
+	orderData := new(orderapi.OrderData)
+
+	err = v1.Decode(req, orderData)
 	if err != nil {
 		e.log.Println(err)
 
@@ -160,7 +162,9 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, r *http
 		return
 	}
 
-	orderData, err := orderapi.DecodeOrderData(req)
+	orderData := new(orderapi.OrderData)
+
+	err = v1.Decode(req, orderData)
 	if err != nil {
 		e.log.Println(err)
 
@@ -211,7 +215,9 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 		return
 	}
 
-	statusData, err := orderapi.DecodeOrderStatusData(req)
+	statusData := new(orderapi.OrderStatusData)
+
+	err = v1.Decode(req, statusData)
 	if err != nil {
 		e.log.Println(err)
 

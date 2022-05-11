@@ -83,7 +83,9 @@ func TestCreateOrderEndpoint(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			order, err := orderapi.DecodeReturnOrder(resp.Body.Bytes())
+			order := new(orderapi.ReturnOrder)
+
+			err = v1.Decode(resp.Body.Bytes(), order)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -118,7 +120,9 @@ func TestReturnOrderEndpoint(t *testing.T) {
 
 		handler.ServeHTTP(resp, req)
 
-		order, err := orderapi.DecodeReturnOrder(resp.Body.Bytes())
+		order := new(orderapi.ReturnOrder)
+
+		err := v1.Decode(resp.Body.Bytes(), order)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -173,11 +177,12 @@ func TestUpdateOrderEndpoint(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			order, err := orderapi.DecodeReturnOrder(resp.Body.Bytes())
+			order := new(orderapi.ReturnOrder)
+
+			err = v1.Decode(resp.Body.Bytes(), order)
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			sort.Ints(test.orderData.OrderItems)
 			sort.Ints(order.OrderItems)
 
@@ -261,7 +266,9 @@ func TestReturnIncompleteOrderListEndpoint(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			orders, err := orderapi.DecodeReturnOrderList(resp.Body.Bytes())
+			orders := new(orderapi.ReturnOrderList)
+
+			err := v1.Decode(resp.Body.Bytes(), orders)
 			if err != nil {
 				t.Fatal(err)
 			}

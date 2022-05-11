@@ -147,7 +147,9 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	restaurantData, err := restaurantapi.DecodeRestaurantData(req)
+	restaurantData := new(restaurantapi.RestaurantData)
+
+	err = v1.Decode(req, restaurantData)
 	if err != nil {
 		e.log.Println(err)
 
@@ -159,7 +161,6 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	rest := requestToRestaurant(0, restaurantData)
 
 	createdRest, err := e.service.CreateNewRestaurant(rest)
-
 	if err != nil {
 		e.log.Println(err)
 
@@ -195,7 +196,9 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	restaurantData, err := restaurantapi.DecodeRestaurantData(req)
+	restaurantData := new(restaurantapi.RestaurantData)
+
+	err = v1.Decode(req, restaurantData)
 	if err != nil {
 		e.log.Println(err)
 
@@ -235,7 +238,7 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-  err = e.service.DeleteRestaurant(restaurantID)
+	err = e.service.DeleteRestaurant(restaurantID)
 	if err != nil {
 		e.log.Println(err)
 
@@ -271,7 +274,9 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menuData, err := restaurantapi.DecodeMenuData(req)
+	menuData := new(restaurantapi.MenuData)
+
+	err = v1.Decode(req, menuData)
 	if err != nil {
 		e.log.Println(err)
 
@@ -320,7 +325,9 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menuItemData, err := restaurantapi.DecodeMenuItem(req)
+	menuItemData := new(restaurantapi.MenuItemData)
+
+	err = v1.Decode(req, menuItemData)
 	if err != nil {
 		e.log.Println(err)
 
@@ -378,7 +385,9 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	menuItemData, err := restaurantapi.DecodeMenuItem(req)
+	menuItemData := new(restaurantapi.MenuItemData)
+
+	err = v1.Decode(req, menuItemData)
 	if err != nil {
 		e.log.Println(err)
 
