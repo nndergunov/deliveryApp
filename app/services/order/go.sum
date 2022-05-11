@@ -270,6 +270,8 @@ github.com/mitchellh/reflectwalk v1.0.0/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220511114948-5e4549ed22d7 h1:6mZVwQBcADh15uKreDJinLrIxsV1U+9xjJY13pFcY1w=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220511114948-5e4549ed22d7/go.mod h1:Ctf+Q3dmfpQ5LOblpMlyVSAo1Cd/QVs06XPaB4AcRhQ=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220506143302-2019639d5978 h1:bKiB+0Rn3U2g8CV1Y58y2Xe3ymvBGW9w3ZK6wri5sKA=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220506143302-2019639d5978/go.mod h1:ZUwhDklV6a8zUSmHhlHE9I7viwpewNgQOFY93kjJtRc=
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506143302-2019639d5978 h1:4MIAuZMM72OgPKlBVAnfrFoGcwjh+/8tAfQmhjADggA=
