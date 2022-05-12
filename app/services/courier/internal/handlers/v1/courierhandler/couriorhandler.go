@@ -3,6 +3,7 @@ package courierhandler
 
 import (
 	"courier/internal/handlers"
+	"fmt"
 	"net/http"
 	"os"
 	"syscall"
@@ -64,14 +65,14 @@ func (a *CourierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 
 	if err := decoder.BindJson(r, &courier); err != nil {
 		a.log.Println(err)
-		if err := handlers.Respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("incorrect input data")); err != nil {
 			a.log.Println(err)
 		}
 		return
 	}
 
-	data, statusCode := a.courierService.InsertNewCourier(courier)
-	if err := handlers.Respond(rw, data, statusCode); err != nil {
+	data, err := a.courierService.InsertNewCourier(courier)
+	if err := handlers.Respond(rw, data, err); err != nil {
 		a.log.Println(err)
 		return
 	}
@@ -81,14 +82,14 @@ func (a *CourierHandler) removeCourier(rw http.ResponseWriter, r *http.Request) 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		if err := handlers.Respond(rw, "id is not indicated", http.StatusInternalServerError); err != nil {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("id is not indicated")); err != nil {
 			a.log.Println(err)
 		}
 		return
 	}
 
-	data, statusCode := a.courierService.RemoveCourier(id)
-	if err := handlers.Respond(rw, data, statusCode); err != nil {
+	data, err := a.courierService.RemoveCourier(id)
+	if err := handlers.Respond(rw, data, err); err != nil {
 		a.log.Println(err)
 		return
 	}
@@ -99,22 +100,22 @@ func (a *CourierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 
 	if err := decoder.BindJson(r, &courier); err != nil {
 		a.log.Println(err)
-		if err := handlers.Respond(rw, "incorrect input data", http.StatusBadRequest); err != nil {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("incorrect input data")); err != nil {
 			a.log.Println(err)
 		}
 		return
 	}
 
-	data, statusCode := a.courierService.UpdateCourier(courier)
-	if err := handlers.Respond(rw, data, statusCode); err != nil {
+	data, err := a.courierService.UpdateCourier(courier)
+	if err := handlers.Respond(rw, data, err); err != nil {
 		a.log.Println(err)
 		return
 	}
 }
 
 func (a *CourierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) {
-	data, statusCode := a.courierService.GetAllCourier()
-	if err := handlers.Respond(rw, data, statusCode); err != nil {
+	data, err := a.courierService.GetAllCourier()
+	if err := handlers.Respond(rw, data, err); err != nil {
 		a.log.Println(err)
 		return
 	}
@@ -124,15 +125,14 @@ func (a *CourierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		if err := handlers.Respond(rw, "id is missing in parameters", http.StatusInternalServerError); err != nil {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("id is missing in parameters")); err != nil {
 			a.log.Println(err)
-			return
 		}
 		return
 	}
 
-	data, statusCode := a.courierService.GetCourier(id)
-	if err := handlers.Respond(rw, data, statusCode); err != nil {
+	data, err := a.courierService.GetCourier(id)
+	if err := handlers.Respond(rw, data, err); err != nil {
 		a.log.Println(err)
 		return
 	}
