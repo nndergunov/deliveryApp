@@ -21,6 +21,7 @@ func Respond(w http.ResponseWriter, data any, err error) error {
 	// Convert the response value to JSON.
 	jsonData, err := json.Marshal(data)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 
