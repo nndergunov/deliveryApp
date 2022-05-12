@@ -10,10 +10,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/service"
 )
 
-const (
-	restaurantIDKey = "restaurantID"
-	menuIDKey       = "menuID"
-)
+const kitchenIDKey = "kitchenID"
 
 type endpointHandler struct {
 	service  service.App
@@ -38,6 +35,8 @@ func NewEndpointHandler(serviceInstance service.App, log *logger.Logger) *mux.Ro
 
 func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
+
+	e.serveMux.HandleFunc("/v1/tasks/{"+kitchenIDKey+"}", e.returnTasks).Methods(http.MethodGet)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -67,4 +66,31 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	responseWriter.WriteHeader(http.StatusOK)
 
 	e.log.Printf("gave status %s", data.IsUp)
+}
+
+func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request *http.Request) {
+	kitchenID, err := getIDFromEndpoint(kitchenIDKey, request)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	tasks, err := e.service.GetTasks(kitchenID)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	response := tasksToResponse(tasks)
+
+	err = v1.Respond(response, responseWriter)
+	if err != nil {
+		e.log.Println(err)
+	}
 }

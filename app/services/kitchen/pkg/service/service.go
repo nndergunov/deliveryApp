@@ -1,8 +1,14 @@
 package service
 
-import "github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
+import (
+	"fmt"
 
-type App interface{}
+	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
+)
+
+type App interface {
+	GetTasks(kitchenID int) (domain.Tasks, error)
+}
 
 // Service is a main service logic.
 type Service struct {
@@ -15,9 +21,21 @@ func NewService(communicator Communicator) *Service {
 	}
 }
 
-func (s Service) GetTasks(kitchenID int) domain.Tasks {
-	_, _ = s.communicator.GetRestaurantIncompleteOrders(kitchenID)
+func (s Service) GetTasks(kitchenID int) (domain.Tasks, error) {
+	_, _ = s.communicator.GetIncompleteOrders(kitchenID)
 
-	// TODO
-	panic("TODO")
+	orders, err := s.communicator.GetIncompleteOrders(kitchenID)
+	if err != nil {
+		return nil, fmt.Errorf("getting orders: %w", err)
+	}
+
+	tasks := make(domain.Tasks)
+
+	for _, order := range orders.Orders {
+		for _, item := range order.OrderItems {
+			tasks[item]++
+		}
+	}
+
+	return tasks, nil
 }
