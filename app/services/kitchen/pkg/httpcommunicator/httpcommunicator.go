@@ -11,5 +11,5 @@ func NewHTTPCommunicator(orderServiceBaseURL string) *HTTPCommunicator {
 }
 
 func (c HTTPCommunicator) GetRestaurantIncompleteOrders(restaurantID int) (orderapi.ReturnOrderList, error) {
-
+	panic("TODO")
 }

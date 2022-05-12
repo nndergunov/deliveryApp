@@ -16,7 +16,7 @@ func NewService(communicator Communicator) *Service {
 }
 
 func (s Service) GetTasks(kitchenID int) domain.Tasks {
-	orders, err := s.communicator.GetRestaurantIncompleteOrders(kitchenID)
+	_, _ = s.communicator.GetRestaurantIncompleteOrders(kitchenID)
 
 	// TODO
 	panic("TODO")
