@@ -9,27 +9,11 @@ import (
 	"syscall"
 
 	"courier/internal/models"
-	"courier/internal/services"
 	"courier/pkg/decoder"
 
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
-
-type Params struct {
-	Logger         *logger.Logger
-	CourierService services.CourierService
-	Route          *mux.Router
-	Shutdown       chan os.Signal
-}
-
-// CourierHandler is the entrypoint into our application
-type CourierHandler struct {
-	rout           *mux.Router
-	log            *logger.Logger
-	courierService services.CourierService
-	shutdown       chan os.Signal
-}
 
 // Handler is the interface for the carrier handlers.
 type Handler interface {
@@ -38,6 +22,41 @@ type Handler interface {
 	updateCourier(rw http.ResponseWriter, r *http.Request)
 	getAllCourier(rw http.ResponseWriter, r *http.Request)
 	getCourier(rw http.ResponseWriter, r *http.Request)
+}
+
+// CourierService is the interface for the user services.
+type CourierService interface {
+	InsertNewCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
+	RemoveCourier(id string) (data any, err error)
+	UpdateCourier(courier models.UpdateCourierRequest, id string) (*models.CourierResponse, error)
+	UpdateCourierAvailable(id, available string) (*models.CourierResponse, error)
+	GetAllCourier() ([]*models.CourierResponse, error)
+	GetCourier(id string) (data any, err error)
+}
+
+// CourierStorage is the interface for the courier storage.
+type CourierStorage interface {
+	InsertCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
+	RemoveCourier(id uint64) error
+	UpdateCourier(courier models.UpdateCourierRequest, id uint64) (*models.CourierResponse, error)
+	UpdateCourierAvailabe(id uint64, available bool) (*models.CourierResponse, error)
+	GetAllCourier() ([]*models.CourierResponse, error)
+	GetCourier(id uint64, username, status string) (*models.CourierResponse, error)
+}
+
+type Params struct {
+	Logger         *logger.Logger
+	CourierService CourierService
+	Route          *mux.Router
+	Shutdown       chan os.Signal
+}
+
+// CourierHandler is the entrypoint into our application
+type CourierHandler struct {
+	rout           *mux.Router
+	log            *logger.Logger
+	courierService CourierService
+	shutdown       chan os.Signal
 }
 
 // NewCourierHandler creates an CourierHandler value that handle a set of routes for the application.

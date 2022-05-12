@@ -1,6 +1,7 @@
 package services
 
 import (
+	"courier/internal/handlers/v1/courierhandler"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -9,39 +10,19 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
-// CourierService is the interface for the user services.
-type CourierService interface {
-	InsertNewCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
-	RemoveCourier(id string) (data any, err error)
-	UpdateCourier(courier models.UpdateCourierRequest, id string) (*models.CourierResponse, error)
-	UpdateCourierAvailable(id, available string) (*models.CourierResponse, error)
-	GetAllCourier() ([]*models.CourierResponse, error)
-	GetCourier(id string) (data any, err error)
-}
-
-// CourierStorage is the interface for the courier storage.
-type CourierStorage interface {
-	InsertCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
-	RemoveCourier(id uint64) error
-	UpdateCourier(courier models.UpdateCourierRequest, id uint64) (*models.CourierResponse, error)
-	UpdateCourierAvailabe(id uint64, available bool) (*models.CourierResponse, error)
-	GetAllCourier() ([]*models.CourierResponse, error)
-	GetCourier(id uint64, username, status string) (*models.CourierResponse, error)
-}
-
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	CourierStorage CourierStorage
+	CourierStorage courierhandler.CourierStorage
 	Logger         *logger.Logger
 }
 
 type courierService struct {
-	courierStorage CourierStorage
+	courierStorage courierhandler.CourierStorage
 	logger         *logger.Logger
 }
 
 // NewCourierService constructs a new NewCourierService.
-func NewCourierService(p Params) (CourierService, error) {
+func NewCourierService(p Params) (courierhandler.CourierService, error) {
 	courierServiceItem := &courierService{
 		courierStorage: p.CourierStorage,
 		logger:         p.Logger,

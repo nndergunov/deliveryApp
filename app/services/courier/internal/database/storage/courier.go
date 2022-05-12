@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"courier/internal/services"
+	"courier/internal/handlers/v1/courierhandler"
 	"fmt"
 
 	"courier/internal/models"
@@ -20,7 +20,7 @@ type courierStorage struct {
 }
 
 // NewCourierStorage constructs a new NewCourierStorage.
-func NewCourierStorage(p Params) (services.CourierStorage, error) {
+func NewCourierStorage(p Params) (courierhandler.CourierStorage, error) {
 	courierStorageItem := &courierStorage{
 		db: p.DB,
 	}
