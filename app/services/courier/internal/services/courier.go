@@ -1,7 +1,6 @@
 package services
 
 import (
-	"courier/internal/database/storage"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -20,14 +19,24 @@ type CourierService interface {
 	GetCourier(id string) (data any, err error)
 }
 
+// CourierStorage is the interface for the courier storage.
+type CourierStorage interface {
+	InsertCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
+	RemoveCourier(id uint64) error
+	UpdateCourier(courier models.UpdateCourierRequest, id uint64) (*models.CourierResponse, error)
+	UpdateCourierAvailabe(id uint64, available bool) (*models.CourierResponse, error)
+	GetAllCourier() ([]*models.CourierResponse, error)
+	GetCourier(id uint64, username, status string) (*models.CourierResponse, error)
+}
+
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	CourierStorage storage.CourierStorage
+	CourierStorage CourierStorage
 	Logger         *logger.Logger
 }
 
 type courierService struct {
-	courierStorage storage.CourierStorage
+	courierStorage CourierStorage
 	logger         *logger.Logger
 }
 

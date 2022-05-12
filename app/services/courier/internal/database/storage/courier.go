@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"courier/internal/services"
 	"fmt"
 
 	"courier/internal/models"
@@ -8,16 +9,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
-
-// CourierStorage is the interface for the courier storage.
-type CourierStorage interface {
-	InsertCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
-	RemoveCourier(id uint64) error
-	UpdateCourier(courier models.UpdateCourierRequest, id uint64) (*models.CourierResponse, error)
-	UpdateCourierAvailabe(id uint64, available bool) (*models.CourierResponse, error)
-	GetAllCourier() ([]*models.CourierResponse, error)
-	GetCourier(id uint64, username, status string) (*models.CourierResponse, error)
-}
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
@@ -29,7 +20,7 @@ type courierStorage struct {
 }
 
 // NewCourierStorage constructs a new NewCourierStorage.
-func NewCourierStorage(p Params) (CourierStorage, error) {
+func NewCourierStorage(p Params) (services.CourierStorage, error) {
 	courierStorageItem := &courierStorage{
 		db: p.DB,
 	}
