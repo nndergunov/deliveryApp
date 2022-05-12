@@ -52,16 +52,17 @@ func NewCourierHandler(p Params) Handler {
 	const courier = "/courier"
 
 	p.Route.HandleFunc(version+courier+"/new", handler.insertNewCourier).Methods(http.MethodPost)
-	p.Route.HandleFunc(version+courier+"/remove/{id}", handler.removeCourier).Methods(http.MethodPost)
+	p.Route.HandleFunc(version+courier+"/remove", handler.removeCourier).Methods(http.MethodPost)
 	p.Route.HandleFunc(version+courier+"/update", handler.updateCourier).Methods(http.MethodPut)
+	p.Route.HandleFunc(version+courier+"/update-available", handler.updateCourierAvailable).Methods(http.MethodPut)
 	p.Route.HandleFunc(version+courier+"/get-all", handler.getAllCourier).Methods(http.MethodGet)
-	p.Route.HandleFunc(version+courier+"/get/{id}", handler.getCourier).Methods(http.MethodGet)
+	p.Route.HandleFunc(version+courier+"/get", handler.getCourier).Methods(http.MethodGet)
 
 	return handler
 }
 
 func (a *CourierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Request) {
-	var courier models.Courier
+	var courier models.NewCourierRequest
 
 	if err := decoder.BindJson(r, &courier); err != nil {
 		a.log.Println(err)
@@ -96,7 +97,16 @@ func (a *CourierHandler) removeCourier(rw http.ResponseWriter, r *http.Request) 
 }
 
 func (a *CourierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) {
-	var courier models.Courier
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("id param is not found")); err != nil {
+			a.log.Println(err)
+		}
+		return
+	}
+
+	var courier models.UpdateCourierRequest
 
 	if err := decoder.BindJson(r, &courier); err != nil {
 		a.log.Println(err)
@@ -106,7 +116,32 @@ func (a *CourierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	data, err := a.courierService.UpdateCourier(courier)
+	data, err := a.courierService.UpdateCourier(courier, id)
+	if err := handlers.Respond(rw, data, err); err != nil {
+		a.log.Println(err)
+		return
+	}
+}
+
+func (a *CourierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("id param is not found")); err != nil {
+			a.log.Println(err)
+		}
+		return
+	}
+
+	available, ok := vars["available"]
+	if !ok {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("available param is not found")); err != nil {
+			a.log.Println(err)
+		}
+		return
+	}
+
+	data, err := a.courierService.UpdateCourierAvailable(id, available)
 	if err := handlers.Respond(rw, data, err); err != nil {
 		a.log.Println(err)
 		return
@@ -125,7 +160,7 @@ func (a *CourierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
-		if err := handlers.Respond(rw, nil, fmt.Errorf("id is missing in parameters")); err != nil {
+		if err := handlers.Respond(rw, nil, fmt.Errorf("id param is not found")); err != nil {
 			a.log.Println(err)
 		}
 		return

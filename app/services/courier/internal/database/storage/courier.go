@@ -11,11 +11,12 @@ import (
 
 // CourierStorage is the interface for the courier storage.
 type CourierStorage interface {
-	InsertCourier(courier models.Courier) (*models.Courier, error)
+	InsertCourier(courier models.NewCourierRequest) (*models.CourierResponse, error)
 	RemoveCourier(id uint64) error
-	UpdateCourier(courier models.Courier) (*models.Courier, error)
-	GetAllCourier() ([]*models.Courier, error)
-	GetCourier(id uint64, username, status string) (*models.Courier, error)
+	UpdateCourier(courier models.UpdateCourierRequest, id uint64) (*models.CourierResponse, error)
+	UpdateCourierAvailabe(id uint64, available bool) (*models.CourierResponse, error)
+	GetAllCourier() ([]*models.CourierResponse, error)
+	GetCourier(id uint64, username, status string) (*models.CourierResponse, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -37,10 +38,10 @@ func NewCourierStorage(p Params) (CourierStorage, error) {
 }
 
 // InsertCourier inserts a new courier into the database.
-func (c courierStorage) InsertCourier(courier models.Courier) (*models.Courier, error) {
+func (c courierStorage) InsertCourier(courier models.NewCourierRequest) (*models.CourierResponse, error) {
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(courier.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return &models.Courier{}, fmt.Errorf("generating password hash: %w", err)
+		return nil, fmt.Errorf("generating password hash: %w", err)
 	}
 	sql := `INSERT INTO
 				courier
@@ -48,11 +49,12 @@ func (c courierStorage) InsertCourier(courier models.Courier) (*models.Courier, 
 			VALUES($1,$2,$3,$4,$5,now(),now(),$6,'active',true)
 			returning *`
 
-	var newCourier models.Courier
-	err = c.db.QueryRow(sql, courier.Username, hashPass, courier.Firstname,
-		courier.Lastname, courier.Email, courier.Phone).Scan(newCourier.Fields()...)
-	if err != nil {
-		return &models.Courier{}, err
+	var newCourier models.CourierResponse
+	if err = c.db.QueryRow(sql, courier.Username, hashPass, courier.Firstname,
+		courier.Lastname, courier.Email, courier.Phone).
+		Scan(newCourier.ID, newCourier.Username, newCourier.Password, newCourier.Firstname, newCourier.Lastname,
+			newCourier.Email, newCourier.Createdat, newCourier.Updatedat, newCourier.Status, newCourier.Available); err != nil {
+		return &models.CourierResponse{}, err
 	}
 	newCourier.Password = ""
 
@@ -67,19 +69,15 @@ func (c courierStorage) RemoveCourier(id uint64) error {
 				available = false,
 				updatedat = now()
 			WHERE id = $1
-			returning *
 	`
-	var removedCourier models.Courier
-	if err := c.db.QueryRow(sql, id).Scan(removedCourier.Fields()...); err != nil {
+	if _, err := c.db.Exec(sql, id); err != nil {
 		return err
 	}
-
-	removedCourier.Password = ""
 
 	return nil
 }
 
-func (c courierStorage) UpdateCourier(courier models.Courier) (*models.Courier, error) {
+func (c courierStorage) UpdateCourier(courier models.UpdateCourierRequest, id uint64) (*models.CourierResponse, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -89,19 +87,20 @@ func (c courierStorage) UpdateCourier(courier models.Courier) (*models.Courier, 
 			  	email = $4,
 			  	updatedat = now(),
 			  	phone = $5,
-				available = $6
 			    
 			WHERE 
 			    status = 'active'
 			    AND 
-			    id = $7
+			    id = $6
 			returning *
 	`
-	var updatedCourier models.Courier
+	var updatedCourier models.CourierResponse
 	if err := c.db.QueryRow(sql, courier.Username, courier.Firstname, courier.Lastname,
-		courier.Email, courier.Phone, courier.Available,
-		courier.ID).Scan(updatedCourier.Fields()...); err != nil {
-		return &models.Courier{}, err
+		courier.Email, courier.Phone, id).
+		Scan(updatedCourier.ID, updatedCourier.Username, updatedCourier.Password, updatedCourier.Firstname,
+			updatedCourier.Lastname, updatedCourier.Email, updatedCourier.Createdat, updatedCourier.Updatedat,
+			updatedCourier.Status, updatedCourier.Available); err != nil {
+		return &models.CourierResponse{}, err
 	}
 
 	updatedCourier.Password = ""
@@ -109,21 +108,47 @@ func (c courierStorage) UpdateCourier(courier models.Courier) (*models.Courier, 
 	return &updatedCourier, nil
 }
 
-func (c courierStorage) GetAllCourier() ([]*models.Courier, error) {
+func (c courierStorage) UpdateCourierAvailabe(id uint64, available bool) (*models.CourierResponse, error) {
+	sql := `UPDATE 
+				courier
+			SET 
+			    available = $2
+			WHERE 
+			    status = 'active'
+			    AND 
+			    id = $1
+			returning *
+	`
+	var updatedCourier models.CourierResponse
+	if err := c.db.QueryRow(sql, id, available).
+		Scan(updatedCourier.ID, updatedCourier.Username, updatedCourier.Password, updatedCourier.Firstname,
+			updatedCourier.Lastname, updatedCourier.Email, updatedCourier.Createdat, updatedCourier.Updatedat,
+			updatedCourier.Status, updatedCourier.Available); err != nil {
+		return &models.CourierResponse{}, err
+	}
+
+	updatedCourier.Password = ""
+
+	return &updatedCourier, nil
+}
+
+func (c courierStorage) GetAllCourier() ([]*models.CourierResponse, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE status = 'active'
 	`
 
-	var allCourier []*models.Courier
+	var allCourier []*models.CourierResponse
 
 	rows, err := c.db.Query(sql)
 	if err != nil {
 		return nil, err
 	}
 	for rows.Next() {
-		var courier models.Courier
-		if err := rows.Scan(courier.Fields()...); err != nil {
+		var courier models.CourierResponse
+		if err := rows.Scan(courier.ID, courier.Username, courier.Password, courier.Firstname,
+			courier.Lastname, courier.Email, courier.Createdat, courier.Updatedat,
+			courier.Status, courier.Available); err != nil {
 			break
 		}
 		courier.Password = ""
@@ -133,7 +158,7 @@ func (c courierStorage) GetAllCourier() ([]*models.Courier, error) {
 	return allCourier, nil
 }
 
-func (c courierStorage) GetCourier(id uint64, username, status string) (*models.Courier, error) {
+func (c courierStorage) GetCourier(id uint64, username, status string) (*models.CourierResponse, error) {
 	sql := `SELECT * FROM 
 				courier
 	`
@@ -144,9 +169,11 @@ func (c courierStorage) GetCourier(id uint64, username, status string) (*models.
 	}
 	sql = sql + where
 
-	courier := models.Courier{}
+	courier := models.CourierResponse{}
 
-	if err := c.db.QueryRow(sql, id, username).Scan(courier.Fields()...); err != nil {
+	if err := c.db.QueryRow(sql, id, username).Scan(courier.ID, courier.Username, courier.Password, courier.Firstname,
+		courier.Lastname, courier.Email, courier.Createdat, courier.Updatedat,
+		courier.Status, courier.Available); err != nil {
 		return nil, err
 	}
 
