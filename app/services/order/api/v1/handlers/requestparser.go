@@ -26,12 +26,24 @@ func getIDFromEndpoint(code string, r *http.Request) (int, error) {
 	return id, nil
 }
 
+func parseParameters(params orderapi.OrderFilters) domain.SearchParameters {
+	return domain.SearchParameters{
+		FromRestaurantID: params.FromRestaurantID,
+		Statuses:         params.Statuses,
+		ExcludeStatuses:  params.ExcludeStatuses,
+	}
+}
+
 func requestToOrder(orderData orderapi.OrderData) domain.Order {
 	return domain.Order{
 		OrderID:      0,
 		FromUserID:   orderData.FromUserID,
 		RestaurantID: orderData.RestaurantID,
 		OrderItems:   orderData.OrderItems,
+		Status: domain.OrderStatus{
+			OrderID: 0,
+			Status:  "",
+		},
 	}
 }
 

@@ -1,5 +1,11 @@
 package domain
 
+type SearchParameters struct {
+	FromRestaurantID int
+	Statuses         []string
+	ExcludeStatuses  []string
+}
+
 type Order struct {
 	OrderID      int
 	FromUserID   int
