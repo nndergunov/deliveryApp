@@ -11,6 +11,8 @@ import (
 )
 
 func TestGetAllOrders(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name  string
 		order domain.Order
@@ -55,7 +57,7 @@ func TestGetAllOrders(t *testing.T) {
 
 			orderID, _ := database.InsertOrder(test.order)
 
-			orders, err := database.GetAllOrders()
+			orders, err := database.GetAllOrders(nil)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -102,11 +104,14 @@ func TestGetAllOrders(t *testing.T) {
 }
 
 func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name            string
 		restaurantID    int
 		incompleteOrder domain.Order
 		completeOrder   domain.Order
+		params          domain.SearchParameters
 	}{
 		{
 			name:         "Test Insert Order",
@@ -126,7 +131,15 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 				FromUserID:   182,
 				RestaurantID: 673473346,
 				OrderItems:   []int{},
-				Status:       domain.OrderStatus{},
+				Status: domain.OrderStatus{
+					OrderID: 0,
+					Status:  "",
+				},
+			},
+			params: domain.SearchParameters{
+				FromRestaurantID: 673473346,
+				Statuses:         nil,
+				ExcludeStatuses:  []string{"complete"},
 			},
 		},
 	}
@@ -159,7 +172,7 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 
 			_ = database.UpdateOrderStatus(complOrderID, "complete")
 
-			orders, err := database.GetAllIncompleteOrdersFromRestaurant(673473346)
+			orders, err := database.GetAllOrders(&test.params)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -210,6 +223,8 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 }
 
 func TestInsertOrder(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name  string
 		order domain.Order
@@ -263,6 +278,8 @@ func TestInsertOrder(t *testing.T) {
 }
 
 func TestGetOrder(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name  string
 		order domain.Order
@@ -336,6 +353,8 @@ func TestGetOrder(t *testing.T) {
 }
 
 func TestUpdateOrder(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		initialOrder domain.Order
@@ -404,6 +423,8 @@ func TestUpdateOrder(t *testing.T) {
 }
 
 func TestDeleteOrder(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name  string
 		order domain.Order
@@ -457,6 +478,8 @@ func TestDeleteOrder(t *testing.T) {
 }
 
 func TestUpdateOrderStatus(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name      string
 		order     domain.Order

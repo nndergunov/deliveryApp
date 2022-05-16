@@ -6,11 +6,11 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
-type ServiceApp interface {
+type App interface {
+	ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error)
 	CreateOrder(order domain.Order) (*domain.Order, error)
 	ReturnOrder(orderID int) (*domain.Order, error)
 	UpdateOrder(order domain.Order) (*domain.Order, error)
-	ReturnIncompleteOrderList(restaurantID int) ([]domain.Order, error)
 	UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error)
 }
 
@@ -22,6 +22,15 @@ func NewService(storage Storage) *Service {
 	return &Service{
 		storage: storage,
 	}
+}
+
+func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error) {
+	orders, err := s.storage.GetAllOrders(params)
+	if err != nil {
+		return nil, fmt.Errorf("ReturnIncompleteOrderList: %w", err)
+	}
+
+	return orders, nil
 }
 
 func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
@@ -51,15 +60,6 @@ func (s Service) UpdateOrder(order domain.Order) (*domain.Order, error) {
 	}
 
 	return &order, nil
-}
-
-func (s Service) ReturnIncompleteOrderList(restaurantID int) ([]domain.Order, error) {
-	orders, err := s.storage.GetAllIncompleteOrdersFromRestaurant(restaurantID)
-	if err != nil {
-		return nil, fmt.Errorf("ReturnIncompleteOrderList: %w", err)
-	}
-
-	return orders, nil
 }
 
 func (s Service) UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error) {

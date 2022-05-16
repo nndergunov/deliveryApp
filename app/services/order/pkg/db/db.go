@@ -47,34 +47,34 @@ func (d Database) getOrderByID(orderID int) (*models.Order, error) {
 	return dbOrder, nil
 }
 
-func (d Database) GetAllOrders() ([]domain.Order, error) {
-	dbOrders, err := models.Orders().All(d.db)
-	if err != nil {
-		return nil, fmt.Errorf("GetAllOrders: %w", err)
-	}
+func (d Database) GetAllOrders(params *domain.SearchParameters) ([]domain.Order, error) {
+	var mods []qm.QueryMod
 
-	orders := make([]domain.Order, 0, len(dbOrders))
-
-	for _, dbOrder := range dbOrders {
-		order := domain.Order{
-			OrderID:      dbOrder.ID,
-			FromUserID:   dbOrder.CustomerID,
-			RestaurantID: dbOrder.RestaurantID,
-			OrderItems:   int64ArrToIntArr(dbOrder.OrderItems),
-			Status: domain.OrderStatus{
-				OrderID: dbOrder.ID,
-				Status:  dbOrder.Status,
-			},
+	if params != nil {
+		if params.FromRestaurantID != -1 {
+			mods = append(mods, qm.Where("restaurant_id=?", params.FromRestaurantID))
 		}
 
-		orders = append(orders, order)
+		if params.Statuses != nil {
+			convertedStatuses := make([]interface{}, len(params.Statuses))
+			for index, num := range params.Statuses {
+				convertedStatuses[index] = num
+			}
+
+			mods = append(mods, qm.WhereIn("status in ?", convertedStatuses...))
+		}
+
+		if params.ExcludeStatuses != nil {
+			convertedExclStatuses := make([]interface{}, len(params.ExcludeStatuses))
+			for index, num := range params.ExcludeStatuses {
+				convertedExclStatuses[index] = num
+			}
+
+			mods = append(mods, qm.WhereNotIn("status not in ?", convertedExclStatuses...))
+		}
 	}
 
-	return orders, nil
-}
-
-func (d Database) GetAllIncompleteOrdersFromRestaurant(restaurantID int) ([]domain.Order, error) {
-	dbOrders, err := models.Orders(qm.Where("restaurant_id=? and status!=?", restaurantID, "complete")).All(d.db)
+	dbOrders, err := models.Orders(mods...).All(d.db)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllOrders: %w", err)
 	}

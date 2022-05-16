@@ -9,22 +9,20 @@ import (
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
 )
 
-const (
-	orderID      = "orderID"
-	restaurantID = "restaurantID"
-)
+const orderID = "orderID"
 
 type endpointHandler struct {
-	serviceInstance service.ServiceApp
+	serviceInstance service.App
 	serveMux        *mux.Router
 	log             *logger.Logger
 }
 
 // NewEndpointHandler returns new http multiplexer with configured endpoints.
-func NewEndpointHandler(serviceInstance service.ServiceApp, log *logger.Logger) *mux.Router {
+func NewEndpointHandler(serviceInstance service.App, log *logger.Logger) *mux.Router {
 	serveMux := mux.NewRouter()
 
 	handler := endpointHandler{
@@ -41,14 +39,12 @@ func NewEndpointHandler(serviceInstance service.ServiceApp, log *logger.Logger) 
 func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
 
+	e.serveMux.HandleFunc("/v1/orders", e.returnAllOrders).Methods(http.MethodGet)
 	e.serveMux.HandleFunc("/v1/orders", e.createOrder).Methods(http.MethodPost)
 	e.serveMux.HandleFunc("/v1/orders/{"+orderID+"}", e.returnOrder).Methods(http.MethodGet)
 	e.serveMux.HandleFunc("/v1/orders/{"+orderID+"}", e.updateOrder).Methods(http.MethodPut)
 
 	e.serveMux.HandleFunc("/v1/admin/orders/{"+orderID+"}/status", e.updateOrderStatus).Methods(http.MethodPut)
-
-	e.serveMux.HandleFunc("/v1/admin/orders/restaurant={"+restaurantID+"}/incomplete",
-		e.returnIncompleteOrderList).Methods(http.MethodGet)
 }
 
 func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -72,8 +68,58 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
-func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, r *http.Request) {
-	req, err := ioutil.ReadAll(r.Body)
+func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, request *http.Request) {
+	parameters := domain.SearchParameters{
+		FromRestaurantID: -1,
+		Statuses:         nil,
+		ExcludeStatuses:  nil,
+	}
+
+	req, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	searchParams := new(orderapi.OrderFilters)
+
+	if len(req) != 0 {
+		err = v1.Decode(req, searchParams)
+		if err != nil {
+			e.log.Println(err)
+
+			responseWriter.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
+
+		parameters = parseParameters(*searchParams)
+	}
+
+	orders, err := e.serviceInstance.ReturnOrderList(parameters)
+	if err != nil {
+		e.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	response := orderListToResponse(orders)
+
+	err = v1.Respond(response, responseWriter)
+	if err != nil {
+		e.log.Println(err)
+
+		return
+	}
+}
+
+func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request *http.Request) {
+	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.log.Println(err)
 
@@ -114,8 +160,8 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, r *http
 	}
 }
 
-func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, r *http.Request) {
-	returnOrderID, err := getIDFromEndpoint(orderID, r)
+func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request *http.Request) {
+	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.log.Println(err)
 
@@ -143,8 +189,8 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, r *http
 	}
 }
 
-func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, r *http.Request) {
-	updateOrderID, err := getIDFromEndpoint(orderID, r)
+func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request *http.Request) {
+	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.log.Println(err)
 
@@ -153,7 +199,7 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, r *http
 		return
 	}
 
-	req, err := ioutil.ReadAll(r.Body)
+	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.log.Println(err)
 
@@ -196,8 +242,8 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, r *http
 	}
 }
 
-func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, r *http.Request) {
-	updateOrderID, err := getIDFromEndpoint(orderID, r)
+func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, request *http.Request) {
+	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.log.Println(err)
 
@@ -206,7 +252,7 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 		return
 	}
 
-	req, err := ioutil.ReadAll(r.Body)
+	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.log.Println(err)
 
@@ -240,33 +286,4 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	}
 
 	responseWriter.WriteHeader(http.StatusOK)
-}
-
-func (e endpointHandler) returnIncompleteOrderList(responseWriter http.ResponseWriter, r *http.Request) {
-	restID, err := getIDFromEndpoint(restaurantID, r)
-	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
-
-	orderList, err := e.serviceInstance.ReturnIncompleteOrderList(restID)
-	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	response := orderListToResponse(orderList)
-
-	err = v1.Respond(response, responseWriter)
-	if err != nil {
-		e.log.Println(err)
-
-		return
-	}
 }

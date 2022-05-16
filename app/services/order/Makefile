@@ -1,3 +1,6 @@
+lint:
+	golangci-lint run
+
 status-check:
 	-curl http://localhost:8083/status
 

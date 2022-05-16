@@ -40,7 +40,7 @@ func (m mockService) UpdateOrder(order domain.Order) (*domain.Order, error) {
 	return &order, nil
 }
 
-func (m mockService) ReturnIncompleteOrderList(_ int) ([]domain.Order, error) {
+func (m mockService) ReturnOrderList(_ domain.SearchParameters) ([]domain.Order, error) {
 	return []domain.Order{defaultOrder}, nil
 }
 
@@ -236,7 +236,7 @@ func TestUpdateOrderStatusEndpoint(t *testing.T) {
 	}
 }
 
-func TestReturnIncompleteOrderListEndpoint(t *testing.T) {
+func TestReturnOrderListEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -244,8 +244,8 @@ func TestReturnIncompleteOrderListEndpoint(t *testing.T) {
 		orderData orderapi.OrderData
 	}{
 		{
-			"Simple create order test",
-			orderapi.OrderData{
+			name: "Simple create order test",
+			orderData: orderapi.OrderData{
 				FromUserID:   0,
 				RestaurantID: 0,
 				OrderItems:   []int{1, 2, 3},
@@ -262,7 +262,7 @@ func TestReturnIncompleteOrderListEndpoint(t *testing.T) {
 			handler := handlers.NewEndpointHandler(mockService{}, logger.NewLogger(os.Stdout, test.name))
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/admin/orders/restaurant=0/incomplete", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/orders", nil)
 
 			handler.ServeHTTP(resp, req)
 
