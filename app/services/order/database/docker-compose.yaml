@@ -8,6 +8,6 @@ services:
       - POSTGRES_PASSWORD=${PASS}
       - POSTGRES_DB=${DB_NAME}
     ports:
-      - '5433:5432'
+      - '5435:5432'
     volumes:
       - ./order.sql:/docker-entrypoint-initdb.d/order.sql
