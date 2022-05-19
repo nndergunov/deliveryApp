@@ -1,28 +1,27 @@
-package services
+package service
 
 import (
-	"courier/internal/handlers/v1/courierhandler"
+	"courier/domain"
 	"database/sql"
 	"fmt"
 	"strconv"
 
-	"courier/internal/models"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	CourierStorage courierhandler.CourierStorage
+	CourierStorage CourierStorage
 	Logger         *logger.Logger
 }
 
 type courierService struct {
-	courierStorage courierhandler.CourierStorage
+	courierStorage CourierStorage
 	logger         *logger.Logger
 }
 
 // NewCourierService constructs a new NewCourierService.
-func NewCourierService(p Params) (courierhandler.CourierService, error) {
+func NewCourierService(p Params) (CourierService, error) {
 	courierServiceItem := &courierService{
 		courierStorage: p.CourierStorage,
 		logger:         p.Logger,
@@ -31,13 +30,13 @@ func NewCourierService(p Params) (courierhandler.CourierService, error) {
 	return courierServiceItem, nil
 }
 
-// InsertNewCourier prepare and send data to courierStorage services.
-func (c *courierService) InsertNewCourier(courier models.NewCourierRequest) (*models.CourierResponse, error) {
+// InsertCourier prepare and send data to courierStorage service.
+func (c *courierService) InsertCourier(courier domain.Courier) (*domain.Courier, error) {
 
 	if len(courier.Username) < 4 || len(courier.Password) < 8 {
 		return nil, fmt.Errorf("username or password don't meet requirement")
 	}
-	foundCourier, err := c.courierStorage.GetCourier(0, courier.Username, "active")
+	foundCourier, err := c.courierStorage.GetCourier(0, courier.Username, "")
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, nil
@@ -69,7 +68,7 @@ func (c *courierService) RemoveCourier(id string) (data any, err error) {
 		return nil, nil
 	}
 	if foundCourier == nil {
-		return nil, fmt.Errorf("wrong id")
+		return nil, fmt.Errorf("active courier with this id not found")
 	}
 
 	if err = c.courierStorage.RemoveCourier(idUint); err != nil {
@@ -81,7 +80,7 @@ func (c *courierService) RemoveCourier(id string) (data any, err error) {
 }
 
 // UpdateCourier prepare data for updating.
-func (c *courierService) UpdateCourier(courier models.UpdateCourierRequest, id string) (*models.CourierResponse, error) {
+func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error) {
 	idUint, err := strconv.ParseUint(string(id), 10, 64)
 	if err != nil {
 		c.logger.Println(err)
@@ -97,7 +96,9 @@ func (c *courierService) UpdateCourier(courier models.UpdateCourierRequest, id s
 		return nil, fmt.Errorf("courier with this username already exist")
 	}
 
-	updatedCourier, err := c.courierStorage.UpdateCourier(courier, idUint)
+	courier.ID = idUint
+
+	updatedCourier, err := c.courierStorage.UpdateCourier(courier)
 	if err != nil && err == sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, fmt.Errorf("couldn't update courier")
@@ -111,7 +112,7 @@ func (c *courierService) UpdateCourier(courier models.UpdateCourierRequest, id s
 }
 
 // UpdateCourierAvailable prepare data for updating.
-func (c *courierService) UpdateCourierAvailable(id, available string) (*models.CourierResponse, error) {
+func (c *courierService) UpdateCourierAvailable(id, available string) (*domain.Courier, error) {
 	idUint, err := strconv.ParseUint(string(id), 10, 64)
 	if err != nil {
 		c.logger.Println(err)
@@ -124,7 +125,7 @@ func (c *courierService) UpdateCourierAvailable(id, available string) (*models.C
 		return nil, fmt.Errorf("wrong available type")
 	}
 
-	updatedCourier, err := c.courierStorage.UpdateCourierAvailabe(idUint, availableBool)
+	updatedCourier, err := c.courierStorage.UpdateCourierAvailable(idUint, availableBool)
 	if err != nil && err == sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, fmt.Errorf("couldn't update courier")
@@ -138,7 +139,7 @@ func (c *courierService) UpdateCourierAvailable(id, available string) (*models.C
 }
 
 // GetAllCourier prepare data to get it from courierStorage.
-func (c *courierService) GetAllCourier() ([]*models.CourierResponse, error) {
+func (c *courierService) GetAllCourier() ([]domain.Courier, error) {
 	allCourier, err := c.courierStorage.GetAllCourier()
 	if err != nil {
 		c.logger.Println(err)
@@ -149,7 +150,7 @@ func (c *courierService) GetAllCourier() ([]*models.CourierResponse, error) {
 }
 
 // GetCourier prepare data to get it from courierStorage.
-func (c *courierService) GetCourier(id string) (data any, err error) {
+func (c *courierService) GetCourier(id string) (*domain.Courier, error) {
 	idUint, err := strconv.ParseUint(string(id), 10, 64)
 	if err != nil {
 		c.logger.Println(err)
@@ -158,7 +159,7 @@ func (c *courierService) GetCourier(id string) (data any, err error) {
 
 	courier, err := c.courierStorage.GetCourier(idUint, "", "active")
 	if err != nil && err == sql.ErrNoRows {
-		return "no courier found", nil
+		return nil, fmt.Errorf("no courier found")
 	}
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)

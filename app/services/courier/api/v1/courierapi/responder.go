@@ -1,25 +1,15 @@
-package handlers
+package courierapi
 
 import (
-	"encoding/json"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
 )
 
 // Respond converts a Go value to JSON and sends it to the client.
-func Respond(w http.ResponseWriter, data any, err error) error {
-
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return nil
-	}
-
-	if data == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return nil
-	}
+func Respond(w http.ResponseWriter, status int, data any) error {
 
 	// Convert the response value to JSON.
-	jsonData, err := json.Marshal(data)
+	jsonData, err := v1.Encode(data)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return err
@@ -29,7 +19,7 @@ func Respond(w http.ResponseWriter, data any, err error) error {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Write the status code to the response.
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(status)
 
 	// Send the result back to the client.
 	if _, err := w.Write(jsonData); err != nil {
