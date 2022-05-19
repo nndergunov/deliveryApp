@@ -1,4 +1,4 @@
-package httpcommunicator
+package orderclient
 
 import (
 	"bytes"
@@ -10,15 +10,15 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 )
 
-type HTTPCommunicator struct {
+type OrderClient struct {
 	orderServiceBaseURL string
 }
 
-func NewHTTPCommunicator(orderServiceBaseURL string) *HTTPCommunicator {
-	return &HTTPCommunicator{orderServiceBaseURL: orderServiceBaseURL}
+func NewOrderClient(orderServiceBaseURL string) *OrderClient {
+	return &OrderClient{orderServiceBaseURL: orderServiceBaseURL}
 }
 
-func (c HTTPCommunicator) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, error) {
+func (c OrderClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, error) {
 	filters := orderapi.OrderFilters{
 		FromRestaurantID: id,
 		Statuses:         nil,

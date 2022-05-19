@@ -12,10 +12,10 @@ type App interface {
 
 // Service is a main service logic.
 type Service struct {
-	communicator Communicator
+	communicator OrdersClient
 }
 
-func NewService(communicator Communicator) *Service {
+func NewService(communicator OrdersClient) *Service {
 	return &Service{
 		communicator: communicator,
 	}
