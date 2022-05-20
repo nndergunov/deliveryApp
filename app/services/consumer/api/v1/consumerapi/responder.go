@@ -1,21 +1,17 @@
-package handlers
+package consumerapi
 
 import (
-	"encoding/json"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
 )
 
 // Respond converts a Go value to JSON and sends it to the client.
-func Respond(w http.ResponseWriter, data any, statusCode int) error {
-	// If there is nothing to marshal then set status code and return.
-	if statusCode == http.StatusNoContent {
-		w.WriteHeader(statusCode)
-		return nil
-	}
+func Respond(w http.ResponseWriter, status int, data any) error {
 
 	// Convert the response value to JSON.
-	jsonData, err := json.Marshal(data)
+	jsonData, err := v1.Encode(data)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 
@@ -23,7 +19,7 @@ func Respond(w http.ResponseWriter, data any, statusCode int) error {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Write the status code to the response.
-	w.WriteHeader(statusCode)
+	w.WriteHeader(status)
 
 	// Send the result back to the client.
 	if _, err := w.Write(jsonData); err != nil {

@@ -1,4 +1,4 @@
-package decoder
+package consumerapi
 
 import (
 	"encoding/json"
@@ -11,10 +11,10 @@ func BindJson(req *http.Request, obj interface{}) error {
 	if req == nil || req.Body == nil {
 		return fmt.Errorf("invalid request")
 	}
-	return decodeJSON(req.Body, obj)
+	return DecodeJSON(req.Body, obj)
 }
 
-func decodeJSON(r io.Reader, obj interface{}) error {
+func DecodeJSON(r io.Reader, obj interface{}) error {
 	decoder := json.NewDecoder(r)
 	decoder.DisallowUnknownFields()
 

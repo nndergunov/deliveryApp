@@ -1,5 +1,5 @@
-// Package database provides support for access the database.
-package database
+// Package db provides support for access the database.
+package db
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -7,8 +7,8 @@ import (
 )
 
 // Open knows how to open a database connection based on the configuration.
-func Open(dbUrl string) (*sqlx.DB, error) {
-	db, err := sqlx.Open("postgres", dbUrl)
+func Open(driver, dbUrl string) (*sqlx.DB, error) {
+	db, err := sqlx.Open(driver, dbUrl)
 	if err != nil {
 		return nil, err
 	}
