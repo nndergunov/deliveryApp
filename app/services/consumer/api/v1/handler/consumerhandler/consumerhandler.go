@@ -49,7 +49,7 @@ func (c *consumerHandler) handlerInit() {
 	c.serveMux.HandleFunc(version+consumer+"/get-all", c.getAllConsumer).Methods(http.MethodGet)
 	c.serveMux.HandleFunc(version+consumer+"/get/{id}", c.getConsumer).Methods(http.MethodGet)
 
-	c.serveMux.HandleFunc(version+consumer+"/update/{id}", c.updateConsumerLocation).Methods(http.MethodPut)
+	c.serveMux.HandleFunc(version+consumerLocation+"/update/{id}", c.updateConsumerLocation).Methods(http.MethodPut)
 }
 
 func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
