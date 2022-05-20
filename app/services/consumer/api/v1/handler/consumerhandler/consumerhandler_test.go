@@ -151,7 +151,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPost, "/v1/consumer/delete?id=1", nil)
+		req := httptest.NewRequest(http.MethodPost, "/v1/consumer/delete/id=1", nil)
 
 		handler.ServeHTTP(resp, req)
 		var respData string
@@ -208,7 +208,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/update?id=1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/update/id=1", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -312,7 +312,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/get?id=1", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/get/id=1", nil)
 
 		handler.ServeHTTP(resp, req)
 

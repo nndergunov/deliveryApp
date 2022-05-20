@@ -44,12 +44,12 @@ func (c *consumerHandler) handlerInit() {
 	const consumerLocation = "/consumer-location"
 
 	c.serveMux.HandleFunc(version+consumer+"/new", c.insertNewConsumer).Methods(http.MethodPost)
-	c.serveMux.HandleFunc(version+consumer+"/delete", c.deleteConsumer).Methods(http.MethodPost)
-	c.serveMux.HandleFunc(version+consumer+"/update", c.updateConsumer).Methods(http.MethodPut)
+	c.serveMux.HandleFunc(version+consumer+"/delete/{id}", c.deleteConsumer).Methods(http.MethodPost)
+	c.serveMux.HandleFunc(version+consumer+"/update/{id}", c.updateConsumer).Methods(http.MethodPut)
 	c.serveMux.HandleFunc(version+consumer+"/get-all", c.getAllConsumer).Methods(http.MethodGet)
-	c.serveMux.HandleFunc(version+consumer+"/get", c.getConsumer).Methods(http.MethodGet)
+	c.serveMux.HandleFunc(version+consumer+"/get/{id}", c.getConsumer).Methods(http.MethodGet)
 
-	c.serveMux.HandleFunc(version+consumer+"/update", c.updateConsumerLocation).Methods(http.MethodPut)
+	c.serveMux.HandleFunc(version+consumer+"/update/{id}", c.updateConsumerLocation).Methods(http.MethodPut)
 }
 
 func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
@@ -91,9 +91,9 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 
 func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request) {
 
-	queryParams := r.URL.Query()
-	id := queryParams["id"][0]
-	if id == "" {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, "id param is not found"); err != nil {
 			c.log.Println(err)
 		}
@@ -114,9 +114,9 @@ func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request
 }
 
 func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request) {
-	queryParams := r.URL.Query()
-	id := queryParams["id"][0]
-	if id == "" {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, "id param is not found"); err != nil {
 			c.log.Println(err)
 		}
@@ -184,9 +184,9 @@ func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request
 }
 
 func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
-	queryParams := r.URL.Query()
-	id := queryParams["id"][0]
-	if id == "" {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, "id param is not found"); err != nil {
 			c.log.Println(err)
 		}
@@ -217,9 +217,9 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http.Request) {
-	queryParams := r.URL.Query()
-	consumer_id := queryParams["consumer_id"][0]
-	if consumer_id == "" {
+	vars := mux.Vars(r)
+	consumerID, ok := vars["id"]
+	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, "consumer_id param is not found"); err != nil {
 			c.log.Println(err)
 		}
@@ -237,7 +237,7 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 
 	consumerLocation := requestToUpdateConsumerLocation(&updateConsumerLocationRequest)
 
-	data, err := c.consumerService.UpdateConsumerLocation(consumerLocation, consumer_id)
+	data, err := c.consumerService.UpdateConsumerLocation(consumerLocation, consumerID)
 
 	if err != nil {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err); err != nil {
