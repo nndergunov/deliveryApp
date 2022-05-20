@@ -29,12 +29,13 @@ func NewConsumerStorage(p Params) (service.ConsumerStorage, error) {
 // InsertConsumer inserts a new consumer into the database.
 func (c consumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
 
-	//find better solution
+	//todo: find better solution do it in one query
 	//create default location for consumer
-	sql1 := `INSERT INTO 
-    			consumer_location 
-    		DEFAULT VALUE 
-    			returning id;`
+	sql1 := `INSERT INTO
+    			consumer_location
+			DEFAULT VALUES
+				returning id;
+`
 
 	var consumerLocationID uint64
 	err := c.db.QueryRow(sql1).Scan(&consumerLocationID)
@@ -44,7 +45,7 @@ func (c consumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consu
 
 	sql2 := `INSERT INTO
 				consumer
-					(firstname, lastname, email, phone, created_at, updated_at, location_id)
+					(firstname, lastname, email, phone, createdat, updatedat, location_id)
 			VALUES($1,$2,$3,$4,now(),now(), $5)
 			returning *`
 
@@ -54,7 +55,7 @@ func (c consumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consu
 		Scan(&newConsumer.ID, &newConsumer.Firstname, &newConsumer.Lastname, &newConsumer.Email, &newConsumer.Phone,
 			&newConsumer.Createdat, &newConsumer.Updatedat, &newConsumer.ConsumerLocation.ID)
 	if err != nil {
-		return &domain.Consumer{}, err
+		return nil, err
 	}
 
 	return &newConsumer, nil
@@ -63,8 +64,7 @@ func (c consumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consu
 func (c consumerStorage) DeleteConsumer(id uint64) error {
 	sql := `DELETE FROM 
 				consumer
-			WHERE id = $1
-			CASCADE 
+			WHERE id = $1;
 	`
 	if _, err := c.db.Exec(sql, id); err != nil {
 		return err
@@ -81,7 +81,7 @@ func (c consumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consu
 			    lastname = $2,
 			  	email = $3,
 			    phone = $4,
-			  	updated_at = now(),
+			  	updatedat = now()
 			WHERE 
 			    id = $5
 			returning *
@@ -95,10 +95,14 @@ func (c consumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consu
 		return nil, err
 	}
 
-	sql2 := `SELECT * FROM
-				consumer_location
-			WHERE 
-			    id = $1
+	sql2 := `SELECT
+   			 	cl.ID, COALESCE (cl.location_alt, ''), COALESCE (cl.location_lat,''), COALESCE (cl.country, ''),
+    			COALESCE (cl.city,''),  COALESCE (cl.region,''), COALESCE (cl.street,''), 
+       			COALESCE (cl.home_number,''), COALESCE (cl.floor,''), COALESCE (cl.door, '')
+			FROM
+    			consumer_location cl
+			WHERE
+        		cl.id = $1
 	`
 	var consumerLocation domain.ConsumerLocation
 	if err := c.db.QueryRow(sql2, updatedConsumer.ConsumerLocation.ID).
@@ -116,9 +120,10 @@ func (c consumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consu
 
 func (c consumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 	sql := `SELECT
-				c.id, c.first_name, c.last_name, c.email, c.phone, c.created_at, c.updated_at,
-       			cl.ID, cl.location_alt, cl.location_lat, cl.country, cl.city, cl.region, cl.street, 
-       			cl.home_number, cl.floor, cl.door	
+				c.id, c.firstname, c.lastname, c.email, c.phone, c.createdat, c.updatedat,
+       			cl.ID, COALESCE (cl.location_alt, ''), COALESCE (cl.location_lat,''), COALESCE (cl.country, ''),
+    			COALESCE (cl.city,''),  COALESCE (cl.region,''), COALESCE (cl.street,''), 
+       			COALESCE (cl.home_number,''), COALESCE (cl.floor,''), COALESCE (cl.door, '')
 			FROM 
 				consumer c
 			INNER JOIN 
@@ -151,32 +156,32 @@ func (c consumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 
 func (c consumerStorage) GetConsumer(id uint64, phone, email string) (*domain.Consumer, error) {
 	sql := `SELECT
-				c.id, c.first_name, c.last_name, c.email, c.phone, c.created_at, c.updated_at,
-       			cl.ID, cl.location_alt, cl.location_lat, cl.country, cl.city, cl.region, cl.street, 
-       			cl.home_number, cl.floor, cl.door	
+				c.id, c.firstname, c.lastname, c.email, c.phone, c.createdat, c.updatedat,
+       			cl.ID, COALESCE (cl.location_alt, ''), COALESCE (cl.location_lat,''), COALESCE (cl.country, ''),
+    			COALESCE (cl.city,''),  COALESCE (cl.region,''), COALESCE (cl.street,''), 
+       			COALESCE (cl.home_number,''), COALESCE (cl.floor,''), COALESCE (cl.door, '')
 			FROM 
 				consumer c
+			INNER JOIN 
+					consumer_location cl
+				ON 
+			    	c.location_id = cl.id
 	`
-	where := `WHERE id = 1=1`
+	where := `WHERE 1=1`
 
 	if id != 0 {
-		where = where + "AND id =" + strconv.FormatInt(int64(id), 10)
+		where = where + "AND c.id = " + strconv.FormatInt(int64(id), 10)
 	}
 
 	if phone != "" {
-		where = where + "AND phone = '" + phone + "'"
+		where = where + "AND c.phone = '" + phone + "'"
 	}
 
 	if email != "" {
-		where = where + "AND email = '" + email + "'"
+		where = where + "AND c.email = '" + email + "'"
 	}
 
 	sql = sql + where
-	sql = sql + `
-				INNER JOIN 
-					consumer_location cl
-				ON 
-			    	c.location_id = cl.id`
 
 	var consumer domain.Consumer
 
@@ -240,10 +245,9 @@ func (c consumerStorage) UpdateConsumerLocation(consumerLocation domain.Consumer
 }
 
 func (c consumerStorage) CleanConsumerLocationTable() error {
-	sql := `DELETE FROM
-				consumer_location
-			WHERE 
-				 1=1
+	sql := `DELETE
+			FROM consumer_location
+			WHERE 1 = 1;
 	`
 	if _, err := c.db.Exec(sql); err != nil {
 		return err

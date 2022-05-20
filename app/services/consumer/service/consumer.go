@@ -77,7 +77,7 @@ func (c *consumerService) DeleteConsumer(id string) (data any, err error) {
 		return nil, err
 	}
 
-	return "Consumer removed", nil
+	return "Consumer deleted", nil
 }
 
 // UpdateConsumer prepare data for updating.
