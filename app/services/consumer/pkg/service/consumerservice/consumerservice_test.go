@@ -67,7 +67,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			}
 
 			if respData.ID < 1 {
-				t.Errorf("ID: Expected: > 1, Got: %v", respData.ID)
+				t.Errorf("ID: Expected : > 1, Got: %v", respData.ID)
 			}
 
 			defer func() {
