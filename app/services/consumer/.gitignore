@@ -2,3 +2,5 @@
 sqlboiler.toml
 conf.json
 commands.txt
+api/.idea
+pkg/storage/consumerstorage/sql/

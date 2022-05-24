@@ -1,10 +1,10 @@
 package main
 
 import (
-	"courier/api/v1/handler/courierhandler"
-	"courier/db"
-	"courier/db/storage"
-	"courier/service"
+	"consumer/api/v1/handler/consumerhandler"
+	"consumer/pkg/db"
+	"consumer/pkg/service/consumerservice"
+	"consumer/pkg/storage/consumerstorage"
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
@@ -39,41 +39,30 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	database, err := db.Open("postgres", configreader.GetString("DB.dev"))
-	if err != nil {
-		return err
-	}
-	defer database.Close()
-
 	log.Println("starting service", "version", configreader.GetString("buildmode"))
 	defer log.Println("shutdown complete")
 
-	newCourierStorage, err := storage.NewCourierStorage(storage.Params{
-		DB: database,
-	})
+	database, err := db.OpenDB("postgres", configreader.GetString("DB.dev"))
 	if err != nil {
 		return err
 	}
+	consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-	courierService, err := service.NewCourierService(service.Params{
-		CourierStorage: newCourierStorage,
-		Logger:         logger.NewLogger(os.Stdout, "courier-service"),
-	})
-	if err != nil {
-		return err
-	}
+	consumerService := consumerservice.NewConsumerService(consumerservice.Params{
+		ConsumerStorage: consumerStorage,
+		Logger:          logger.NewLogger(os.Stdout, "service: ")})
 
-	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-		Logger:         handlerLogger,
-		CourierService: courierService,
+	consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+		Logger:          logger.NewLogger(os.Stdout, "handler"),
+		ConsumerService: consumerService,
 	})
 
 	apiLogger := logger.NewLogger(os.Stdout, "api")
-	serverAPI := api.NewAPI(courierHandler, apiLogger)
+	serverAPI := api.NewAPI(consumerHandler, apiLogger)
 
 	serverLogger := logger.NewLogger(os.Stdout, "server")
 	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
+
 	serviceServer := server.NewServer(serverConfig)
 
 	serverErrors := make(chan interface{})

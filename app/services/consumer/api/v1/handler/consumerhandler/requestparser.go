@@ -2,7 +2,7 @@ package consumerhandler
 
 import (
 	"consumer/api/v1/consumerapi"
-	"consumer/domain"
+	"consumer/pkg/domain"
 )
 
 func requestToNewConsumer(req *consumerapi.NewConsumerRequest) domain.Consumer {
@@ -23,16 +23,30 @@ func requestToUpdateConsumer(req *consumerapi.UpdateConsumerRequest) domain.Cons
 	}
 }
 
+func requestToNewConsumerLocation(req *consumerapi.NewConsumerLocationRequest) domain.ConsumerLocation {
+	return domain.ConsumerLocation{
+		Altitude:   req.Altitude,
+		Longitude:  req.Longitude,
+		Country:    req.Country,
+		City:       req.City,
+		Region:     req.Region,
+		Street:     req.Street,
+		HomeNumber: req.HomeNumber,
+		Floor:      req.Floor,
+		Door:       req.Door,
+	}
+}
+
 func requestToUpdateConsumerLocation(req *consumerapi.UpdateConsumerLocationRequest) domain.ConsumerLocation {
 	return domain.ConsumerLocation{
-		LocationAlt: req.LocationAlt,
-		LocationLat: req.LocationLat,
-		Country:     req.Country,
-		City:        req.City,
-		Region:      req.Region,
-		Street:      req.Street,
-		HomeNumber:  req.HomeNumber,
-		Floor:       req.Floor,
-		Door:        req.Door,
+		Altitude:   req.Altitude,
+		Longitude:  req.Longitude,
+		Country:    req.Country,
+		City:       req.City,
+		Region:     req.Region,
+		Street:     req.Street,
+		HomeNumber: req.HomeNumber,
+		Floor:      req.Floor,
+		Door:       req.Door,
 	}
 }

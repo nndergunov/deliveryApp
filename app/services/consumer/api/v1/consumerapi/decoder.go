@@ -16,7 +16,6 @@ func BindJson(req *http.Request, obj interface{}) error {
 
 func DecodeJSON(r io.Reader, obj interface{}) error {
 	decoder := json.NewDecoder(r)
-	decoder.DisallowUnknownFields()
 
 	if err := decoder.Decode(obj); err != nil {
 		return err

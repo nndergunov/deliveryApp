@@ -2,7 +2,7 @@ package consumerhandler
 
 import (
 	"consumer/api/v1/consumerapi"
-	"consumer/domain"
+	"consumer/pkg/domain"
 )
 
 func consumerToResponse(consumer domain.Consumer) consumerapi.ConsumerResponse {
@@ -12,60 +12,39 @@ func consumerToResponse(consumer domain.Consumer) consumerapi.ConsumerResponse {
 		Lastname:  consumer.Lastname,
 		Email:     consumer.Email,
 		Phone:     consumer.Phone,
-		ConsumerLocation: consumerapi.ConsumerLocationResponse{
-			LocationAlt: consumer.ConsumerLocation.LocationAlt,
-			LocationLat: consumer.ConsumerLocation.LocationLat,
-			Country:     consumer.ConsumerLocation.Country,
-			City:        consumer.ConsumerLocation.City,
-			Region:      consumer.ConsumerLocation.Region,
-			Street:      consumer.ConsumerLocation.Street,
-			HomeNumber:  consumer.ConsumerLocation.HomeNumber,
-			Floor:       consumer.ConsumerLocation.Floor,
-			Door:        consumer.ConsumerLocation.Door,
-		},
 	}
 }
 
-func consumerListToResponse(consumerList []domain.Consumer) consumerapi.ReturnConsumerList {
+func consumerListToResponse(consumerList []domain.Consumer) consumerapi.ReturnConsumerResponseList {
 	consumerResponseList := make([]consumerapi.ConsumerResponse, 0, len(consumerList))
 
 	for _, consumer := range consumerList {
-		courierResponse := consumerapi.ConsumerResponse{
+		consumerResponse := consumerapi.ConsumerResponse{
 			ID:        consumer.ID,
 			Firstname: consumer.Firstname,
 			Lastname:  consumer.Lastname,
 			Email:     consumer.Email,
 			Phone:     consumer.Phone,
-			ConsumerLocation: consumerapi.ConsumerLocationResponse{
-				LocationAlt: consumer.ConsumerLocation.LocationAlt,
-				LocationLat: consumer.ConsumerLocation.LocationLat,
-				Country:     consumer.ConsumerLocation.Country,
-				City:        consumer.ConsumerLocation.City,
-				Region:      consumer.ConsumerLocation.Region,
-				Street:      consumer.ConsumerLocation.Street,
-				HomeNumber:  consumer.ConsumerLocation.HomeNumber,
-				Floor:       consumer.ConsumerLocation.Floor,
-				Door:        consumer.ConsumerLocation.Door,
-			},
 		}
 
-		consumerResponseList = append(consumerResponseList, courierResponse)
+		consumerResponseList = append(consumerResponseList, consumerResponse)
 	}
-	return consumerapi.ReturnConsumerList{
-		ConsumerList: consumerResponseList,
+	return consumerapi.ReturnConsumerResponseList{
+		ConsumerResponseList: consumerResponseList,
 	}
 }
 
 func consumerLocationToResponse(consumerLocation domain.ConsumerLocation) consumerapi.ConsumerLocationResponse {
 	return consumerapi.ConsumerLocationResponse{
-		LocationAlt: consumerLocation.LocationAlt,
-		LocationLat: consumerLocation.LocationLat,
-		Country:     consumerLocation.Country,
-		City:        consumerLocation.City,
-		Region:      consumerLocation.Region,
-		Street:      consumerLocation.Street,
-		HomeNumber:  consumerLocation.HomeNumber,
-		Floor:       consumerLocation.Floor,
-		Door:        consumerLocation.Door,
+		ConsumerID: consumerLocation.ConsumerID,
+		Altitude:   consumerLocation.Altitude,
+		Longitude:  consumerLocation.Longitude,
+		Country:    consumerLocation.Country,
+		City:       consumerLocation.City,
+		Region:     consumerLocation.Region,
+		Street:     consumerLocation.Street,
+		HomeNumber: consumerLocation.HomeNumber,
+		Floor:      consumerLocation.Floor,
+		Door:       consumerLocation.Door,
 	}
 }
