@@ -5,7 +5,7 @@ import (
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/subscriber"
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 const hostURL = "amqp://guest:guest@localhost:5672/"

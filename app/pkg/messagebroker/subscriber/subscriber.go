@@ -3,7 +3,7 @@ package subscriber
 import (
 	"fmt"
 
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Subscriber struct {
