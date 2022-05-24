@@ -70,7 +70,7 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 
 func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, request *http.Request) {
 	parameters := domain.SearchParameters{
-		FromRestaurantID: -1,
+		FromRestaurantID: nil,
 		Statuses:         nil,
 		ExcludeStatuses:  nil,
 	}

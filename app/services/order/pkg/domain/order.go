@@ -1,7 +1,7 @@
 package domain
 
 type SearchParameters struct {
-	FromRestaurantID int
+	FromRestaurantID *int
 	Statuses         []string
 	ExcludeStatuses  []string
 }

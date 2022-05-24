@@ -51,7 +51,7 @@ func (d Database) GetAllOrders(params *domain.SearchParameters) ([]domain.Order,
 	var mods []qm.QueryMod
 
 	if params != nil {
-		if params.FromRestaurantID != -1 {
+		if params.FromRestaurantID != nil {
 			mods = append(mods, qm.Where("restaurant_id=?", params.FromRestaurantID))
 		}
 
