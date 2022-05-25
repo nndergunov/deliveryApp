@@ -1,6 +1,5 @@
 .idea
-sqlboiler.toml
-conf.json
-commands.txt
+config.yaml
 api/.idea
-pkg/storage/consumerstorage/sql/
+sql
+notes.txt

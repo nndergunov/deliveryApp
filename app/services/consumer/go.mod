@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.5
 	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220516080600-4954ce51ac52
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220503132556-de9b4711faca

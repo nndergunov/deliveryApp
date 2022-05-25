@@ -5,7 +5,9 @@ import (
 	"consumer/api/v1/consumerapi"
 	"consumer/pkg/service/consumerservice"
 	"github.com/gorilla/mux"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"io"
 	"net/http"
 )
 
@@ -39,15 +41,46 @@ func NewConsumerHandler(p Params) *mux.Router {
 // NewConsumerHandler creates an consumerHandler value that handle a set of routes for the application.
 func (c *consumerHandler) handlerInit() {
 
+	c.serveMux.HandleFunc("/status", c.insertNewConsumer).Methods(http.MethodPost)
+
 	c.serveMux.HandleFunc("/v1/consumer", c.insertNewConsumer).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/v1/consumer/all", c.getAllConsumer).Methods(http.MethodGet)
 	c.serveMux.HandleFunc("/v1/consumer/{consumer_id}", c.deleteConsumer).Methods(http.MethodDelete)
 	c.serveMux.HandleFunc("/v1/consumer/{consumer_id}", c.updateConsumer).Methods(http.MethodPut)
 	c.serveMux.HandleFunc("/v1/consumer/{consumer_id}", c.getConsumer).Methods(http.MethodGet)
-	c.serveMux.HandleFunc("/v1/consumer/all/", c.getAllConsumer).Methods(http.MethodGet)
 
 	c.serveMux.HandleFunc("/v1/consumer/location/{consumer_id}", c.insertNewConsumerLocation).Methods(http.MethodPost)
 	c.serveMux.HandleFunc("/v1/consumer/location/{consumer_id}", c.updateConsumerLocation).Methods(http.MethodPut)
 	c.serveMux.HandleFunc("/v1/consumer/location/{consumer_id}", c.getConsumerLocation).Methods(http.MethodGet)
+}
+
+func (c *consumerHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+	data := v1.Status{
+		ServiceName: "consumer",
+		IsUp:        "up",
+	}
+
+	status, err := v1.EncodeIndent(data, "", " ")
+	if err != nil {
+		c.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	_, err = io.WriteString(responseWriter, string(status))
+	if err != nil {
+		c.log.Println(err)
+
+		responseWriter.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	responseWriter.WriteHeader(http.StatusOK)
+
+	c.log.Printf("gave status %s", data.IsUp)
 }
 
 func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
@@ -65,7 +98,8 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 
 	data, err := c.consumerService.InsertConsumer(consumer)
 	if err != nil {
-		if err := consumerapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		c.log.Println(err)
+		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -237,7 +271,8 @@ func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *h
 
 	data, err := c.consumerService.InsertConsumerLocation(consumerLocation, consumerID)
 	if err != nil {
-		if err := consumerapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		c.log.Println(err)
+		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -283,7 +318,7 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 	data, err := c.consumerService.UpdateConsumerLocation(consumerLocation, consumerID)
 
 	if err != nil {
-		if err := consumerapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return

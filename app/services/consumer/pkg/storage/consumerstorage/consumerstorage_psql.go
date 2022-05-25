@@ -116,15 +116,15 @@ func (c ConsumerStorage) GetConsumer(id uint64, phone, email string) (*domain.Co
 	where := `WHERE 1=1`
 
 	if id != 0 {
-		where = where + "AND id = " + strconv.FormatInt(int64(id), 10)
+		where = where + " AND id = " + strconv.FormatInt(int64(id), 10)
 	}
 
 	if phone != "" {
-		where = where + "AND phone = '" + phone + "'"
+		where = where + " AND phone = '" + phone + "'"
 	}
 
 	if email != "" {
-		where = where + "AND email = '" + email + "'"
+		where = where + " AND email = '" + email + "'"
 	}
 
 	sql = sql + where

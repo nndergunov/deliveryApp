@@ -33,7 +33,6 @@ func TestInsertConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -51,7 +50,6 @@ func TestInsertConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -62,7 +60,6 @@ func TestInsertConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer consumerStorage.DeleteConsumer(insertedConsumer.ID)
 
 			if insertedConsumer == nil {
 				t.Errorf("inserted Consumer: Expected: %s, Got: %s", "not nill", "nil")
@@ -82,6 +79,15 @@ func TestInsertConsumer(t *testing.T) {
 			if insertedConsumer.Phone != test.consumer.Phone {
 				t.Errorf("inserted Consumer Phone: Expected: %s, Got: %s", test.consumer.Phone, insertedConsumer.Phone)
 			}
+
+			if err := consumerStorage.DeleteConsumer(insertedConsumer.ID); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
+			}
+
 		})
 	}
 }
@@ -106,7 +112,6 @@ func TestDeleteConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -124,7 +129,6 @@ func TestDeleteConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -135,7 +139,6 @@ func TestDeleteConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer consumerStorage.DeleteConsumer(insertedConsumer.ID)
 
 			if insertedConsumer == nil {
 				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
@@ -153,6 +156,10 @@ func TestDeleteConsumer(t *testing.T) {
 
 			if deletedConsumer != nil {
 				t.Errorf("deleted Consumer: Expected: %v, Got: %v", nil, deletedConsumer)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
 			}
 
 		})
@@ -186,7 +193,6 @@ func TestUpdateConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -204,7 +210,6 @@ func TestUpdateConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -215,8 +220,6 @@ func TestUpdateConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			defer consumerStorage.DeleteConsumer(insertedConsumer.ID)
 
 			if insertedConsumer == nil {
 				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
@@ -238,6 +241,15 @@ func TestUpdateConsumer(t *testing.T) {
 
 			if updatedConsumer.Email != test.updateConsumer.Email {
 				t.Errorf("updatedConsumer Email: Expected: %s, Got: %s", test.updateConsumer.Email, updatedConsumer.Email)
+			}
+
+			err = consumerStorage.DeleteConsumer(insertedConsumer.ID)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
 			}
 		})
 	}
@@ -264,7 +276,6 @@ func TestGetAllConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -282,14 +293,11 @@ func TestGetAllConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			defer consumerStorage.CleanConsumerTable()
 
 			for _, initialConsumer := range test.initialConsumerList {
 				insertedConsumer, err := consumerStorage.InsertConsumer(initialConsumer)
@@ -299,7 +307,6 @@ func TestGetAllConsumer(t *testing.T) {
 				if insertedConsumer == nil {
 					t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
 				}
-
 			}
 
 			allConsumer, err := consumerStorage.GetAllConsumer()
@@ -311,6 +318,13 @@ func TestGetAllConsumer(t *testing.T) {
 				t.Errorf("GetaAllConsumer len: Expected: %v, Got: %v", len(test.initialConsumerList), len(allConsumer))
 			}
 
+			if err = consumerStorage.CleanConsumerTable(); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -335,7 +349,6 @@ func TestGetConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -353,7 +366,6 @@ func TestGetConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -364,8 +376,6 @@ func TestGetConsumer(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			defer consumerStorage.DeleteConsumer(insertedConsumer.ID)
 
 			if insertedConsumer == nil {
 				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
@@ -379,14 +389,25 @@ func TestGetConsumer(t *testing.T) {
 			if gotConsumer.Firstname != test.initialConsumer.Firstname {
 				t.Errorf("get consumer Firstname: Expected: %s, Got: %s", test.initialConsumer.Firstname, gotConsumer.Firstname)
 			}
+
 			if gotConsumer.Lastname != test.initialConsumer.Lastname {
 				t.Errorf("get consumer Lastname: Expected: %s, Got: %s", test.initialConsumer.Lastname, gotConsumer.Lastname)
 			}
+
 			if gotConsumer.Phone != test.initialConsumer.Phone {
 				t.Errorf("get consumer Phone: Expected: %s, Got: %s", test.initialConsumer.Phone, gotConsumer.Phone)
 			}
+
 			if gotConsumer.Email != test.initialConsumer.Email {
 				t.Errorf("get consumer Email: Expected: %s, Got: %s", test.initialConsumer.Email, gotConsumer.Email)
+			}
+
+			if err = consumerStorage.DeleteConsumer(insertedConsumer.ID); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
 			}
 		})
 	}
@@ -418,7 +439,6 @@ func TestInsertConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -436,7 +456,6 @@ func TestInsertConsumerLocation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -447,8 +466,6 @@ func TestInsertConsumerLocation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			defer consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID)
 
 			if insertedConsumerLocation == nil {
 				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
@@ -480,6 +497,14 @@ func TestInsertConsumerLocation(t *testing.T) {
 
 			if insertedConsumerLocation.Region != test.consumerLocation.Region {
 				t.Errorf("insertedConsumerLocation Region: Expected: %v, Got: %v", test.consumerLocation.Region, insertedConsumerLocation.Region)
+			}
+
+			if err = consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
 			}
 		})
 	}
@@ -525,7 +550,6 @@ func TestUpdateConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -543,7 +567,6 @@ func TestUpdateConsumerLocation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -554,8 +577,6 @@ func TestUpdateConsumerLocation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			defer consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID)
 
 			if insertedConsumerLocation == nil {
 				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
@@ -593,6 +614,14 @@ func TestUpdateConsumerLocation(t *testing.T) {
 			if updatedConsumerLocation.Region != test.updateConsumerLocation.Region {
 				t.Errorf("updatedConsumerLocation Region: Expected: %v, Got: %v", test.updateConsumerLocation.Region, updatedConsumerLocation.Region)
 			}
+
+			if err = consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -623,7 +652,6 @@ func TestGetConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
 
 			line, err := os.Getwd()
 			if err != nil {
@@ -641,7 +669,6 @@ func TestGetConsumerLocation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer database.Close()
 
 			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 			if err != nil {
@@ -652,8 +679,6 @@ func TestGetConsumerLocation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			defer consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID)
 
 			if insertedConsumerLocation == nil {
 				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
@@ -690,6 +715,14 @@ func TestGetConsumerLocation(t *testing.T) {
 
 			if getConsumerLocation.Region != test.consumerLocation.Region {
 				t.Errorf("getConsumerLocation Region: Expected: %v, Got: %v", test.consumerLocation.Region, getConsumerLocation.Region)
+			}
+
+			if err = consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
 			}
 		})
 	}

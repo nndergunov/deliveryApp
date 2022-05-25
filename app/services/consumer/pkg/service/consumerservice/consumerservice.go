@@ -19,8 +19,8 @@ type ConsumerService interface {
 	GetConsumer(id string) (*domain.Consumer, error)
 
 	InsertConsumerLocation(consumer domain.ConsumerLocation, id string) (*domain.ConsumerLocation, error)
-	GetConsumerLocation(id string) (*domain.ConsumerLocation, error)
 	UpdateConsumerLocation(consumer domain.ConsumerLocation, id string) (*domain.ConsumerLocation, error)
+	GetConsumerLocation(id string) (*domain.ConsumerLocation, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -179,7 +179,7 @@ func (c *consumerService) InsertConsumerLocation(consumerLocation domain.Consume
 		c.logger.Println(err)
 		return nil, nil
 	}
-	if foundConsumer != nil {
+	if foundConsumer == nil {
 		return nil, fmt.Errorf("couldn't find consumer with this id")
 	}
 
@@ -188,6 +188,9 @@ func (c *consumerService) InsertConsumerLocation(consumerLocation domain.Consume
 		c.logger.Println(err)
 		return nil, nil
 	}
+
+	consumerLocation.ConsumerID = idUint
+
 	if foundConsumerLocation != nil {
 		return nil, fmt.Errorf("consumer location already exist: please update old one")
 	}
@@ -199,28 +202,6 @@ func (c *consumerService) InsertConsumerLocation(consumerLocation domain.Consume
 	}
 
 	return newConsumerLocation, nil
-}
-
-// GetConsumerLocation prepare data to get it from customerStorage.
-func (c *consumerService) GetConsumerLocation(id string) (*domain.ConsumerLocation, error) {
-	idUint, err := strconv.ParseUint(string(id), 10, 64)
-	if err != nil {
-		c.logger.Println(err)
-		return nil, fmt.Errorf("wrong consumer_id type")
-	}
-
-	consumerLocation, err := c.consumerStorage.GetConsumerLocation(idUint)
-	if err != nil && err == sql.ErrNoRows {
-		return &domain.ConsumerLocation{}, nil
-	}
-
-	if err != nil && err != sql.ErrNoRows {
-		c.logger.Println(err)
-		return nil, nil
-	}
-
-	return consumerLocation, nil
-
 }
 
 // UpdateConsumerLocation prepare data for updating.
@@ -245,4 +226,26 @@ func (c *consumerService) UpdateConsumerLocation(consumerLocation domain.Consume
 	}
 
 	return updatedConsumerLocation, nil
+}
+
+// GetConsumerLocation prepare data to get it from customerStorage.
+func (c *consumerService) GetConsumerLocation(id string) (*domain.ConsumerLocation, error) {
+	idUint, err := strconv.ParseUint(string(id), 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, fmt.Errorf("wrong consumer_id type")
+	}
+
+	consumerLocation, err := c.consumerStorage.GetConsumerLocation(idUint)
+	if err != nil && err == sql.ErrNoRows {
+		return &domain.ConsumerLocation{}, nil
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		c.logger.Println(err)
+		return nil, nil
+	}
+
+	return consumerLocation, nil
+
 }

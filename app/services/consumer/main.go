@@ -20,7 +20,7 @@ const configFile = "/config.yaml"
 func main() {
 
 	// Construct the application logger.
-	log := logger.NewLogger(os.Stdout, "courier-api")
+	log := logger.NewLogger(os.Stdout, "main: ")
 
 	// Perform the startup and shutdown sequence.
 	if err := run(log); err != nil {
@@ -53,14 +53,14 @@ func run(log *logger.Logger) error {
 		Logger:          logger.NewLogger(os.Stdout, "service: ")})
 
 	consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
-		Logger:          logger.NewLogger(os.Stdout, "handler"),
+		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
 		ConsumerService: consumerService,
 	})
 
-	apiLogger := logger.NewLogger(os.Stdout, "api")
+	apiLogger := logger.NewLogger(os.Stdout, "api: ")
 	serverAPI := api.NewAPI(consumerHandler, apiLogger)
 
-	serverLogger := logger.NewLogger(os.Stdout, "server")
+	serverLogger := logger.NewLogger(os.Stdout, "server: ")
 	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
 
 	serviceServer := server.NewServer(serverConfig)

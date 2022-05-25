@@ -265,7 +265,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/all/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/all", nil)
 
 		handler.ServeHTTP(resp, req)
 
