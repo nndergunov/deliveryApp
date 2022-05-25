@@ -15,17 +15,17 @@ func TestSubscriber(t *testing.T) {
 
 	tests := []struct {
 		name       string
-		postThemes []string
+		postTopics []string
 		postData   []string
 	}{
 		{
 			name:       "order posted mock",
-			postThemes: []string{"orders"},
+			postTopics: []string{"orders"},
 			postData:   []string{"new order posted"},
 		},
 		{
-			name:       "receiving from two themes",
-			postThemes: []string{"theme1", "theme2"},
+			name:       "receiving from two topics",
+			postTopics: []string{"topic1", "topic2"},
 			postData:   []string{"data1", "data2"},
 		},
 	}
@@ -39,13 +39,13 @@ func TestSubscriber(t *testing.T) {
 			msgChan := make(chan []byte)
 
 			// creating listener, main test subject
-			listener, err := subscriber.NewSubscriber(hostURL, msgChan)
+			listener, err := subscriber.NewEventSubscriber(hostURL, msgChan)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			for _, theme := range test.postThemes {
-				err = listener.SubscribeToTheme(theme)
+			for _, topic := range test.postTopics {
+				err = listener.SubscribeToTopic(topic)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -61,8 +61,8 @@ func TestSubscriber(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			for id, theme := range test.postThemes {
-				err = publishChan.ExchangeDeclare(theme, "fanout", true, false, false, false, nil)
+			for id, topic := range test.postTopics {
+				err = publishChan.ExchangeDeclare(topic, "fanout", true, false, false, false, nil)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -77,7 +77,7 @@ func TestSubscriber(t *testing.T) {
 				pub.ContentType = "text/plain"
 				pub.Body = body
 
-				err = publishChan.Publish(theme, "", false, false, pub)
+				err = publishChan.Publish(topic, "", false, false, pub)
 				if err != nil {
 					t.Fatal(err)
 				}

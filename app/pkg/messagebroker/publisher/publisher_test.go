@@ -63,7 +63,7 @@ func TestNewPublisher(t *testing.T) {
 			}
 
 			// creating publisher, the main test subject
-			publish, err := publisher.NewPublisher(hostURL)
+			publish, err := publisher.NewEventPublisher(hostURL)
 			if err != nil {
 				t.Fatal(err)
 			}

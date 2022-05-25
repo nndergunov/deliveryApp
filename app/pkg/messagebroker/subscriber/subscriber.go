@@ -6,13 +6,17 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Subscriber struct {
+type Subscriber interface {
+	SubscribeToTopic(topic string) error
+}
+
+type EventSubscriber struct {
 	conn    *amqp.Connection
 	ch      *amqp.Channel
 	msgChan chan []byte
 }
 
-func NewSubscriber(url string, msgChan chan []byte) (*Subscriber, error) {
+func NewEventSubscriber(url string, msgChan chan []byte) (*EventSubscriber, error) {
 	conn, err := amqp.Dial(url)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to messagebroker: %w", err)
@@ -23,16 +27,16 @@ func NewSubscriber(url string, msgChan chan []byte) (*Subscriber, error) {
 		return nil, fmt.Errorf("opening channel: %w", err)
 	}
 
-	return &Subscriber{
+	return &EventSubscriber{
 		conn:    conn,
 		ch:      ch,
 		msgChan: msgChan,
 	}, nil
 }
 
-func (s Subscriber) SubscribeToTheme(theme string) error {
+func (s EventSubscriber) SubscribeToTopic(topic string) error {
 	err := s.ch.ExchangeDeclare(
-		theme,
+		topic,
 		"fanout",
 		true,
 		false,
@@ -59,7 +63,7 @@ func (s Subscriber) SubscribeToTheme(theme string) error {
 	err = s.ch.QueueBind(
 		queue.Name,
 		"",
-		theme,
+		topic,
 		false,
 		nil,
 	)
