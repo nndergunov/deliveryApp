@@ -1,9 +1,9 @@
 package db_test
 
 import (
-	"courier/db"
-	"courier/db/storage"
-	"courier/domain"
+	"courier/pkg/db"
+	"courier/pkg/domain"
+	"courier/pkg/storage/courierstorage"
 	"database/sql"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"os"
@@ -55,7 +55,7 @@ func TestInsertCourier(t *testing.T) {
 			}
 			defer db.Close()
 
-			database, err := storage.NewCourierStorage(storage.Params{DB: db})
+			database, err := courierstorage.NewCourierStorage(courierstorage.Params{DB: db})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -119,7 +119,7 @@ func TestRemoveCourier(t *testing.T) {
 			}
 			defer db.Close()
 
-			database, err := storage.NewCourierStorage(storage.Params{DB: db})
+			database, err := courierstorage.NewCourierStorage(courierstorage.Params{DB: db})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -201,7 +201,7 @@ func TestUpdateCourier(t *testing.T) {
 			}
 			defer db.Close()
 
-			database, err := storage.NewCourierStorage(storage.Params{DB: db})
+			database, err := courierstorage.NewCourierStorage(courierstorage.Params{DB: db})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -282,7 +282,7 @@ func TestUpdateCourierAvailable(t *testing.T) {
 			}
 			defer db.Close()
 
-			database, err := storage.NewCourierStorage(storage.Params{DB: db})
+			database, err := courierstorage.NewCourierStorage(courierstorage.Params{DB: db})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -352,7 +352,7 @@ func TestGetAllCourier(t *testing.T) {
 			}
 			defer db.Close()
 
-			database, err := storage.NewCourierStorage(storage.Params{DB: db})
+			database, err := courierstorage.NewCourierStorage(courierstorage.Params{DB: db})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -423,7 +423,7 @@ func TestGetCourier(t *testing.T) {
 			}
 			defer db.Close()
 
-			database, err := storage.NewCourierStorage(storage.Params{DB: db})
+			database, err := courierstorage.NewCourierStorage(courierstorage.Params{DB: db})
 			if err != nil {
 				t.Fatal(err)
 			}

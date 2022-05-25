@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"courier/api/v1/courierapi"
 	"courier/api/v1/handler/courierhandler"
-	"courier/domain"
+	"courier/pkg/domain"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"

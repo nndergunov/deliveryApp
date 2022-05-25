@@ -3,7 +3,7 @@ package courierhandler
 
 import (
 	"courier/api/v1/courierapi"
-	"courier/service"
+	"courier/pkg/service/courierservice"
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
@@ -11,14 +11,14 @@ import (
 
 type Params struct {
 	Logger         *logger.Logger
-	CourierService service.CourierService
+	CourierService courierservice.CourierService
 }
 
 // courierHandler is the entrypoint into our application
 type courierHandler struct {
 	serveMux       *mux.Router
 	log            *logger.Logger
-	courierService service.CourierService
+	courierService courierservice.CourierService
 }
 
 // NewCourierHandler returns new http multiplexer with configured endpoints.

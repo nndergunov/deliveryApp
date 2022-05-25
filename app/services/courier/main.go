@@ -2,9 +2,9 @@ package main
 
 import (
 	"courier/api/v1/handler/courierhandler"
-	"courier/db"
-	"courier/db/storage"
-	"courier/service"
+	"courier/pkg/db"
+	"courier/pkg/service/courierservice"
+	"courier/pkg/storage/courierstorage"
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
@@ -48,14 +48,14 @@ func run(log *logger.Logger) error {
 	log.Println("starting service", "version", configreader.GetString("buildmode"))
 	defer log.Println("shutdown complete")
 
-	newCourierStorage, err := storage.NewCourierStorage(storage.Params{
+	newCourierStorage, err := courierstorage.NewCourierStorage(courierstorage.Params{
 		DB: database,
 	})
 	if err != nil {
 		return err
 	}
 
-	courierService, err := service.NewCourierService(service.Params{
+	courierService, err := courierservice.NewCourierService(courierservice.Params{
 		CourierStorage: newCourierStorage,
 		Logger:         logger.NewLogger(os.Stdout, "courier-service"),
 	})

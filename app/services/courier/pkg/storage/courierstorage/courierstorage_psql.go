@@ -1,8 +1,8 @@
-package storage
+package courierstorage
 
 import (
-	"courier/domain"
-	"courier/service"
+	"courier/pkg/domain"
+	"courier/pkg/service"
 	"fmt"
 	"strconv"
 

@@ -2,7 +2,7 @@ package courierhandler
 
 import (
 	"courier/api/v1/courierapi"
-	"courier/domain"
+	"courier/pkg/domain"
 )
 
 func requestToNewCourier(req *courierapi.NewCourierRequest) domain.Courier {

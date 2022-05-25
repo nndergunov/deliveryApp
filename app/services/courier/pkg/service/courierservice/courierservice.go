@@ -1,7 +1,8 @@
-package service
+package courierservice
 
 import (
-	"courier/domain"
+	"courier/pkg/domain"
+	"courier/pkg/service"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -9,14 +10,24 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
+// CourierService is the interface for the user service.
+type CourierService interface {
+	InsertCourier(courier domain.Courier) (*domain.Courier, error)
+	RemoveCourier(id string) (data any, err error)
+	UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error)
+	UpdateCourierAvailable(id, available string) (*domain.Courier, error)
+	GetAllCourier() ([]domain.Courier, error)
+	GetCourier(id string) (*domain.Courier, error)
+}
+
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	CourierStorage CourierStorage
+	CourierStorage service.CourierStorage
 	Logger         *logger.Logger
 }
 
 type courierService struct {
-	courierStorage CourierStorage
+	courierStorage service.CourierStorage
 	logger         *logger.Logger
 }
 
