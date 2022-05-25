@@ -7,12 +7,16 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Publisher struct {
+type Publisher interface {
+	Publish(theme string, data []byte) error
+}
+
+type EventPublisher struct {
 	conn *amqp.Connection
 	ch   *amqp.Channel
 }
 
-func NewPublisher(url string) (*Publisher, error) {
+func NewEventPublisher(url string) (*EventPublisher, error) {
 	conn, err := amqp.Dial(url)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to messagebroker: %w", err)
@@ -23,15 +27,15 @@ func NewPublisher(url string) (*Publisher, error) {
 		return nil, fmt.Errorf("opening channel: %w", err)
 	}
 
-	return &Publisher{
+	return &EventPublisher{
 		conn: conn,
 		ch:   ch,
 	}, nil
 }
 
-func (p Publisher) Publish(theme string, data []byte) error {
+func (p EventPublisher) Publish(topic string, data []byte) error {
 	err := p.ch.ExchangeDeclare(
-		theme,
+		topic,
 		"fanout",
 		true,
 		false,
@@ -44,7 +48,7 @@ func (p Publisher) Publish(theme string, data []byte) error {
 	}
 
 	err = p.ch.Publish(
-		theme,
+		topic,
 		"",
 		false,
 		false,
