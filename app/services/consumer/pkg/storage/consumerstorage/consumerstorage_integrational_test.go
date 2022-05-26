@@ -149,7 +149,7 @@ func TestDeleteConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			deletedConsumer, err := consumerStorage.GetConsumer(insertedConsumer.ID, "", "")
+			deletedConsumer, err := consumerStorage.GetConsumerByID(insertedConsumer.ID)
 			if err != nil && err != sql.ErrNoRows {
 				t.Fatal(err)
 			}
@@ -381,7 +381,7 @@ func TestGetConsumer(t *testing.T) {
 				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			gotConsumer, err := consumerStorage.GetConsumer(insertedConsumer.ID, "", "")
+			gotConsumer, err := consumerStorage.GetConsumerByID(insertedConsumer.ID)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -97,7 +97,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
 				Logger:          log,
 				ConsumerService: mockService,
 			})
@@ -110,7 +110,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/consumer", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			consumerHandler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
@@ -204,7 +204,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
 				Logger:          log,
 				ConsumerService: mockService,
 			})
@@ -217,7 +217,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/1", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			consumerHandler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
@@ -386,7 +386,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
 				Logger:          log,
 				ConsumerService: mockService,
 			})
@@ -399,7 +399,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/consumer/location/1", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			consumerHandler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
@@ -469,7 +469,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
 				Logger:          log,
 				ConsumerService: mockService,
 			})
@@ -482,7 +482,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/location/1", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			consumerHandler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
@@ -540,7 +540,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
 				Logger:          log,
 				ConsumerService: mockService,
 			})
@@ -548,7 +548,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodGet, "/v1/consumer/location/1", nil)
 
-			courierHandler.ServeHTTP(resp, req)
+			consumerHandler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)

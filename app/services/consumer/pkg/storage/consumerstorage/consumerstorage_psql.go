@@ -107,32 +107,50 @@ func (c ConsumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 	return allConsumer, nil
 }
 
-func (c ConsumerStorage) GetConsumer(id uint64, phone, email string) (*domain.Consumer, error) {
+func (c ConsumerStorage) GetConsumerByID(id uint64) (*domain.Consumer, error) {
 	sql := `SELECT
 				id, firstname, lastname, email, phone, created_at, updated_at
 			FROM 
 				consumer 
+			WHERE id = $1
 	`
-	where := `WHERE 1=1`
+	var consumer domain.Consumer
 
-	if id != 0 {
-		where = where + " AND id = " + strconv.FormatInt(int64(id), 10)
+	if err := c.db.QueryRow(sql, id).Scan(&consumer.ID, &consumer.Firstname, &consumer.Lastname,
+		&consumer.Email, &consumer.Phone, &consumer.CreatedAt, &consumer.UpdatedAt); err != nil {
+		return nil, err
 	}
 
-	if phone != "" {
-		where = where + " AND phone = '" + phone + "'"
+	return &consumer, nil
+}
+
+func (c ConsumerStorage) GetConsumerDuplicateByParam(param domain.SearchParam) (*domain.Consumer, error) {
+	sql := `SELECT * FROM 
+				consumer
+	`
+	where := "WHERE 1=1"
+
+	id := param["id"]
+	if id != "" {
+		where = where + " AND id != " + id + ""
 	}
 
+	email := param["email"]
 	if email != "" {
-		where = where + " AND email = '" + email + "'"
+		where = where + " AND email = '" + email + "' "
+	}
+
+	phone := param["phone"]
+	if phone != "" {
+		where = where + " AND phone = '" + phone + "' "
 	}
 
 	sql = sql + where
 
-	var consumer domain.Consumer
+	consumer := domain.Consumer{}
 
-	if err := c.db.QueryRow(sql).Scan(&consumer.ID, &consumer.Firstname, &consumer.Lastname,
-		&consumer.Email, &consumer.Phone, &consumer.CreatedAt, &consumer.UpdatedAt); err != nil {
+	if err := c.db.QueryRow(sql).Scan(&consumer.ID, &consumer.Firstname,
+		&consumer.Lastname, &consumer.Email, &consumer.Phone, &consumer.CreatedAt, &consumer.UpdatedAt); err != nil {
 		return nil, err
 	}
 
