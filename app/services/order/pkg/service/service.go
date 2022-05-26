@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/publisher"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
@@ -15,7 +16,8 @@ type App interface {
 }
 
 type Service struct {
-	storage Storage
+	storage     Storage
+	notificator publisher.Publisher
 }
 
 func NewService(storage Storage) *Service {
@@ -25,7 +27,7 @@ func NewService(storage Storage) *Service {
 }
 
 func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error) {
-	orders, err := s.storage.GetAllOrders(params)
+	orders, err := s.storage.GetAllOrders(&params)
 	if err != nil {
 		return nil, fmt.Errorf("ReturnIncompleteOrderList: %w", err)
 	}
