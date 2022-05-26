@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Publisher interface {
-	Publish(theme string, data []byte) error
+	Publish(theme string, data any) error
 }
 
 type EventPublisher struct {
@@ -33,7 +34,7 @@ func NewEventPublisher(url string) (*EventPublisher, error) {
 	}, nil
 }
 
-func (p EventPublisher) Publish(topic string, data []byte) error {
+func (p EventPublisher) Publish(topic string, data any) error {
 	err := p.ch.ExchangeDeclare(
 		topic,
 		"fanout",
@@ -45,6 +46,11 @@ func (p EventPublisher) Publish(topic string, data []byte) error {
 	)
 	if err != nil {
 		return fmt.Errorf("declaring exchange: %w", err)
+	}
+
+	body, err := v1.Encode(data)
+	if err != nil {
+		return fmt.Errorf("encoding data: %w", err)
 	}
 
 	err = p.ch.Publish(
@@ -66,7 +72,7 @@ func (p EventPublisher) Publish(topic string, data []byte) error {
 			Type:            "",
 			UserId:          "",
 			AppId:           "",
-			Body:            data,
+			Body:            body,
 		})
 	if err != nil {
 		return fmt.Errorf("declaring exchange: %w", err)
