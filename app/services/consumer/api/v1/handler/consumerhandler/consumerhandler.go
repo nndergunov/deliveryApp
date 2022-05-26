@@ -1,4 +1,3 @@
-// Package handler contains a small handler framework extension.
 package consumerhandler
 
 import (
@@ -86,6 +85,7 @@ func (c *consumerHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 }
 
 func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
+
 	var consumerRequest consumerapi.NewConsumerRequest
 
 	if err := consumerapi.BindJson(r, &consumerRequest); err != nil {
