@@ -68,12 +68,7 @@ func TestNewPublisher(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			bytePostData, err := v1.Encode(test.postData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			err = publish.Publish(test.postTheme, bytePostData)
+			err = publish.Publish(test.postTheme, test.postData)
 			if err != nil {
 				t.Fatal(err)
 			}
