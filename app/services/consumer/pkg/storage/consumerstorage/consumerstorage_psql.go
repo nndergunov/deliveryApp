@@ -265,3 +265,4 @@ func (c ConsumerStorage) UpdateConsumerLocation(consumerLocation domain.Consumer
 
 	return &updatedConsumerLocation, nil
 }
+
