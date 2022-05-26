@@ -20,6 +20,6 @@ WORKDIR /root/
 COPY --from=builder /app/kitchen-service .
 COPY --from=builder /app/config.yaml .
 
-EXPOSE 8084
+EXPOSE 8086
 
 CMD ["./kitchen-service"]

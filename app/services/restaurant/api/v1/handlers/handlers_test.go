@@ -116,7 +116,9 @@ func TestCreateRestaurantEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData, err := restaurantapi.DecodeReturnRestaurant(resp.Body.Bytes())
+			respData := new(restaurantapi.ReturnRestaurant)
+
+			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -155,7 +157,9 @@ func TestGetRestaurantsEndpoint(t *testing.T) {
 			t.Fatalf("StatusCode: %d", resp.Code)
 		}
 
-		respData, err := restaurantapi.DecodeReturnRestaurantList(resp.Body.Bytes())
+		respData := new(restaurantapi.ReturnRestaurantList)
+
+		err := v1.Decode(resp.Body.Bytes(), respData)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -217,7 +221,9 @@ func TestUpdateRestaurantEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData, err := restaurantapi.DecodeReturnRestaurant(resp.Body.Bytes())
+			respData := new(restaurantapi.ReturnRestaurant)
+
+			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -303,7 +309,9 @@ func TestCreateMenuEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData, err := restaurantapi.DecodeReturnMenu(resp.Body.Bytes())
+			respData := new(restaurantapi.ReturnMenu)
+
+			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -338,7 +346,9 @@ func TestGetMenuEndpoint(t *testing.T) {
 			t.Fatalf("StatusCode: %d", resp.Code)
 		}
 
-		respData, err := restaurantapi.DecodeReturnMenu(resp.Body.Bytes())
+		respData := new(restaurantapi.ReturnMenu)
+
+		err := v1.Decode(resp.Body.Bytes(), respData)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -396,7 +406,9 @@ func TestAddMenuItemEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData, err := restaurantapi.DecodeReturnMenuItem(resp.Body.Bytes())
+			respData := new(restaurantapi.ReturnMenuItem)
+
+			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -455,7 +467,9 @@ func TestUpdateMenuItemEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData, err := restaurantapi.DecodeReturnMenuItem(resp.Body.Bytes())
+			respData := new(restaurantapi.ReturnMenuItem)
+
+			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
 				t.Fatal(err)
 			}

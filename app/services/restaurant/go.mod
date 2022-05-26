@@ -5,11 +5,11 @@ go 1.18
 require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
-	github.com/lib/pq v1.10.5
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220506140628-c1fe9b0781b4
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220506140628-c1fe9b0781b4
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506135343-b98520baf981
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220506140628-c1fe9b0781b4
+	github.com/lib/pq v1.10.6
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220516080600-4954ce51ac52
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220516080600-4954ce51ac52
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220516080600-4954ce51ac52
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
 )
@@ -20,18 +20,18 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
-	github.com/spf13/cast v1.4.1 // indirect
+	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.11.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
-	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
+	golang.org/x/sys v0.0.0-20220517195934-5e4e11fc645e // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
+	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.0-20220512140231-539c8e751b99 // indirect
 )

@@ -2,7 +2,7 @@ package courierhandler
 
 import (
 	"courier/api/v1/courierapi"
-	"courier/domain"
+	"courier/pkg/domain"
 )
 
 func courierToResponse(courier domain.Courier) courierapi.CourierResponse {
@@ -17,7 +17,7 @@ func courierToResponse(courier domain.Courier) courierapi.CourierResponse {
 	}
 }
 
-func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourierList {
+func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourierResponseList {
 	courierResponseList := make([]courierapi.CourierResponse, 0, len(courierList))
 
 	for _, courier := range courierList {
@@ -33,7 +33,22 @@ func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourie
 
 		courierResponseList = append(courierResponseList, courierResponse)
 	}
-	return courierapi.ReturnCourierList{
-		CourierList: courierResponseList,
+	return courierapi.ReturnCourierResponseList{
+		CourierResponseList: courierResponseList,
+	}
+}
+
+func courierLocationToResponse(courierLocation domain.CourierLocation) courierapi.CourierLocationResponse {
+	return courierapi.CourierLocationResponse{
+		CourierID:  courierLocation.CourierID,
+		Altitude:   courierLocation.Altitude,
+		Longitude:  courierLocation.Longitude,
+		Country:    courierLocation.Country,
+		City:       courierLocation.City,
+		Region:     courierLocation.Region,
+		Street:     courierLocation.Street,
+		HomeNumber: courierLocation.HomeNumber,
+		Floor:      courierLocation.Floor,
+		Door:       courierLocation.Door,
 	}
 }
