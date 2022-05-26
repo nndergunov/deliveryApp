@@ -1,4 +1,3 @@
-// Package handler contains a small handler framework extension.
 package consumerhandler
 
 import (
