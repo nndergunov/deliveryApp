@@ -32,3 +32,8 @@ func GetInt(key string) int {
 func GetDuration(key string) time.Duration {
 	return viper.GetDuration(key)
 }
+
+// GetMap reads data under the key as map[string]string.
+func GetMap(key string) map[string]string {
+	return viper.GetStringMapString(key)
+}
