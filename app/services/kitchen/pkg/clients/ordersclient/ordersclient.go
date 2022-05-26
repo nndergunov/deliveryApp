@@ -1,4 +1,4 @@
-package orderclient
+package ordersclient
 
 import (
 	"bytes"
@@ -10,17 +10,17 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 )
 
-type OrderClient struct {
+type OrdersClient struct {
 	orderServiceBaseURL string
 }
 
-func NewOrderClient(orderServiceBaseURL string) *OrderClient {
-	return &OrderClient{orderServiceBaseURL: orderServiceBaseURL}
+func NewOrdersClient(orderServiceBaseURL string) *OrdersClient {
+	return &OrdersClient{orderServiceBaseURL: orderServiceBaseURL}
 }
 
-func (c OrderClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, error) {
+func (c OrdersClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, error) {
 	filters := orderapi.OrderFilters{
-		FromRestaurantID: id,
+		FromRestaurantID: &id,
 		Statuses:         nil,
 		ExcludeStatuses:  []string{orderapi.Complete},
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/api/v1/handlers"
-	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/clients/orderclient"
+	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/clients/ordersclient"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/service"
 )
 
@@ -26,8 +26,7 @@ func main() {
 	}
 
 	orderServiceURL := configreader.GetString("orderService.URL")
-
-	httpCommunicator := orderclient.NewOrderClient(orderServiceURL)
+	httpCommunicator := ordersclient.NewOrdersClient(orderServiceURL)
 
 	serviceInstance := service.NewService(httpCommunicator)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")

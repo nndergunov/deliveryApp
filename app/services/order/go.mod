@@ -2,11 +2,6 @@ module github.com/nndergunov/deliveryApp/app/services/order
 
 go 1.18
 
-replace (
-	github.com/nndergunov/deliveryApp/app/pkg/messagebroker  => C:/Users/Mykyta_Derhunov/Desktop/Code/deliveryApp/app/pkg/messagebroker
-	github.com/nndergunov/deliveryApp/app/pkg/configreader  => C:/Users/Mykyta_Derhunov/Desktop/Code/deliveryApp/app/pkg/configreader
-)
-
 require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
