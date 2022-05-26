@@ -25,3 +25,31 @@ func requestToUpdateCourier(req *courierapi.UpdateCourierRequest) domain.Courier
 		Phone:     req.Phone,
 	}
 }
+
+func requestToNewCourierLocation(req *courierapi.NewCourierLocationRequest) domain.CourierLocation {
+	return domain.CourierLocation{
+		Altitude:   req.Altitude,
+		Longitude:  req.Longitude,
+		Country:    req.Country,
+		City:       req.City,
+		Region:     req.Region,
+		Street:     req.Street,
+		HomeNumber: req.HomeNumber,
+		Floor:      req.Floor,
+		Door:       req.Door,
+	}
+}
+
+func requestToUpdateConsumerLocation(req *courierapi.UpdateCourierLocationRequest) domain.CourierLocation {
+	return domain.CourierLocation{
+		Altitude:   req.Altitude,
+		Longitude:  req.Longitude,
+		Country:    req.Country,
+		City:       req.City,
+		Region:     req.Region,
+		Street:     req.Street,
+		HomeNumber: req.HomeNumber,
+		Floor:      req.Floor,
+		Door:       req.Door,
+	}
+}

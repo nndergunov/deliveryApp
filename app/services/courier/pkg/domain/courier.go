@@ -9,9 +9,10 @@ type Courier struct {
 	Firstname string
 	Lastname  string
 	Email     string
-	Createdat time.Time
-	Updatedat time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Phone     string
-	Status    string
 	Available bool
 }
+
+type SearchParam map[string]string

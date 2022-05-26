@@ -2,16 +2,15 @@
 package db
 
 import (
-	"github.com/jmoiron/sqlx"
+	"database/sql"
+	"fmt"
 	_ "github.com/lib/pq"
 )
 
-// Open knows how to open a database connection based on the configuration.
-func Open(driver, dbUrl string) (*sqlx.DB, error) {
-	db, err := sqlx.Open(driver, dbUrl)
+func OpenDB(driver, url string) (*sql.DB, error) {
+	database, err := sql.Open(driver, url)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("OpenDB: %w", err)
 	}
-
-	return db, nil
+	return database, nil
 }
