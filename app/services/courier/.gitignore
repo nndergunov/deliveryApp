@@ -1,5 +1,5 @@
 .idea
-sqlboiler.toml
-internal/database/sql
-conf.json
+config.yaml
 commands.txt
+sql
+notes.txt

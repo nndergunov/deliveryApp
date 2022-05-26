@@ -1,6 +1,0 @@
-{
-  "buildmode": "dev",
-  "DB": {
-    "dev": "user=postgres password=postgres dbname=courier_db host=container_courier_db port=5432 sslmode=disable"
-  }
-}

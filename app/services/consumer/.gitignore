@@ -1,4 +1,5 @@
 .idea
-sqlboiler.toml
-conf.json
-commands.txt
+config.yaml
+api/.idea
+sql
+notes.txt

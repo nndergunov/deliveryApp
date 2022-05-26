@@ -6,8 +6,10 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.5
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220516080600-4954ce51ac52
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220421192017-5bea05ecd937
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220421192017-5bea05ecd937
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506135343-b98520baf981
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
 )
 
