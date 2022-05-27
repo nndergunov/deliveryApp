@@ -129,7 +129,7 @@ func (c consumerAccountingService) SubFromConsumerAccount(account domain.Consume
 		return nil, errNotEnoughBalance
 	}
 
-	consumerAccountUpdated, err := c.AccountingStorage.SubToConsumerAccount(account)
+	consumerAccountUpdated, err := c.AccountingStorage.SubFromConsumerAccount(account)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr

@@ -82,7 +82,7 @@ func (c ConsumerAccountingStorage) AddToConsumerAccount(account domain.ConsumerA
 	return &newCourier, nil
 }
 
-func (c ConsumerAccountingStorage) SubToConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
+func (c ConsumerAccountingStorage) SubFromConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 	sql := `UPDATE consumer_account
 				    SET 
 				        balance = (SELECT balance FROM 

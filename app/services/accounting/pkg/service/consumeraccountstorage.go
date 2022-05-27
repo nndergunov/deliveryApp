@@ -9,5 +9,5 @@ type AccountingStorage interface {
 	DeleteConsumerAccount(consumerID uint64) error
 
 	AddToConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
-	SubToConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
+	SubFromConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
 }
