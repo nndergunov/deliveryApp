@@ -10,16 +10,16 @@ RUN go mod download
 
 COPY .. .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o accounting-service main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o courier-service main.go
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-COPY --from=builder /app/accounting-service .
+COPY --from=builder /app/courier-service .
 COPY --from=builder /app/config.yaml .
 
-EXPOSE 8080
+EXPOSE 8081
 
-CMD ["./accounting-service"]
+CMD ["./courier-service"]

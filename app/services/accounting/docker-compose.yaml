@@ -1,9 +1,8 @@
 version: '3.8'
-
 services:
   app:
-    container_name: accounting-service
+    container_name: courier-service
     build: .
     ports:
-      - 8080:8080
+      - "8081:8081"
     restart: on-failure
