@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=${PASS}
       - POSTGRES_DB=${DB_NAME}
     ports:
-      - '5431:5432'
+      - '5433:5432'
     volumes:
       - ./accounting.sql:/docker-entrypoint-initdb.d/accounting.sql
     networks:
