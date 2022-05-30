@@ -2,8 +2,8 @@ package domain
 
 import "time"
 
-type ConsumerAccount struct {
-	ConsumerID uint64
+type CourierAccount struct {
+	CourierID uint64
 	Balance    int64
 	CreatedAt  time.Time
 	UpdatedAt  time.Time

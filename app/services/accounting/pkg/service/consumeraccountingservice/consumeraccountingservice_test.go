@@ -1,1 +1,0 @@
-package consumeraccountingservice_test
