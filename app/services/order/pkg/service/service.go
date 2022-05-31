@@ -2,7 +2,10 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/messages"
+	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/publisher"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
@@ -15,17 +18,21 @@ type App interface {
 }
 
 type Service struct {
-	storage Storage
+	storage       Storage
+	notificator   publisher.Publisher
+	statusChecker AppStatusChecker
 }
 
-func NewService(storage Storage) *Service {
+func NewService(storage Storage, notificator publisher.Publisher, statusChecker AppStatusChecker) *Service {
 	return &Service{
-		storage: storage,
+		storage:       storage,
+		notificator:   notificator,
+		statusChecker: statusChecker,
 	}
 }
 
 func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error) {
-	orders, err := s.storage.GetAllOrders(params)
+	orders, err := s.storage.GetAllOrders(&params)
 	if err != nil {
 		return nil, fmt.Errorf("ReturnIncompleteOrderList: %w", err)
 	}
@@ -34,12 +41,24 @@ func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order
 }
 
 func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
+	err := s.statusChecker.CheckStatuses()
+	if err != nil {
+		return nil, fmt.Errorf("checking initial service statuces: %w", err)
+	}
+
 	orderID, err := s.storage.InsertOrder(order)
 	if err != nil {
 		return nil, fmt.Errorf("CreateOrder: %w", err)
 	}
 
 	order.OrderID = orderID
+
+	err = s.notificator.Publish("restaurant"+strconv.Itoa(order.RestaurantID), messages.OrderNotification{
+		Data: messages.CreatedChange,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("sending notification: %w", err)
+	}
 
 	return &order, nil
 }
@@ -59,6 +78,13 @@ func (s Service) UpdateOrder(order domain.Order) (*domain.Order, error) {
 		return nil, fmt.Errorf("CreateOrder: %w", err)
 	}
 
+	err = s.notificator.Publish("restaurant"+strconv.Itoa(order.RestaurantID), messages.OrderNotification{
+		Data: messages.UpdatedChange,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("sending notification: %w", err)
+	}
+
 	return &order, nil
 }
 
@@ -66,6 +92,13 @@ func (s Service) UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, e
 	err := s.storage.UpdateOrderStatus(status.OrderID, status.Status)
 	if err != nil {
 		return nil, fmt.Errorf("CreateOrder: %w", err)
+	}
+
+	err = s.notificator.Publish("order"+strconv.Itoa(status.OrderID), messages.OrderNotification{
+		Data: messages.StatusUpdatedChange,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("sending notification: %w", err)
 	}
 
 	return &status, nil

@@ -9,9 +9,11 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/publisher"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/handlers"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
 )
@@ -38,7 +40,17 @@ func main() {
 		mainLogger.Fatalln(err)
 	}
 
-	serviceInstance := service.NewService(database)
+	publisherURL := configreader.GetString("publisher.url")
+
+	notificationer, err := publisher.NewEventPublisher(publisherURL)
+	if err != nil {
+		mainLogger.Fatalln(err)
+	}
+
+	services := configreader.GetMap("services")
+	client := clients.NewMultiServiceClient(services)
+
+	serviceInstance := service.NewService(database, notificationer, client)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
 	endpointHandler := handlers.NewEndpointHandler(serviceInstance, handlerLogger)
 

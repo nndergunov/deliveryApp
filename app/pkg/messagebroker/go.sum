@@ -1,4 +1,4 @@
-github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220524144259-683ac59b203a h1:cTa3YTMOR8NcxBdg+1xE8ERVH40ZOxkyIVv4SDqtJa4=
-github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220524144259-683ac59b203a/go.mod h1:Ctf+Q3dmfpQ5LOblpMlyVSAo1Cd/QVs06XPaB4AcRhQ=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220525152929-2c4e657a1f60 h1:1A7U3Jr7cfkV7pts28CR5ysnYUXL+6K0wdKjMFl84fc=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220525152929-2c4e657a1f60/go.mod h1:Ctf+Q3dmfpQ5LOblpMlyVSAo1Cd/QVs06XPaB4AcRhQ=
 github.com/rabbitmq/amqp091-go v1.3.4 h1:tXuIslN1nhDqs2t6Jrz3BAoqvt4qIZzxvdbdcxWtHYU=
 github.com/rabbitmq/amqp091-go v1.3.4/go.mod h1:ogQDLSOACsLPsIq0NpbtiifNZi2YOz0VTJ0kHRghqbM=
