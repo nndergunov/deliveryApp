@@ -13,7 +13,8 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/handlers"
-	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/accountingclient"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/restaurantclient"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
 )
@@ -48,9 +49,10 @@ func main() {
 	}
 
 	services := configreader.GetMap("services")
-	client := clients.NewMultiServiceClient(services)
+	accountingClient := accountingclient.NewAccountingClient(services["accounting"])
+	restaurantClient := restaurantclient.NewRestaurantClient(services["restaurant"])
 
-	serviceInstance := service.NewService(database, notificationer, client)
+	serviceInstance := service.NewService(database, notificationer, accountingClient, restaurantClient)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
 	endpointHandler := handlers.NewEndpointHandler(serviceInstance, handlerLogger)
 

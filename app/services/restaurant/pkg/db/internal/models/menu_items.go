@@ -22,10 +22,11 @@ import (
 
 // MenuItem is an object representing the database table.
 type MenuItem struct {
-	ID     int    `boil:"id" json:"id" toml:"id" yaml:"id"`
-	MenuID int    `boil:"menu_id" json:"menu_id" toml:"menu_id" yaml:"menu_id"`
-	Name   string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	Course string `boil:"course" json:"course" toml:"course" yaml:"course"`
+	ID     int     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	MenuID int     `boil:"menu_id" json:"menu_id" toml:"menu_id" yaml:"menu_id"`
+	Name   string  `boil:"name" json:"name" toml:"name" yaml:"name"`
+	Price  float64 `boil:"price" json:"price" toml:"price" yaml:"price"`
+	Course string  `boil:"course" json:"course" toml:"course" yaml:"course"`
 
 	R *menuItemR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L menuItemL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -35,11 +36,13 @@ var MenuItemColumns = struct {
 	ID     string
 	MenuID string
 	Name   string
+	Price  string
 	Course string
 }{
 	ID:     "id",
 	MenuID: "menu_id",
 	Name:   "name",
+	Price:  "price",
 	Course: "course",
 }
 
@@ -47,11 +50,13 @@ var MenuItemTableColumns = struct {
 	ID     string
 	MenuID string
 	Name   string
+	Price  string
 	Course string
 }{
 	ID:     "menu_items.id",
 	MenuID: "menu_items.menu_id",
 	Name:   "menu_items.name",
+	Price:  "menu_items.price",
 	Course: "menu_items.course",
 }
 
@@ -103,15 +108,46 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
+type whereHelperfloat64 struct{ field string }
+
+func (w whereHelperfloat64) EQ(x float64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperfloat64) NEQ(x float64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.NEQ, x)
+}
+func (w whereHelperfloat64) LT(x float64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperfloat64) LTE(x float64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelperfloat64) GT(x float64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperfloat64) GTE(x float64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+func (w whereHelperfloat64) IN(slice []float64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelperfloat64) NIN(slice []float64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
 var MenuItemWhere = struct {
 	ID     whereHelperint
 	MenuID whereHelperint
 	Name   whereHelperstring
+	Price  whereHelperfloat64
 	Course whereHelperstring
 }{
 	ID:     whereHelperint{field: "\"menu_items\".\"id\""},
 	MenuID: whereHelperint{field: "\"menu_items\".\"menu_id\""},
 	Name:   whereHelperstring{field: "\"menu_items\".\"name\""},
+	Price:  whereHelperfloat64{field: "\"menu_items\".\"price\""},
 	Course: whereHelperstring{field: "\"menu_items\".\"course\""},
 }
 
@@ -136,8 +172,8 @@ func (*menuItemR) NewStruct() *menuItemR {
 type menuItemL struct{}
 
 var (
-	menuItemAllColumns            = []string{"id", "menu_id", "name", "course"}
-	menuItemColumnsWithoutDefault = []string{"menu_id", "name", "course"}
+	menuItemAllColumns            = []string{"id", "menu_id", "name", "price", "course"}
+	menuItemColumnsWithoutDefault = []string{"menu_id", "name", "price", "course"}
 	menuItemColumnsWithDefault    = []string{"id"}
 	menuItemPrimaryKeyColumns     = []string{"id"}
 	menuItemGeneratedColumns      = []string{}

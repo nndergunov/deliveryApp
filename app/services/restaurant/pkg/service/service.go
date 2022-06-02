@@ -8,6 +8,7 @@ import (
 
 type AppService interface {
 	ReturnAllRestaurants() ([]domain.Restaurant, error)
+	ReturnRestaurant(restaurantID int) (*domain.Restaurant, error)
 	CreateNewRestaurant(restaurant domain.Restaurant) (*domain.Restaurant, error)
 	UpdateRestaurant(restaurant domain.Restaurant) (*domain.Restaurant, error)
 	DeleteRestaurant(restaurantID int) error
@@ -36,6 +37,15 @@ func (s Service) ReturnAllRestaurants() ([]domain.Restaurant, error) {
 	}
 
 	return restaurants, nil
+}
+
+func (s Service) ReturnRestaurant(restaurantID int) (*domain.Restaurant, error) {
+	restaurant, err := s.storage.GetRestaurant(restaurantID)
+	if err != nil {
+		return nil, fmt.Errorf("getting restaurant from storage: %w", err)
+	}
+
+	return restaurant, err
 }
 
 func (s Service) CreateNewRestaurant(restaurant domain.Restaurant) (*domain.Restaurant, error) {

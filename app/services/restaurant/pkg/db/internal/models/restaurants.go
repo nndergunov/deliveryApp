@@ -22,51 +22,67 @@ import (
 
 // Restaurant is an object representing the database table.
 type Restaurant struct {
-	ID      int    `boil:"id" json:"id" toml:"id" yaml:"id"`
-	Name    string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	City    string `boil:"city" json:"city" toml:"city" yaml:"city"`
-	Address string `boil:"address" json:"address" toml:"address" yaml:"address"`
+	ID              int    `boil:"id" json:"id" toml:"id" yaml:"id"`
+	Name            string `boil:"name" json:"name" toml:"name" yaml:"name"`
+	AcceptingOrders bool   `boil:"accepting_orders" json:"accepting_orders" toml:"accepting_orders" yaml:"accepting_orders"`
+	City            string `boil:"city" json:"city" toml:"city" yaml:"city"`
+	Address         string `boil:"address" json:"address" toml:"address" yaml:"address"`
 
 	R *restaurantR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L restaurantL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var RestaurantColumns = struct {
-	ID      string
-	Name    string
-	City    string
-	Address string
+	ID              string
+	Name            string
+	AcceptingOrders string
+	City            string
+	Address         string
 }{
-	ID:      "id",
-	Name:    "name",
-	City:    "city",
-	Address: "address",
+	ID:              "id",
+	Name:            "name",
+	AcceptingOrders: "accepting_orders",
+	City:            "city",
+	Address:         "address",
 }
 
 var RestaurantTableColumns = struct {
-	ID      string
-	Name    string
-	City    string
-	Address string
+	ID              string
+	Name            string
+	AcceptingOrders string
+	City            string
+	Address         string
 }{
-	ID:      "restaurants.id",
-	Name:    "restaurants.name",
-	City:    "restaurants.city",
-	Address: "restaurants.address",
+	ID:              "restaurants.id",
+	Name:            "restaurants.name",
+	AcceptingOrders: "restaurants.accepting_orders",
+	City:            "restaurants.city",
+	Address:         "restaurants.address",
 }
 
 // Generated where
 
+type whereHelperbool struct{ field string }
+
+func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+
 var RestaurantWhere = struct {
-	ID      whereHelperint
-	Name    whereHelperstring
-	City    whereHelperstring
-	Address whereHelperstring
+	ID              whereHelperint
+	Name            whereHelperstring
+	AcceptingOrders whereHelperbool
+	City            whereHelperstring
+	Address         whereHelperstring
 }{
-	ID:      whereHelperint{field: "\"restaurants\".\"id\""},
-	Name:    whereHelperstring{field: "\"restaurants\".\"name\""},
-	City:    whereHelperstring{field: "\"restaurants\".\"city\""},
-	Address: whereHelperstring{field: "\"restaurants\".\"address\""},
+	ID:              whereHelperint{field: "\"restaurants\".\"id\""},
+	Name:            whereHelperstring{field: "\"restaurants\".\"name\""},
+	AcceptingOrders: whereHelperbool{field: "\"restaurants\".\"accepting_orders\""},
+	City:            whereHelperstring{field: "\"restaurants\".\"city\""},
+	Address:         whereHelperstring{field: "\"restaurants\".\"address\""},
 }
 
 // RestaurantRels is where relationship names are stored.
@@ -90,8 +106,8 @@ func (*restaurantR) NewStruct() *restaurantR {
 type restaurantL struct{}
 
 var (
-	restaurantAllColumns            = []string{"id", "name", "city", "address"}
-	restaurantColumnsWithoutDefault = []string{"name", "city", "address"}
+	restaurantAllColumns            = []string{"id", "name", "accepting_orders", "city", "address"}
+	restaurantColumnsWithoutDefault = []string{"name", "accepting_orders", "city", "address"}
 	restaurantColumnsWithDefault    = []string{"id"}
 	restaurantPrimaryKeyColumns     = []string{"id"}
 	restaurantGeneratedColumns      = []string{}
