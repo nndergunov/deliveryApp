@@ -1,4 +1,3 @@
-# delivery service
+A courier who deliver orders to consumers. It tracks the availability of
+the courier and their current location.
 
-Will be used to handle delivery process, serve as a communication layer between
-kitchen, courier and client. May have its own database.
