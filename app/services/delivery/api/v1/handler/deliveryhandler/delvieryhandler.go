@@ -48,7 +48,7 @@ func (c *deliveryHandler) handlerInit() {
 	version := "/v1"
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
-	c.serveMux.HandleFunc(version+"/estimate-delivery", c.getEstimateDelivery).Methods(http.MethodGet)
+	c.serveMux.HandleFunc(version+"/estimate", c.getEstimateDeliveryValues).Methods(http.MethodGet)
 	c.serveMux.HandleFunc(version+"/order/{"+orderIDKey+"}/assign", c.assignOrder).Methods(http.MethodPost)
 }
 
@@ -81,7 +81,7 @@ func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 	c.log.Printf("gave status %s", data.IsUp)
 }
 
-func (c *deliveryHandler) getEstimateDelivery(rw http.ResponseWriter, r *http.Request) {
+func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *http.Request) {
 	var estimateDeliveryRequest deliveryapi.EstimateDeliveryRequest
 
 	if err := deliveryapi.BindJson(r, &estimateDeliveryRequest); err != nil {
