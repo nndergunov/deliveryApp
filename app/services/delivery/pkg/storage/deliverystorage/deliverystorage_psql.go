@@ -2,6 +2,7 @@ package deliverystorage
 
 import (
 	"database/sql"
+
 	"delivery/pkg/domain"
 )
 
@@ -21,14 +22,14 @@ func NewDeliveryStorage(p Params) *DeliveryStorage {
 }
 
 // AssignCourier store assigned courier to the order
-func (c DeliveryStorage) AssignCourier(courierID int, orderID int) (*domain.AssignedCourier, error) {
+func (c DeliveryStorage) AssignOrder(courierID int, orderID int) (*domain.AssignOrder, error) {
 	sql := `INSERT INTO
 				delivery
 					(order_id, courier_id, delivered)
 			VALUES($1,$2, false)
 			returning *`
 
-	newAssignedCourier := domain.AssignedCourier{}
+	newAssignedCourier := domain.AssignOrder{}
 	if err := c.db.QueryRow(sql, courierID, orderID).
 		Scan(&newAssignedCourier.OrderID, &newAssignedCourier.CourierID); err != nil {
 		return nil, err

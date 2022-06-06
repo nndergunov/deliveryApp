@@ -1,9 +1,10 @@
 package tools
 
 import (
-	"delivery/pkg/domain"
 	"errors"
 	"math"
+
+	"delivery/pkg/domain"
 )
 
 // these constants are used for vincentyDistance()
@@ -12,7 +13,7 @@ const a = 6378137
 const b = 6356752.3142
 const f = 1 / 298.257223563 // WGS-84 ellipsiod
 
-func VincentyDistance(p1, p2 domain.Coord) (float64, float64, error) {
+func VincentyDistance(p1, p2 domain.Coord) (float64, error) {
 	// convert from degrees to radians
 	piRad := math.Pi / 180
 	p1.Lat = p1.Lat * piRad
@@ -48,7 +49,7 @@ func VincentyDistance(p1, p2 domain.Coord) (float64, float64, error) {
 
 		sinSigma = math.Sqrt((cosU2*sinLambda)*(cosU2*sinLambda) + (cosU1*sinU2-sinU1*cosU2*cosLambda)*(cosU1*sinU2-sinU1*cosU2*cosLambda))
 		if sinSigma == 0 {
-			return 0, 0, nil // co-incident points
+			return 0, nil // co-incident points
 		}
 
 		cosSigma = sinU1*sinU2 + cosU1*cosU2*cosLambda
@@ -65,7 +66,7 @@ func VincentyDistance(p1, p2 domain.Coord) (float64, float64, error) {
 		lambda = L + (1-C)*f*sinAlpha*(sigma+C*sinSigma*(cos2SigmaM+C*cosSigma*(-1+2*cos2SigmaM*cos2SigmaM)))
 	}
 	if iterLimit == 0 {
-		return -1, -1, errors.New("vincenty algorithm failed to converge") // formula failed to converge
+		return -1, errors.New("vincenty algorithm failed to converge") // formula failed to converge
 	}
 
 	uSq := cosSqAlpha * (a*a - b*b) / (b * b)
@@ -74,6 +75,5 @@ func VincentyDistance(p1, p2 domain.Coord) (float64, float64, error) {
 	deltaSigma := B * sinSigma * (cos2SigmaM + B/4*(cosSigma*(-1+2*cos2SigmaM*cos2SigmaM)-B/6*cos2SigmaM*(-3+4*sinSigma*sinSigma)*(-3+4*cos2SigmaM*cos2SigmaM)))
 	meters := b * A * (sigma - deltaSigma)
 	kilometers := meters / 1000
-	miles := kilometers * 0.621371
-	return miles, kilometers, nil
+	return kilometers, nil
 }

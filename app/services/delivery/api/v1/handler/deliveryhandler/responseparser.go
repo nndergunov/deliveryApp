@@ -5,14 +5,10 @@ import (
 	"delivery/pkg/domain"
 )
 
-func deliveryTimeToResponse(deliveryTime *domain.DeliveryTime) deliveryapi.DeliveryTimeResponse {
-	return deliveryapi.DeliveryTimeResponse{Time: deliveryTime.Time}
+func estimateDeliveryToResponse(estimateDelivery *domain.EstimateDeliveryResponse) deliveryapi.EstimateDeliveryResponse {
+	return deliveryapi.EstimateDeliveryResponse{Time: estimateDelivery.Time, Cost: estimateDelivery.Cost}
 }
 
-func deliveryCostToResponse(deliveryCost *domain.DeliveryCost) deliveryapi.DeliveryCostResponse {
-	return deliveryapi.DeliveryCostResponse{Cost: deliveryCost.Cost}
-}
-
-func deliveryAssignedCourierResponse(assignOrderToCourier *domain.AssignedCourier) deliveryapi.DeliveryAssignedCourierResponse {
-	return deliveryapi.DeliveryAssignedCourierResponse{OrderID: assignOrderToCourier.OrderID, CourierID: assignOrderToCourier.CourierID}
+func assignOrderResponse(assignOrderToCourier *domain.AssignOrder) deliveryapi.AssignOrderResponse {
+	return deliveryapi.AssignOrderResponse{OrderID: assignOrderToCourier.OrderID, CourierID: assignOrderToCourier.CourierID}
 }

@@ -1,19 +1,20 @@
 package domain
 
-type DeliveryDistanceLocation struct {
-	FromLocation *Location
-	ToLocation   *Location
+type EstimateDeliveryRequest struct {
+	ConsumerID   int
+	RestaurantID int
 }
 
-type DeliveryTime struct {
+type EstimateDeliveryResponse struct {
 	Time string
+	Cost float64
 }
 
 type DeliveryCost struct {
 	Cost float64
 }
 
-type AssignedCourier struct {
+type AssignOrder struct {
 	OrderID   int
 	CourierID int
 }

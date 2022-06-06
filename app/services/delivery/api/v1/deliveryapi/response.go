@@ -1,14 +1,11 @@
 package deliveryapi
 
-type DeliveryTimeResponse struct {
-	Time string `json:"time,omitempty"`
-}
-
-type DeliveryCostResponse struct {
+type EstimateDeliveryResponse struct {
+	Time string  `json:"time,omitempty"`
 	Cost float64 `json:"cost,omitempty"`
 }
 
-type DeliveryAssignedCourierResponse struct {
+type AssignOrderResponse struct {
 	OrderID   int `json:"order_id"`
 	CourierID int `json:"courier_id"`
 }

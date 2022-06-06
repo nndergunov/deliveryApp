@@ -3,10 +3,14 @@ package service
 import "delivery/pkg/domain"
 
 type RestaurantClient interface {
-	GetRestaurantLocation(restaurantID int) (*domain.Location, error)
+	GetRestaurant(restaurantID int) (*domain.Restaurant, error)
 }
 
 type CourierClient interface {
-	GetNearestCourier(location *domain.Location, radius int) (*domain.Courier, error)
+	GetNearestCourier(location *domain.Location, radiusKm int) (*domain.Courier, error)
 	UpdateCourierAvailable(courierID int, available bool) (*domain.Courier, error)
+}
+
+type ConsumerClient interface {
+	GetConsumerLocation(consumerID int) (*domain.ConsumerLocation, error)
 }

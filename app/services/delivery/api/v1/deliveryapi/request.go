@@ -1,8 +1,8 @@
 package deliveryapi
 
-type DeliveryTimeRequest struct {
-	FromLocation *Location `json:"from_location"`
-	ToLocation   *Location `json:"to_location"`
+type EstimateDeliveryRequest struct {
+	ConsumerID   int `json:"consumer_id"`
+	RestaurantID int `json:"restaurant_id"`
 }
 
 type DeliveryCostRequest struct {
@@ -22,7 +22,7 @@ type Location struct {
 	Door       string `json:"door" yaml:"door"`
 }
 
-type OrderRequest struct {
+type AssignOrderRequest struct {
 	FromUserID   int `json:"from_user_id"`
 	RestaurantID int `json:"restaurant_id"`
 }

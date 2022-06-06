@@ -1,13 +1,16 @@
 package deliveryhandler
 
 import (
-	"delivery/api/v1/deliveryapi"
-	"delivery/pkg/service/deliveryservice"
 	"github.com/gorilla/mux"
+
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
 	"io"
 	"net/http"
+
+	"delivery/api/v1/deliveryapi"
+	"delivery/pkg/service/deliveryservice"
 )
 
 type Params struct {
@@ -45,10 +48,8 @@ func (c *deliveryHandler) handlerInit() {
 	version := "/v1"
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
-	c.serveMux.HandleFunc(version+"/delivery/time", c.getDeliveryTime).Methods(http.MethodGet)
-	c.serveMux.HandleFunc(version+"/delivery/cost", c.getDeliveryCost).Methods(http.MethodGet)
-
-	c.serveMux.HandleFunc(version+"/delivery/assign/courier/{"+orderIDKey+"}", c.assignCourierToOrder).Methods(http.MethodPost)
+	c.serveMux.HandleFunc(version+"/estimate-delivery", c.getEstimateDelivery).Methods(http.MethodGet)
+	c.serveMux.HandleFunc(version+"/order/{"+orderIDKey+"}/assign", c.assignOrder).Methods(http.MethodPost)
 }
 
 func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -80,10 +81,10 @@ func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 	c.log.Printf("gave status %s", data.IsUp)
 }
 
-func (c *deliveryHandler) getDeliveryTime(rw http.ResponseWriter, r *http.Request) {
-	var deliveryTimeRequest deliveryapi.DeliveryTimeRequest
+func (c *deliveryHandler) getEstimateDelivery(rw http.ResponseWriter, r *http.Request) {
+	var estimateDeliveryRequest deliveryapi.EstimateDeliveryRequest
 
-	if err := deliveryapi.BindJson(r, &deliveryTimeRequest); err != nil {
+	if err := deliveryapi.BindJson(r, &estimateDeliveryRequest); err != nil {
 		c.log.Println(err)
 		if err := deliveryapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -91,9 +92,9 @@ func (c *deliveryHandler) getDeliveryTime(rw http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	deliveryLocation := requestToDeliveryLocation(&deliveryTimeRequest)
+	estimateDelivery := requestToEstimateDelivery(&estimateDeliveryRequest)
 
-	data, err := c.deliveryService.GetDeliveryTime(deliveryLocation)
+	data, err := c.deliveryService.GetEstimateDelivery(estimateDelivery)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -110,7 +111,7 @@ func (c *deliveryHandler) getDeliveryTime(rw http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	response := deliveryTimeToResponse(data)
+	response := estimateDeliveryToResponse(data)
 
 	if err := deliveryapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
@@ -119,46 +120,7 @@ func (c *deliveryHandler) getDeliveryTime(rw http.ResponseWriter, r *http.Reques
 
 }
 
-func (c *deliveryHandler) getDeliveryCost(rw http.ResponseWriter, r *http.Request) {
-	var deliveryCostRequest deliveryapi.DeliveryCostRequest
-
-	if err := deliveryapi.BindJson(r, &deliveryCostRequest); err != nil {
-		c.log.Println(err)
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
-	deliveryLocation := requestToDeliveryCostLocation(&deliveryCostRequest)
-
-	data, err := c.deliveryService.GetDeliveryCost(deliveryLocation)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := deliveryapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
-	if err != nil {
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
-	response := deliveryCostToResponse(data)
-
-	if err := deliveryapi.Respond(rw, http.StatusOK, response); err != nil {
-		c.log.Println(err)
-		return
-	}
-
-}
-
-func (c *deliveryHandler) assignCourierToOrder(rw http.ResponseWriter, r *http.Request) {
+func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	orderID, ok := vars[orderIDKey]
 	if !ok {
@@ -167,9 +129,9 @@ func (c *deliveryHandler) assignCourierToOrder(rw http.ResponseWriter, r *http.R
 		}
 	}
 
-	var assignOrderToCourierRequest deliveryapi.OrderRequest
+	var assignOrderRequest deliveryapi.AssignOrderRequest
 
-	if err := deliveryapi.BindJson(r, &assignOrderToCourierRequest); err != nil {
+	if err := deliveryapi.BindJson(r, &assignOrderRequest); err != nil {
 		c.log.Println(err)
 		if err := deliveryapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -177,9 +139,9 @@ func (c *deliveryHandler) assignCourierToOrder(rw http.ResponseWriter, r *http.R
 		return
 	}
 
-	assignOrderToCourier := requestToOrder(&assignOrderToCourierRequest)
+	order := requestToOrder(&assignOrderRequest)
 
-	data, err := c.deliveryService.AssignCourierToOrder(orderID, assignOrderToCourier)
+	data, err := c.deliveryService.AssignOrder(orderID, order)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -196,7 +158,7 @@ func (c *deliveryHandler) assignCourierToOrder(rw http.ResponseWriter, r *http.R
 		return
 	}
 
-	response := deliveryAssignedCourierResponse(data)
+	response := assignOrderResponse(data)
 
 	if err := deliveryapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)

@@ -5,60 +5,13 @@ import (
 	"delivery/pkg/domain"
 )
 
-func requestToDeliveryLocation(req *deliveryapi.DeliveryTimeRequest) *domain.DeliveryDistanceLocation {
-	return &domain.DeliveryDistanceLocation{
-		FromLocation: &domain.Location{
-			Latitude:   req.FromLocation.Latitude,
-			Longitude:  req.FromLocation.Longitude,
-			Country:    req.FromLocation.Country,
-			City:       req.FromLocation.City,
-			Region:     req.FromLocation.Region,
-			Street:     req.FromLocation.Street,
-			HomeNumber: req.FromLocation.HomeNumber,
-			Floor:      req.FromLocation.Floor,
-			Door:       req.FromLocation.Door,
-		},
-		ToLocation: &domain.Location{
-			Latitude:   req.FromLocation.Latitude,
-			Longitude:  req.FromLocation.Longitude,
-			Country:    req.FromLocation.Country,
-			City:       req.FromLocation.City,
-			Region:     req.FromLocation.Region,
-			Street:     req.FromLocation.Street,
-			HomeNumber: req.FromLocation.HomeNumber,
-			Floor:      req.FromLocation.Floor,
-			Door:       req.FromLocation.Door,
-		},
+func requestToEstimateDelivery(req *deliveryapi.EstimateDeliveryRequest) *domain.EstimateDeliveryRequest {
+	return &domain.EstimateDeliveryRequest{
+		ConsumerID:   req.ConsumerID,
+		RestaurantID: req.RestaurantID,
 	}
 }
 
-func requestToDeliveryCostLocation(req *deliveryapi.DeliveryCostRequest) *domain.DeliveryDistanceLocation {
-	return &domain.DeliveryDistanceLocation{
-		FromLocation: &domain.Location{
-			Latitude:   req.FromLocation.Latitude,
-			Longitude:  req.FromLocation.Longitude,
-			Country:    req.FromLocation.Country,
-			City:       req.FromLocation.City,
-			Region:     req.FromLocation.Region,
-			Street:     req.FromLocation.Street,
-			HomeNumber: req.FromLocation.HomeNumber,
-			Floor:      req.FromLocation.Floor,
-			Door:       req.FromLocation.Door,
-		},
-		ToLocation: &domain.Location{
-			Latitude:   req.FromLocation.Latitude,
-			Longitude:  req.FromLocation.Longitude,
-			Country:    req.FromLocation.Country,
-			City:       req.FromLocation.City,
-			Region:     req.FromLocation.Region,
-			Street:     req.FromLocation.Street,
-			HomeNumber: req.FromLocation.HomeNumber,
-			Floor:      req.FromLocation.Floor,
-			Door:       req.FromLocation.Door,
-		},
-	}
-}
-
-func requestToOrder(req *deliveryapi.OrderRequest) *domain.Order {
+func requestToOrder(req *deliveryapi.AssignOrderRequest) *domain.Order {
 	return &domain.Order{FromUserID: req.FromUserID, FromRestaurantID: req.RestaurantID}
 }
