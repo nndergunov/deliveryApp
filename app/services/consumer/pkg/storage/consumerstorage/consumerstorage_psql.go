@@ -1,9 +1,10 @@
 package consumerstorage
 
 import (
-	"consumer/pkg/domain"
 	"database/sql"
 	"strconv"
+
+	"consumer/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -42,7 +43,7 @@ func (c ConsumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consu
 	return &newConsumer, nil
 }
 
-func (c ConsumerStorage) DeleteConsumer(id uint64) error {
+func (c ConsumerStorage) DeleteConsumer(id int) error {
 	sql := `
     DELETE
         FROM
@@ -107,7 +108,7 @@ func (c ConsumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 	return allConsumer, nil
 }
 
-func (c ConsumerStorage) GetConsumerByID(id uint64) (*domain.Consumer, error) {
+func (c ConsumerStorage) GetConsumerByID(id int) (*domain.Consumer, error) {
 	sql := `SELECT
 				id, firstname, lastname, email, phone, created_at, updated_at
 			FROM 
@@ -195,7 +196,7 @@ returning *
 	return &newConsumerLocation, nil
 }
 
-func (c ConsumerStorage) DeleteConsumerLocation(consumerID uint64) error {
+func (c ConsumerStorage) DeleteConsumerLocation(consumerID int) error {
 	sql := `
     DELETE
 FROM consumer_location
@@ -206,7 +207,7 @@ WHERE consumer_id = $1
 	}
 	return nil
 }
-func (c ConsumerStorage) GetConsumerLocation(id uint64) (*domain.ConsumerLocation, error) {
+func (c ConsumerStorage) GetConsumerLocation(id int) (*domain.ConsumerLocation, error) {
 	sql := `SELECT
 				consumer_id, altitude, longitude, country, city, region, street, home_number, floor, door
 			FROM 

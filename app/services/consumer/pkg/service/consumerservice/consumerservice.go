@@ -1,11 +1,12 @@
 package consumerservice
 
 import (
-	"consumer/pkg/domain"
-	"consumer/pkg/service"
 	"database/sql"
 	"fmt"
 	"strconv"
+
+	"consumer/pkg/domain"
+	"consumer/pkg/service"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
@@ -73,13 +74,13 @@ func (c *consumerService) InsertConsumer(consumer domain.Consumer) (*domain.Cons
 
 // DeleteConsumer prepare consumer data for deleting.
 func (c *consumerService) DeleteConsumer(id string) (data any, err error) {
-	idUint, err := strconv.ParseUint(string(id), 10, 64)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	foundConsumer, err := c.consumerStorage.GetConsumerByID(idUint)
+	foundConsumer, err := c.consumerStorage.GetConsumerByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -88,12 +89,12 @@ func (c *consumerService) DeleteConsumer(id string) (data any, err error) {
 		return nil, errConsumerWithIDNotFound
 	}
 
-	if err = c.consumerStorage.DeleteConsumer(idUint); err != nil {
+	if err = c.consumerStorage.DeleteConsumer(idInt); err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
 
-	if err = c.consumerStorage.DeleteConsumerLocation(idUint); err != nil {
+	if err = c.consumerStorage.DeleteConsumerLocation(idInt); err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
@@ -105,11 +106,12 @@ func (c *consumerService) DeleteConsumer(id string) (data any, err error) {
 func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*domain.Consumer, error) {
 	//todo: if updating phone number or email send otp first and then update
 
-	idUint, err := strconv.ParseUint(string(id), 10, 64)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
+
 	param := domain.SearchParam{}
 	param["id"] = id
 	param["email"] = consumer.Email
@@ -123,7 +125,7 @@ func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*
 		return nil, fmt.Errorf("consumer with this email or phone already exist")
 	}
 
-	consumer.ID = idUint
+	consumer.ID = idInt
 
 	updatedConsumer, err := c.consumerStorage.UpdateConsumer(consumer)
 
@@ -148,13 +150,13 @@ func (c *consumerService) GetAllConsumer() ([]domain.Consumer, error) {
 
 // GetConsumer prepare data to get it from customerStorage.
 func (c *consumerService) GetConsumer(id string) (*domain.Consumer, error) {
-	idUint, err := strconv.ParseUint(string(id), 10, 64)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	consumer, err := c.consumerStorage.GetConsumerByID(idUint)
+	consumer, err := c.consumerStorage.GetConsumerByID(idInt)
 	if err != nil && err == sql.ErrNoRows {
 		return &domain.Consumer{}, nil
 	}
@@ -170,13 +172,13 @@ func (c *consumerService) GetConsumer(id string) (*domain.Consumer, error) {
 
 // InsertConsumerLocation prepare and send data to consumerStorage service.
 func (c *consumerService) InsertConsumerLocation(consumerLocation domain.ConsumerLocation, id string) (*domain.ConsumerLocation, error) {
-	idUint, err := strconv.ParseUint(id, 10, 64)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	foundConsumer, err := c.consumerStorage.GetConsumerByID(idUint)
+	foundConsumer, err := c.consumerStorage.GetConsumerByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -185,13 +187,13 @@ func (c *consumerService) InsertConsumerLocation(consumerLocation domain.Consume
 		return nil, fmt.Errorf("couldn't find consumer with this id")
 	}
 
-	foundConsumerLocation, err := c.consumerStorage.GetConsumerLocation(idUint)
+	foundConsumerLocation, err := c.consumerStorage.GetConsumerLocation(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
 
-	consumerLocation.ConsumerID = idUint
+	consumerLocation.ConsumerID = idInt
 
 	if foundConsumerLocation != nil {
 		return nil, fmt.Errorf("consumer location already exist: instead update old one")
@@ -208,13 +210,13 @@ func (c *consumerService) InsertConsumerLocation(consumerLocation domain.Consume
 
 // UpdateConsumerLocation prepare data for updating.
 func (c *consumerService) UpdateConsumerLocation(consumerLocation domain.ConsumerLocation, consumerID string) (*domain.ConsumerLocation, error) {
-	cidUint, err := strconv.ParseUint(string(consumerID), 10, 64)
+	cidInt, err := strconv.Atoi(consumerID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	consumerLocation.ConsumerID = cidUint
+	consumerLocation.ConsumerID = cidInt
 
 	updatedConsumerLocation, err := c.consumerStorage.UpdateConsumerLocation(consumerLocation)
 	if err != nil && err != sql.ErrNoRows {
@@ -227,13 +229,13 @@ func (c *consumerService) UpdateConsumerLocation(consumerLocation domain.Consume
 
 // GetConsumerLocation prepare data to get it from customerStorage.
 func (c *consumerService) GetConsumerLocation(id string) (*domain.ConsumerLocation, error) {
-	idUint, err := strconv.ParseUint(string(id), 10, 64)
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	consumerLocation, err := c.consumerStorage.GetConsumerLocation(idUint)
+	consumerLocation, err := c.consumerStorage.GetConsumerLocation(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr

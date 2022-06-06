@@ -1,14 +1,16 @@
 package consumerstorage_test
 
 import (
-	"consumer/pkg/db"
-	"consumer/pkg/domain"
-	"consumer/pkg/storage/consumerstorage"
-	"database/sql"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+
+	"database/sql"
 	"os"
 	"strings"
 	"testing"
+
+	"consumer/pkg/db"
+	"consumer/pkg/domain"
+	"consumer/pkg/storage/consumerstorage"
 )
 
 const configFile = "/config.yaml"

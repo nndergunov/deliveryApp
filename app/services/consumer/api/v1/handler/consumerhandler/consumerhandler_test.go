@@ -1,16 +1,18 @@
 package consumerhandler_test
 
 import (
-	"bytes"
-	"consumer/api/v1/consumerapi"
-	"consumer/api/v1/handler/consumerhandler"
-	"consumer/pkg/domain"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"consumer/api/v1/consumerapi"
+	"consumer/api/v1/handler/consumerhandler"
+	"consumer/pkg/domain"
 )
 
 var (

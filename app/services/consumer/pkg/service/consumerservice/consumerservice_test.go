@@ -1,12 +1,14 @@
 package consumerservice_test
 
 import (
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+
 	"bytes"
-	"consumer/api/v1/consumerapi"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
 	"strconv"
 	"testing"
+
+	"consumer/api/v1/consumerapi"
 )
 
 const baseAddr = "http://localhost:8080"

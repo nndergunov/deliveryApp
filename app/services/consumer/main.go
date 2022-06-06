@@ -1,18 +1,20 @@
 package main
 
 import (
-	"consumer/api/v1/handler/consumerhandler"
-	"consumer/pkg/db"
-	"consumer/pkg/service/consumerservice"
-	"consumer/pkg/storage/consumerstorage"
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+
 	"log"
 	"net/http"
 	"os"
+
+	"consumer/api/v1/handler/consumerhandler"
+	"consumer/pkg/db"
+	"consumer/pkg/service/consumerservice"
+	"consumer/pkg/storage/consumerstorage"
 )
 
 const configFile = "/config.yaml"

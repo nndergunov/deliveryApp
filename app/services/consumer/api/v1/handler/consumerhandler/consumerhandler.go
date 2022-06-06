@@ -1,14 +1,15 @@
-// Package handler contains a small handler framework extension.
 package consumerhandler
 
 import (
-	"consumer/api/v1/consumerapi"
-	"consumer/pkg/service/consumerservice"
 	"github.com/gorilla/mux"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
 	"io"
 	"net/http"
+
+	"consumer/api/v1/consumerapi"
+	"consumer/pkg/service/consumerservice"
 )
 
 type Params struct {
