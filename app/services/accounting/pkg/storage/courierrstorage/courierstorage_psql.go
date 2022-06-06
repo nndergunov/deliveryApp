@@ -37,7 +37,7 @@ func (c Storage) InsertNewCourierAccount(courierAccount domain.CourierAccount) (
 	return &newCourier, nil
 }
 
-func (c Storage) GetCourierAccountByID(id uint64) (*domain.CourierAccount, error) {
+func (c Storage) GetCourierAccountByID(id int) (*domain.CourierAccount, error) {
 
 	sql := `SELECT *
 			FROM courier_account
@@ -53,7 +53,7 @@ func (c Storage) GetCourierAccountByID(id uint64) (*domain.CourierAccount, error
 	return &courierAccount, nil
 }
 
-func (c Storage) DeleteCourierAccount(courierID uint64) error {
+func (c Storage) DeleteCourierAccount(courierID int) error {
 	sql := `DELETE 
 			FROM courier_account
 			WHERE courier_id = $1

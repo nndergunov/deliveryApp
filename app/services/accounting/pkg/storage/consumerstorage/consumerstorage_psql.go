@@ -37,7 +37,7 @@ func (c Storage) InsertNewConsumerAccount(consumerAccount domain.ConsumerAccount
 	return &newCourier, nil
 }
 
-func (c Storage) GetConsumerAccountByID(id uint64) (*domain.ConsumerAccount, error) {
+func (c Storage) GetConsumerAccountByID(id int) (*domain.ConsumerAccount, error) {
 
 	sql := `SELECT * FROM 
 				consumer_account
@@ -54,7 +54,7 @@ func (c Storage) GetConsumerAccountByID(id uint64) (*domain.ConsumerAccount, err
 	return &consumerAccount, nil
 }
 
-func (c Storage) DeleteConsumerAccount(consumerID uint64) error {
+func (c Storage) DeleteConsumerAccount(consumerID int) error {
 	sql := `DELETE FROM 
 				consumer_account
 			WHERE consumer_id = $1

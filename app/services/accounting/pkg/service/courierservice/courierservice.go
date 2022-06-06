@@ -42,7 +42,7 @@ func NewService(p Params) *Service {
 func (c Service) InsertNewCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error) {
 
 	if account.CourierID < 1 {
-		return nil, errWrongCourierIDType
+		return nil, errWrongCourierID
 	}
 
 	//check duplicate
@@ -66,13 +66,13 @@ func (c Service) InsertNewCourierAccount(account domain.CourierAccount) (*domain
 }
 
 func (c Service) GetCourierAccount(courierID string) (*domain.CourierAccount, error) {
-	idUint, err := strconv.ParseUint(courierID, 10, 64)
+	idInt, err := strconv.Atoi(courierID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongCourierIDType
 	}
 
-	courierAccount, err := c.Storage.GetCourierAccountByID(idUint)
+	courierAccount, err := c.Storage.GetCourierAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -85,13 +85,13 @@ func (c Service) GetCourierAccount(courierID string) (*domain.CourierAccount, er
 }
 
 func (c Service) DeleteCourierAccount(courierID string) (string, error) {
-	idUint, err := strconv.ParseUint(courierID, 10, 64)
+	idInt, err := strconv.Atoi(courierID)
 	if err != nil {
 		c.logger.Println(err)
 		return "", errWrongCourierIDType
 	}
 
-	courierAccount, err := c.Storage.GetCourierAccountByID(idUint)
+	courierAccount, err := c.Storage.GetCourierAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -100,7 +100,7 @@ func (c Service) DeleteCourierAccount(courierID string) (string, error) {
 		return "", errCourierAccountNotFound
 	}
 
-	err = c.Storage.DeleteCourierAccount(idUint)
+	err = c.Storage.DeleteCourierAccount(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -110,12 +110,13 @@ func (c Service) DeleteCourierAccount(courierID string) (string, error) {
 }
 
 func (c Service) AddToBalanceCourierAccount(courierID string, account domain.CourierAccount) (*domain.CourierAccount, error) {
-	idUint, err := strconv.ParseUint(courierID, 10, 64)
+	idInt, err := strconv.Atoi(courierID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongCourierIDType
 	}
-	account.CourierID = idUint
+
+	account.CourierID = idInt
 
 	if account.CourierID < 1 {
 		return nil, errWrongCourierID
@@ -144,12 +145,12 @@ func (c Service) AddToBalanceCourierAccount(courierID string, account domain.Cou
 }
 
 func (c Service) SubFromBalanceCourierAccount(courierID string, account domain.CourierAccount) (*domain.CourierAccount, error) {
-	idUint, err := strconv.ParseUint(courierID, 10, 64)
+	idInt, err := strconv.Atoi(courierID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongCourierIDType
 	}
-	account.CourierID = idUint
+	account.CourierID = idInt
 
 	if account.CourierID < 1 {
 		return nil, errWrongCourierID

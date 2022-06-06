@@ -66,13 +66,13 @@ func (c Service) InsertNewRestaurantAccount(account domain.RestaurantAccount) (*
 }
 
 func (c Service) GetRestaurantAccount(restaurantID string) (*domain.RestaurantAccount, error) {
-	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
+	idInt, err := strconv.Atoi(restaurantID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongRestaurantIDType
 	}
 
-	RestaurantAccount, err := c.Storage.GetRestaurantAccountByID(idUint)
+	RestaurantAccount, err := c.Storage.GetRestaurantAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -85,13 +85,13 @@ func (c Service) GetRestaurantAccount(restaurantID string) (*domain.RestaurantAc
 }
 
 func (c Service) DeleteRestaurantAccount(restaurantID string) (string, error) {
-	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
+	idInt, err := strconv.Atoi(restaurantID)
 	if err != nil {
 		c.logger.Println(err)
 		return "", errWrongRestaurantIDType
 	}
 
-	RestaurantAccount, err := c.Storage.GetRestaurantAccountByID(idUint)
+	RestaurantAccount, err := c.Storage.GetRestaurantAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -100,7 +100,7 @@ func (c Service) DeleteRestaurantAccount(restaurantID string) (string, error) {
 		return "", errRestaurantAccountNotFound
 	}
 
-	err = c.Storage.DeleteRestaurantAccount(idUint)
+	err = c.Storage.DeleteRestaurantAccount(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -110,12 +110,12 @@ func (c Service) DeleteRestaurantAccount(restaurantID string) (string, error) {
 }
 
 func (c Service) AddToBalanceRestaurantAccount(restaurantID string, account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
-	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
+	idInt, err := strconv.Atoi(restaurantID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongRestaurantIDType
 	}
-	account.RestaurantID = idUint
+	account.RestaurantID = idInt
 
 	if account.RestaurantID < 1 {
 		return nil, errWrongRestaurantID
@@ -144,12 +144,13 @@ func (c Service) AddToBalanceRestaurantAccount(restaurantID string, account doma
 }
 
 func (c Service) SubFromBalanceRestaurantAccount(restaurantID string, account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
-	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
+	idInt, err := strconv.Atoi(restaurantID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongRestaurantIDType
 	}
-	account.RestaurantID = idUint
+
+	account.RestaurantID = idInt
 
 	if account.RestaurantID < 1 {
 		return nil, errWrongRestaurantID

@@ -37,7 +37,7 @@ func (c RestaurantStorage) InsertNewRestaurantAccount(restaurantAccount domain.R
 	return &newRestaurant, nil
 }
 
-func (c RestaurantStorage) GetRestaurantAccountByID(id uint64) (*domain.RestaurantAccount, error) {
+func (c RestaurantStorage) GetRestaurantAccountByID(id int) (*domain.RestaurantAccount, error) {
 
 	sql := `SELECT *
 			FROM restaurant_account
@@ -53,7 +53,7 @@ func (c RestaurantStorage) GetRestaurantAccountByID(id uint64) (*domain.Restaura
 	return &RestaurantAccount, nil
 }
 
-func (c RestaurantStorage) DeleteRestaurantAccount(RestaurantID uint64) error {
+func (c RestaurantStorage) DeleteRestaurantAccount(RestaurantID int) error {
 
 	sql := `DELETE 
 			FROM restaurant_account

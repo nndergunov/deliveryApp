@@ -65,13 +65,13 @@ func (c Service) InsertNewConsumerAccount(account domain.ConsumerAccount) (*doma
 }
 
 func (c Service) GetConsumerAccount(consumerID string) (*domain.ConsumerAccount, error) {
-	idUint, err := strconv.ParseUint(consumerID, 10, 64)
+	idInt, err := strconv.Atoi(consumerID)
 	if err != nil {
 		c.logger.Println(err)
-		return nil, errWrongConsumerID
+		return nil, errWrongConsumerIDType
 	}
 
-	consumerAccount, err := c.Storage.GetConsumerAccountByID(idUint)
+	consumerAccount, err := c.Storage.GetConsumerAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -84,13 +84,13 @@ func (c Service) GetConsumerAccount(consumerID string) (*domain.ConsumerAccount,
 }
 
 func (c Service) DeleteConsumerAccount(consumerID string) (string, error) {
-	idUint, err := strconv.ParseUint(consumerID, 10, 64)
+	idInt, err := strconv.Atoi(consumerID)
 	if err != nil {
 		c.logger.Println(err)
-		return "", errWrongConsumerID
+		return "", errWrongConsumerIDType
 	}
 
-	consumerAccount, err := c.Storage.GetConsumerAccountByID(idUint)
+	consumerAccount, err := c.Storage.GetConsumerAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -99,7 +99,7 @@ func (c Service) DeleteConsumerAccount(consumerID string) (string, error) {
 		return "", errConsumerAccountExist
 	}
 
-	err = c.Storage.DeleteConsumerAccount(idUint)
+	err = c.Storage.DeleteConsumerAccount(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -110,13 +110,13 @@ func (c Service) DeleteConsumerAccount(consumerID string) (string, error) {
 
 func (c Service) AddToBalanceConsumerAccount(consumerID string, account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 
-	idUint, err := strconv.ParseUint(consumerID, 10, 64)
+	idInt, err := strconv.Atoi(consumerID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	account.ConsumerID = idUint
+	account.ConsumerID = idInt
 
 	if account.ConsumerID < 1 {
 		return nil, errWrongConsumerID
@@ -146,13 +146,13 @@ func (c Service) AddToBalanceConsumerAccount(consumerID string, account domain.C
 
 func (c Service) SubFromBalanceConsumerAccount(consumerID string, account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 
-	idUint, err := strconv.ParseUint(consumerID, 10, 64)
+	idInt, err := strconv.Atoi(consumerID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	account.ConsumerID = idUint
+	account.ConsumerID = idInt
 
 	if account.ConsumerID < 1 {
 		return nil, errWrongConsumerID
