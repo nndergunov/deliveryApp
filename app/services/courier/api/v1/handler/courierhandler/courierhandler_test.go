@@ -2,15 +2,16 @@ package courierhandler_test
 
 import (
 	"bytes"
-	"courier/api/v1/courierapi"
-	"courier/api/v1/handler/courierhandler"
-	"courier/pkg/domain"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"courier/api/v1/courierapi"
+	"courier/api/v1/handler/courierhandler"
+	"courier/pkg/domain"
 )
 
 var (
@@ -115,7 +116,7 @@ func TestInsertNewCourierEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/courier", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/couriers", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -174,7 +175,7 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/v1/courier/1", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/v1/couriers/1", nil)
 
 		handler.ServeHTTP(resp, req)
 		var respData string
@@ -232,7 +233,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/courier/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/couriers/1", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -291,7 +292,7 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPut, "/v1/courier/available/1?available=true", nil)
+		req := httptest.NewRequest(http.MethodPut, "/v1/couriers-available/1?available=true", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -324,7 +325,7 @@ func TestGetCourierEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/courier/1", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/couriers/1", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -381,7 +382,7 @@ func TestGetCourierAllEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/courier/all", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/couriers", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -476,7 +477,7 @@ func TestInsertNewCourierLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/courier/location/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/couriers/1/location", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -559,7 +560,7 @@ func TestUpdateCourierLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/courier/location/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/couriers/1/location", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -625,7 +626,7 @@ func TestGetCourierLocationEndpoint(t *testing.T) {
 			})
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/courier/location/1", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/couriers/1/location", nil)
 
 			courierHandler.ServeHTTP(resp, req)
 
