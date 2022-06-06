@@ -2,14 +2,15 @@
 package consumergrp
 
 import (
-	"accounting/api/v1/accountingapi"
-	"accounting/api/v1/accountingapi/consumerapi"
-	"accounting/pkg/service/consumerservice"
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"io"
 	"net/http"
+
+	"accounting/api/v1/accountingapi"
+	"accounting/api/v1/accountingapi/consumerapi"
+	"accounting/pkg/service/consumerservice"
 )
 
 type Params struct {
@@ -110,6 +111,7 @@ func (c ConsumerHandler) GetConsumerAccount(rw http.ResponseWriter, r *http.Requ
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam); err != nil {
 			c.log.Println(err)
 		}
+		return
 	}
 
 	data, err := c.service.GetConsumerAccount(id)
@@ -146,6 +148,7 @@ func (c ConsumerHandler) DeleteConsumerAccount(rw http.ResponseWriter, r *http.R
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
+		return
 	}
 
 	data, err := c.service.DeleteConsumerAccount(id)

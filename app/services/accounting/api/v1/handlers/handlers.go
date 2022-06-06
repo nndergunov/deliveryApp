@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"accounting/api/v1/handlers/routs"
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"accounting/api/v1/handlers/routes"
 	"accounting/api/v1/web"
 	"accounting/pkg/service/consumerservice"
 	"accounting/pkg/service/courierservice"
 	"accounting/pkg/service/restaurantrservice"
-	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
 
 type Params struct {
@@ -30,7 +31,7 @@ func NewAPIMux(p Params) *mux.Router {
 		RestaurantService: p.RestaurantService,
 	}
 
-	routs.InitRoutes(app)
+	routes.InitRoutes(app)
 
 	return app.ServeMux
 }

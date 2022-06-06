@@ -1,10 +1,11 @@
 package restaurantservice
 
 import (
-	"accounting/pkg/domain"
 	"database/sql"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"strconv"
+
+	"accounting/pkg/domain"
 )
 
 // RestaurantService is the interface for the accounting service.
@@ -41,7 +42,7 @@ func NewService(p Params) *Service {
 func (c Service) InsertNewRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
 
 	if account.RestaurantID < 1 {
-		return nil, errWrongRestaurantIDType
+		return nil, errWrongRestaurantID
 	}
 
 	//check duplicate
@@ -111,7 +112,7 @@ func (c Service) DeleteRestaurantAccount(RestaurantID string) (string, error) {
 func (c Service) AddToBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
 
 	if account.RestaurantID < 1 {
-		return nil, errWrongRestaurantIDType
+		return nil, errWrongRestaurantID
 	}
 
 	if account.Balance < 1 {
@@ -139,7 +140,7 @@ func (c Service) AddToBalanceRestaurantAccount(account domain.RestaurantAccount)
 func (c Service) SubFromBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
 
 	if account.RestaurantID < 1 {
-		return nil, errWrongRestaurantIDType
+		return nil, errWrongRestaurantID
 	}
 
 	if account.Balance < 1 {

@@ -2,12 +2,13 @@
 package couriergrp
 
 import (
-	"accounting/api/v1/accountingapi"
-	"accounting/api/v1/accountingapi/courierrapi"
-	"accounting/pkg/service/courierservice"
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
+
+	"accounting/api/v1/accountingapi"
+	"accounting/api/v1/accountingapi/courierrapi"
+	"accounting/pkg/service/courierservice"
 )
 
 type Params struct {
@@ -68,7 +69,6 @@ func (c CourierHandler) InsertNewCourierAccount(rw http.ResponseWriter, r *http.
 
 	if err := accountingapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
-		return
 	}
 }
 
@@ -79,6 +79,7 @@ func (c CourierHandler) GetCourierAccount(rw http.ResponseWriter, r *http.Reques
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam); err != nil {
 			c.log.Println(err)
 		}
+		return
 	}
 
 	data, err := c.service.GetCourierAccount(id)
@@ -115,6 +116,7 @@ func (c CourierHandler) DeleteCourierAccount(rw http.ResponseWriter, r *http.Req
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
+		return
 	}
 
 	data, err := c.service.DeleteCourierAccount(id)

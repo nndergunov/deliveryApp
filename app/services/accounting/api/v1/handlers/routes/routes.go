@@ -1,15 +1,16 @@
-package routs
+package routes
 
 import (
+	"net/http"
+
 	"accounting/api/v1/handlers/consumergrp"
 	"accounting/api/v1/handlers/curiergrp"
 	"accounting/api/v1/handlers/restaurantgrp"
 	"accounting/api/v1/web"
-	"net/http"
 )
 
-// Package routs contains the full set of handler functions and routes
-// supported by the routs web api.
+// Package routes contains the full set of handler functions and routes
+// supported by the routes web api.
 
 const (
 	version = "/v1"

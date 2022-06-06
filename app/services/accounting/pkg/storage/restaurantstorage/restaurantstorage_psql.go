@@ -1,8 +1,9 @@
 package restaurantstorage
 
 import (
-	"accounting/pkg/domain"
 	"database/sql"
+
+	"accounting/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -21,10 +22,10 @@ func NewStorage(p Params) *RestaurantStorage {
 }
 
 func (c RestaurantStorage) InsertNewRestaurantAccount(restaurantAccount domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
-	sql := `INSERT INTO
-				restaurant_account
-					(restaurant_id, created_at, updated_at)
-			VALUES($1,now(),now())
+
+	sql := `INSERT INTO restaurant_account
+    			(restaurant_id, created_at, updated_at)
+			VALUES ($1, now(), now())
 			returning *`
 
 	newRestaurant := domain.RestaurantAccount{}
@@ -37,11 +38,11 @@ func (c RestaurantStorage) InsertNewRestaurantAccount(restaurantAccount domain.R
 }
 
 func (c RestaurantStorage) GetRestaurantAccountByID(id uint64) (*domain.RestaurantAccount, error) {
-	sql := `SELECT * FROM 
-				restaurant_account
-			WHERE
-				restaurant_id = $1
-	`
+
+	sql := `SELECT *
+			FROM restaurant_account
+			WHERE restaurant_id = $1`
+
 	RestaurantAccount := domain.RestaurantAccount{}
 
 	if err := c.db.QueryRow(sql, id).Scan(&RestaurantAccount.RestaurantID, &RestaurantAccount.Balance, &RestaurantAccount.CreatedAt,
@@ -53,8 +54,9 @@ func (c RestaurantStorage) GetRestaurantAccountByID(id uint64) (*domain.Restaura
 }
 
 func (c RestaurantStorage) DeleteRestaurantAccount(RestaurantID uint64) error {
-	sql := `DELETE FROM 
-				restaurant_account
+
+	sql := `DELETE 
+			FROM restaurant_account
 			WHERE restaurant_id = $1
 	`
 	if _, err := c.db.Exec(sql, RestaurantID); err != nil {
@@ -65,12 +67,10 @@ func (c RestaurantStorage) DeleteRestaurantAccount(RestaurantID uint64) error {
 }
 
 func (c RestaurantStorage) AddToBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
-	sql := `UPDATE Restaurant_account
-				    SET 
-				        balance = (SELECT balance FROM 
-						restaurant_account) + $2
 
-				WHERE restaurant_id = $1
+	sql := `UPDATE Restaurant_account
+			SET balance = (SELECT balance FROM restaurant_account) + $2
+			WHERE restaurant_id = $1
 			returning *`
 
 	newRestaurant := domain.RestaurantAccount{}
@@ -83,12 +83,10 @@ func (c RestaurantStorage) AddToBalanceRestaurantAccount(account domain.Restaura
 }
 
 func (c RestaurantStorage) SubFromBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
-	sql := `UPDATE restaurant_account
-				    SET 
-				        balance = (SELECT balance FROM 
-						Restaurant_account) - $2
 
-				WHERE restaurant_id = $1
+	sql := `UPDATE restaurant_account
+			SET balance = (SELECT balance FROM restaurant_account) - $2
+			WHERE restaurant_id = $1
 			returning *`
 
 	newRestaurant := domain.RestaurantAccount{}

@@ -1,10 +1,11 @@
 package consumerservice
 
 import (
-	"accounting/pkg/domain"
 	"database/sql"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"strconv"
+
+	"accounting/pkg/domain"
 )
 
 // ConsumerService is the interface for the accounting service.
@@ -41,7 +42,7 @@ func NewService(p Params) *Service {
 func (c Service) InsertNewConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 
 	if account.ConsumerID < 1 {
-		return nil, errWrongConsumerIDType
+		return nil, errWrongConsumerID
 	}
 	//check duplicate
 	consumerAccount, err := c.Storage.GetConsumerAccountByID(account.ConsumerID)
@@ -67,7 +68,7 @@ func (c Service) GetConsumerAccount(consumerID string) (*domain.ConsumerAccount,
 	idUint, err := strconv.ParseUint(consumerID, 10, 64)
 	if err != nil {
 		c.logger.Println(err)
-		return nil, errWrongConsumerIDType
+		return nil, errWrongConsumerID
 	}
 
 	consumerAccount, err := c.Storage.GetConsumerAccountByID(idUint)
@@ -86,7 +87,7 @@ func (c Service) DeleteConsumerAccount(consumerID string) (string, error) {
 	idUint, err := strconv.ParseUint(consumerID, 10, 64)
 	if err != nil {
 		c.logger.Println(err)
-		return "", errWrongConsumerIDType
+		return "", errWrongConsumerID
 	}
 
 	consumerAccount, err := c.Storage.GetConsumerAccountByID(idUint)
@@ -110,7 +111,7 @@ func (c Service) DeleteConsumerAccount(consumerID string) (string, error) {
 func (c Service) AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 
 	if account.ConsumerID < 1 {
-		return nil, errWrongConsumerIDType
+		return nil, errWrongConsumerID
 	}
 
 	if account.Balance < 1 {
@@ -138,7 +139,7 @@ func (c Service) AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*d
 func (c Service) SubFromBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 
 	if account.ConsumerID < 1 {
-		return nil, errWrongConsumerIDType
+		return nil, errWrongConsumerID
 	}
 
 	if account.Balance < 1 {

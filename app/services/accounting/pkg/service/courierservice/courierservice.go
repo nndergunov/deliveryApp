@@ -1,10 +1,11 @@
 package courierservice
 
 import (
-	"accounting/pkg/domain"
 	"database/sql"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"strconv"
+
+	"accounting/pkg/domain"
 )
 
 // CourierService is the interface for the accounting service.
@@ -110,7 +111,7 @@ func (c Service) DeleteCourierAccount(courierID string) (string, error) {
 
 func (c Service) AddToBalanceCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error) {
 	if account.CourierID < 1 {
-		return nil, errWrongCourierIDType
+		return nil, errWrongCourierID
 	}
 
 	if account.Balance < 1 {
@@ -138,7 +139,7 @@ func (c Service) AddToBalanceCourierAccount(account domain.CourierAccount) (*dom
 func (c Service) SubFromBalanceCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error) {
 
 	if account.CourierID < 1 {
-		return nil, errWrongCourierIDType
+		return nil, errWrongCourierID
 	}
 
 	if account.Balance < 1 {

@@ -2,12 +2,13 @@
 package restaurantgrp
 
 import (
-	"accounting/api/v1/accountingapi"
-	"accounting/api/v1/accountingapi/restaurantapi"
-	"accounting/pkg/service/restaurantrservice"
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
+
+	"accounting/api/v1/accountingapi"
+	"accounting/api/v1/accountingapi/restaurantapi"
+	"accounting/pkg/service/restaurantrservice"
 )
 
 type Params struct {
@@ -79,6 +80,7 @@ func (c RestaurantHandler) GetRestaurantAccount(rw http.ResponseWriter, r *http.
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoRestaurantIDParam); err != nil {
 			c.log.Println(err)
 		}
+		return
 	}
 
 	data, err := c.restaurantService.GetRestaurantAccount(id)
@@ -115,6 +117,7 @@ func (c RestaurantHandler) DeleteRestaurantAccount(rw http.ResponseWriter, r *ht
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoRestaurantIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
+		return
 	}
 
 	data, err := c.restaurantService.DeleteRestaurantAccount(id)

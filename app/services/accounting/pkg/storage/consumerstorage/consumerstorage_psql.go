@@ -1,8 +1,9 @@
 package consumerstorage
 
 import (
-	"accounting/pkg/domain"
 	"database/sql"
+
+	"accounting/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -21,10 +22,10 @@ func NewStorage(p Params) *Storage {
 }
 
 func (c Storage) InsertNewConsumerAccount(consumerAccount domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
-	sql := `INSERT INTO
-				consumer_account
-					(consumer_id, created_at, updated_at)
-			VALUES($1,now(),now())
+
+	sql := `INSERT INTO consumer_account
+    			(consumer_id, created_at, updated_at)
+			VALUES ($1, now(), now())
 			returning *`
 
 	newCourier := domain.ConsumerAccount{}
@@ -37,11 +38,12 @@ func (c Storage) InsertNewConsumerAccount(consumerAccount domain.ConsumerAccount
 }
 
 func (c Storage) GetConsumerAccountByID(id uint64) (*domain.ConsumerAccount, error) {
+
 	sql := `SELECT * FROM 
 				consumer_account
 			WHERE
-				consumer_id = $1
-	`
+				consumer_id = $1`
+
 	consumerAccount := domain.ConsumerAccount{}
 
 	if err := c.db.QueryRow(sql, id).Scan(&consumerAccount.ConsumerID, &consumerAccount.Balance, &consumerAccount.CreatedAt,
@@ -66,11 +68,8 @@ func (c Storage) DeleteConsumerAccount(consumerID uint64) error {
 
 func (c Storage) AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 	sql := `UPDATE consumer_account
-				    SET 
-				        balance = (SELECT balance FROM 
-						consumer_account) + $2
-
-				WHERE consumer_id = $1
+			SET balance = (SELECT balance FROM consumer_account) + $2
+			WHERE consumer_id = $1
 			returning *`
 
 	newCourier := domain.ConsumerAccount{}
@@ -84,11 +83,8 @@ func (c Storage) AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*d
 
 func (c Storage) SubFromBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
 	sql := `UPDATE consumer_account
-				    SET 
-				        balance = (SELECT balance FROM 
-						consumer_account) - $2
-
-				WHERE consumer_id = $1
+			SET balance = (SELECT balance FROM consumer_account) - $2
+			WHERE consumer_id = $1
 			returning *`
 
 	newCourier := domain.ConsumerAccount{}
