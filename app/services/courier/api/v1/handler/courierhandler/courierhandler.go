@@ -53,11 +53,11 @@ func (c *courierHandler) handlerInit() {
 	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.deleteCourier).Methods(http.MethodDelete)
 	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.updateCourier).Methods(http.MethodPut)
 	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.getCourier).Methods(http.MethodGet)
-	c.serveMux.HandleFunc("/v1/couriers/available/{"+courierIDKey+"}", c.updateCourierAvailable).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/couriers-available/{"+courierIDKey+"}", c.updateCourierAvailable).Methods(http.MethodPut)
 
-	c.serveMux.HandleFunc("/v1/couriers/location/{"+courierIDKey+"}", c.insertNewCourierLocation).Methods(http.MethodPost)
-	c.serveMux.HandleFunc("/v1/couriers/location/{"+courierIDKey+"}", c.updateCourierLocation).Methods(http.MethodPut)
-	c.serveMux.HandleFunc("/v1/couriers/location/{"+courierIDKey+"}", c.getCourierLocation).Methods(http.MethodGet)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.insertNewCourierLocation).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.updateCourierLocation).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.getCourierLocation).Methods(http.MethodGet)
 }
 
 func (c *courierHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
