@@ -52,9 +52,9 @@ func (c *consumerHandler) handlerInit() {
 	c.serveMux.HandleFunc("/v1/consumers/{"+consumerIDKey+"}", c.updateConsumer).Methods(http.MethodPut)
 	c.serveMux.HandleFunc("/v1/consumers/{"+consumerIDKey+"}", c.getConsumer).Methods(http.MethodGet)
 
-	c.serveMux.HandleFunc("/v1/consumers/location/{"+consumerIDKey+"}", c.insertNewConsumerLocation).Methods(http.MethodPost)
-	c.serveMux.HandleFunc("/v1/consumers/location/{"+consumerIDKey+"}", c.updateConsumerLocation).Methods(http.MethodPut)
-	c.serveMux.HandleFunc("/v1/consumers/location/{"+consumerIDKey+"}", c.getConsumerLocation).Methods(http.MethodGet)
+	c.serveMux.HandleFunc("/v1/consumers/{"+consumerIDKey+"}/location", c.insertNewConsumerLocation).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/v1/consumers/{"+consumerIDKey+"}/location", c.updateConsumerLocation).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/consumers/{"+consumerIDKey+"}/location", c.getConsumerLocation).Methods(http.MethodGet)
 }
 
 func (c *consumerHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
