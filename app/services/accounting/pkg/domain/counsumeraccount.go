@@ -3,10 +3,8 @@ package domain
 import "time"
 
 type ConsumerAccount struct {
-	ConsumerID uint64
-	Balance    int64
+	ConsumerID int
+	Balance    int
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
-
-type SearchParam map[string]string
