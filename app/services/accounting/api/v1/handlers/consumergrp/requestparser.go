@@ -11,16 +11,14 @@ func requestToNewConsumerAccount(req *consumerapi.NewConsumerAccountRequest) dom
 	}
 }
 
-func requestToAddConsumerAccount(req *consumerapi.AddConsumerAccountRequest) domain.ConsumerAccount {
+func requestToAddBalanceConsumerAccount(req *consumerapi.AddBalanceConsumerAccountRequest) domain.ConsumerAccount {
 	return domain.ConsumerAccount{
-		ConsumerID: req.ConsumerID,
-		Balance:    req.Amount,
+		Balance: req.Amount,
 	}
 }
 
-func requestToSubConsumerAccount(req *consumerapi.SubConsumerAccountRequest) domain.ConsumerAccount {
+func requestToSubBalanceConsumerAccount(req *consumerapi.SubBalanceConsumerAccountRequest) domain.ConsumerAccount {
 	return domain.ConsumerAccount{
-		ConsumerID: req.ConsumerID,
-		Balance:    req.Amount,
+		Balance: req.Amount,
 	}
 }

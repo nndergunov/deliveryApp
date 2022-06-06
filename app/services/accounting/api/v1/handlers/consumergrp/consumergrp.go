@@ -175,9 +175,18 @@ func (c ConsumerHandler) DeleteConsumerAccount(rw http.ResponseWriter, r *http.R
 }
 
 func (c ConsumerHandler) AddToBalanceConsumerAccount(rw http.ResponseWriter, r *http.Request) {
-	var addConsumerAccountRequest consumerapi.AddConsumerAccountRequest
+	vars := mux.Vars(r)
+	id, ok := vars[ConsumerIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
 
-	if err := accountingapi.BindJson(r, &addConsumerAccountRequest); err != nil {
+	var addBalanceConsumerAccountRequest consumerapi.AddBalanceConsumerAccountRequest
+
+	if err := accountingapi.BindJson(r, &addBalanceConsumerAccountRequest); err != nil {
 		c.log.Println(err)
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -185,9 +194,9 @@ func (c ConsumerHandler) AddToBalanceConsumerAccount(rw http.ResponseWriter, r *
 		return
 	}
 
-	account := requestToAddConsumerAccount(&addConsumerAccountRequest)
+	account := requestToAddBalanceConsumerAccount(&addBalanceConsumerAccountRequest)
 
-	data, err := c.service.AddToBalanceConsumerAccount(account)
+	data, err := c.service.AddToBalanceConsumerAccount(id, account)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -211,9 +220,17 @@ func (c ConsumerHandler) AddToBalanceConsumerAccount(rw http.ResponseWriter, r *
 }
 
 func (c ConsumerHandler) SubFromBalanceConsumerAccount(rw http.ResponseWriter, r *http.Request) {
-	var subConsumerAccountRequest consumerapi.SubConsumerAccountRequest
+	vars := mux.Vars(r)
+	id, ok := vars[ConsumerIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
+	var subBalanceConsumerAccountRequest consumerapi.SubBalanceConsumerAccountRequest
 
-	if err := accountingapi.BindJson(r, &subConsumerAccountRequest); err != nil {
+	if err := accountingapi.BindJson(r, &subBalanceConsumerAccountRequest); err != nil {
 		c.log.Println(err)
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -221,9 +238,9 @@ func (c ConsumerHandler) SubFromBalanceConsumerAccount(rw http.ResponseWriter, r
 		return
 	}
 
-	account := requestToSubConsumerAccount(&subConsumerAccountRequest)
+	account := requestToSubBalanceConsumerAccount(&subBalanceConsumerAccountRequest)
 
-	data, err := c.service.SubFromBalanceConsumerAccount(account)
+	data, err := c.service.SubFromBalanceConsumerAccount(id, account)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)

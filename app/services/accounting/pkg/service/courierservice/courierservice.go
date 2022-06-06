@@ -14,8 +14,8 @@ type CourierService interface {
 	GetCourierAccount(courierID string) (*domain.CourierAccount, error)
 	DeleteCourierAccount(courierID string) (string, error)
 
-	AddToBalanceCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error)
-	SubFromBalanceCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error)
+	AddToBalanceCourierAccount(courierID string, account domain.CourierAccount) (*domain.CourierAccount, error)
+	SubFromBalanceCourierAccount(courierID string, account domain.CourierAccount) (*domain.CourierAccount, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -109,7 +109,14 @@ func (c Service) DeleteCourierAccount(courierID string) (string, error) {
 	return "courier account deleted", nil
 }
 
-func (c Service) AddToBalanceCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error) {
+func (c Service) AddToBalanceCourierAccount(courierID string, account domain.CourierAccount) (*domain.CourierAccount, error) {
+	idUint, err := strconv.ParseUint(courierID, 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, errWrongCourierIDType
+	}
+	account.CourierID = idUint
+
 	if account.CourierID < 1 {
 		return nil, errWrongCourierID
 	}
@@ -136,7 +143,13 @@ func (c Service) AddToBalanceCourierAccount(account domain.CourierAccount) (*dom
 	return courierAccountUpdated, nil
 }
 
-func (c Service) SubFromBalanceCourierAccount(account domain.CourierAccount) (*domain.CourierAccount, error) {
+func (c Service) SubFromBalanceCourierAccount(courierID string, account domain.CourierAccount) (*domain.CourierAccount, error) {
+	idUint, err := strconv.ParseUint(courierID, 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, errWrongCourierIDType
+	}
+	account.CourierID = idUint
 
 	if account.CourierID < 1 {
 		return nil, errWrongCourierID

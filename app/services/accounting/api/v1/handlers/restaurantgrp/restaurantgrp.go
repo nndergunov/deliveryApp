@@ -144,6 +144,15 @@ func (c RestaurantHandler) DeleteRestaurantAccount(rw http.ResponseWriter, r *ht
 }
 
 func (c RestaurantHandler) AddBalanceRestaurantAccount(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars[RestaurantIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoRestaurantIDParam); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
+
 	var addBalanceRestaurantAccountRequest Restaurantapi.AddRestaurantAccountRequest
 
 	if err := accountingapi.BindJson(r, &addBalanceRestaurantAccountRequest); err != nil {
@@ -156,7 +165,7 @@ func (c RestaurantHandler) AddBalanceRestaurantAccount(rw http.ResponseWriter, r
 
 	account := requestToAddBalanceRestaurantAccount(&addBalanceRestaurantAccountRequest)
 
-	data, err := c.restaurantService.AddToBalanceRestaurantAccount(account)
+	data, err := c.restaurantService.AddToBalanceRestaurantAccount(id, account)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -180,6 +189,15 @@ func (c RestaurantHandler) AddBalanceRestaurantAccount(rw http.ResponseWriter, r
 }
 
 func (c RestaurantHandler) SubFromBalanceRestaurantAccount(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars[RestaurantIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoRestaurantIDParam); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
+
 	var subBalanceRestaurantAccountRequest Restaurantapi.SubBalanceRestaurantAccountRequest
 
 	if err := accountingapi.BindJson(r, &subBalanceRestaurantAccountRequest); err != nil {
@@ -192,7 +210,7 @@ func (c RestaurantHandler) SubFromBalanceRestaurantAccount(rw http.ResponseWrite
 
 	account := requestToSubBalanceRestaurantAccount(&subBalanceRestaurantAccountRequest)
 
-	data, err := c.restaurantService.SubFromBalanceRestaurantAccount(account)
+	data, err := c.restaurantService.SubFromBalanceRestaurantAccount(id, account)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)

@@ -13,14 +13,12 @@ func requestToNewRestaurantAccount(req *Restaurantapi.NewRestaurantAccountReques
 
 func requestToAddBalanceRestaurantAccount(req *Restaurantapi.AddRestaurantAccountRequest) domain.RestaurantAccount {
 	return domain.RestaurantAccount{
-		RestaurantID: req.RestaurantID,
-		Balance:      req.Amount,
+		Balance: req.Amount,
 	}
 }
 
 func requestToSubBalanceRestaurantAccount(req *Restaurantapi.SubBalanceRestaurantAccountRequest) domain.RestaurantAccount {
 	return domain.RestaurantAccount{
-		RestaurantID: req.RestaurantID,
-		Balance:      req.Amount,
+		Balance: req.Amount,
 	}
 }

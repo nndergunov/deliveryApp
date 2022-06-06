@@ -143,6 +143,15 @@ func (c CourierHandler) DeleteCourierAccount(rw http.ResponseWriter, r *http.Req
 }
 
 func (c CourierHandler) AddToBalanceCourierAccount(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars[CourierIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
+
 	var addBalanceCourierAccountRequest courierapi.AddBalanceCourierAccountRequest
 
 	if err := accountingapi.BindJson(r, &addBalanceCourierAccountRequest); err != nil {
@@ -155,7 +164,7 @@ func (c CourierHandler) AddToBalanceCourierAccount(rw http.ResponseWriter, r *ht
 
 	account := requestToAddBalanceCourierAccount(&addBalanceCourierAccountRequest)
 
-	data, err := c.service.AddToBalanceCourierAccount(account)
+	data, err := c.service.AddToBalanceCourierAccount(id, account)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -179,6 +188,15 @@ func (c CourierHandler) AddToBalanceCourierAccount(rw http.ResponseWriter, r *ht
 }
 
 func (c CourierHandler) SubFromBalanceCourierAccount(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars[CourierIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
+
 	var subBalanceCourierAccountRequest courierapi.SubBalanceCourierAccountRequest
 
 	if err := accountingapi.BindJson(r, &subBalanceCourierAccountRequest); err != nil {
@@ -191,7 +209,7 @@ func (c CourierHandler) SubFromBalanceCourierAccount(rw http.ResponseWriter, r *
 
 	account := requestToSubBalanceCourierAccount(&subBalanceCourierAccountRequest)
 
-	data, err := c.service.SubFromBalanceCourierAccount(account)
+	data, err := c.service.SubFromBalanceCourierAccount(id, account)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)

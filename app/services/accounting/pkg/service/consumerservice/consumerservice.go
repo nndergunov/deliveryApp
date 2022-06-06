@@ -14,8 +14,8 @@ type ConsumerService interface {
 	GetConsumerAccount(consumerID string) (*domain.ConsumerAccount, error)
 	DeleteConsumerAccount(consumerID string) (string, error)
 
-	AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
-	SubFromBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
+	AddToBalanceConsumerAccount(consumerID string, account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
+	SubFromBalanceConsumerAccount(consumerID string, account domain.ConsumerAccount) (*domain.ConsumerAccount, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -108,7 +108,15 @@ func (c Service) DeleteConsumerAccount(consumerID string) (string, error) {
 	return "consumer account deleted", nil
 }
 
-func (c Service) AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
+func (c Service) AddToBalanceConsumerAccount(consumerID string, account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
+
+	idUint, err := strconv.ParseUint(consumerID, 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, errWrongConsumerIDType
+	}
+
+	account.ConsumerID = idUint
 
 	if account.ConsumerID < 1 {
 		return nil, errWrongConsumerID
@@ -136,7 +144,15 @@ func (c Service) AddToBalanceConsumerAccount(account domain.ConsumerAccount) (*d
 	return consumerAccountUpdated, nil
 }
 
-func (c Service) SubFromBalanceConsumerAccount(account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
+func (c Service) SubFromBalanceConsumerAccount(consumerID string, account domain.ConsumerAccount) (*domain.ConsumerAccount, error) {
+
+	idUint, err := strconv.ParseUint(consumerID, 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, errWrongConsumerIDType
+	}
+
+	account.ConsumerID = idUint
 
 	if account.ConsumerID < 1 {
 		return nil, errWrongConsumerID

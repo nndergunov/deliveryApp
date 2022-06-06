@@ -11,11 +11,11 @@ import (
 // RestaurantService is the interface for the accounting service.
 type RestaurantService interface {
 	InsertNewRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error)
-	GetRestaurantAccount(RestaurantID string) (*domain.RestaurantAccount, error)
-	DeleteRestaurantAccount(RestaurantID string) (string, error)
+	GetRestaurantAccount(restaurantID string) (*domain.RestaurantAccount, error)
+	DeleteRestaurantAccount(restaurantID string) (string, error)
 
-	AddToBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error)
-	SubFromBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error)
+	AddToBalanceRestaurantAccount(restaurantID string, account domain.RestaurantAccount) (*domain.RestaurantAccount, error)
+	SubFromBalanceRestaurantAccount(restaurantID string, account domain.RestaurantAccount) (*domain.RestaurantAccount, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -65,8 +65,8 @@ func (c Service) InsertNewRestaurantAccount(account domain.RestaurantAccount) (*
 	return newRestaurantAccount, nil
 }
 
-func (c Service) GetRestaurantAccount(RestaurantID string) (*domain.RestaurantAccount, error) {
-	idUint, err := strconv.ParseUint(RestaurantID, 10, 64)
+func (c Service) GetRestaurantAccount(restaurantID string) (*domain.RestaurantAccount, error) {
+	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongRestaurantIDType
@@ -84,8 +84,8 @@ func (c Service) GetRestaurantAccount(RestaurantID string) (*domain.RestaurantAc
 	return RestaurantAccount, nil
 }
 
-func (c Service) DeleteRestaurantAccount(RestaurantID string) (string, error) {
-	idUint, err := strconv.ParseUint(RestaurantID, 10, 64)
+func (c Service) DeleteRestaurantAccount(restaurantID string) (string, error) {
+	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
 	if err != nil {
 		c.logger.Println(err)
 		return "", errWrongRestaurantIDType
@@ -109,7 +109,13 @@ func (c Service) DeleteRestaurantAccount(RestaurantID string) (string, error) {
 	return "Restaurant account deleted", nil
 }
 
-func (c Service) AddToBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
+func (c Service) AddToBalanceRestaurantAccount(restaurantID string, account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
+	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, errWrongRestaurantIDType
+	}
+	account.RestaurantID = idUint
 
 	if account.RestaurantID < 1 {
 		return nil, errWrongRestaurantID
@@ -137,7 +143,13 @@ func (c Service) AddToBalanceRestaurantAccount(account domain.RestaurantAccount)
 	return RestaurantAccountUpdated, nil
 }
 
-func (c Service) SubFromBalanceRestaurantAccount(account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
+func (c Service) SubFromBalanceRestaurantAccount(restaurantID string, account domain.RestaurantAccount) (*domain.RestaurantAccount, error) {
+	idUint, err := strconv.ParseUint(restaurantID, 10, 64)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, errWrongRestaurantIDType
+	}
+	account.RestaurantID = idUint
 
 	if account.RestaurantID < 1 {
 		return nil, errWrongRestaurantID
