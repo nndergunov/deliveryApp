@@ -1,8 +1,9 @@
 package restaurantservice
 
 import (
-	"database/sql"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"database/sql"
 	"strconv"
 
 	"accounting/pkg/domain"

@@ -1,10 +1,10 @@
-// Package handlers contains a small handlers framework extension.
 package consumergrp
 
 import (
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
 	"io"
 	"net/http"
 
