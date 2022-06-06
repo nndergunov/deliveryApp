@@ -112,6 +112,33 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 	}
 }
 
+func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request) {
+	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
+	if err != nil {
+		e.log.Println(err)
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	restaurant, err := e.service.ReturnRestaurant(restaurantID)
+	if err != nil {
+		e.log.Println(err)
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	response := restaurantToResponse(*restaurant)
+
+	err = v1.Respond(response, w)
+	if err != nil {
+		e.log.Println(err)
+	}
+}
+
 func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {

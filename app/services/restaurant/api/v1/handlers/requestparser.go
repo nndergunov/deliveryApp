@@ -28,10 +28,11 @@ func getIDFromEndpoint(code string, r *http.Request) (int, error) {
 
 func requestToRestaurant(restID int, req *restaurantapi.RestaurantData) domain.Restaurant {
 	return domain.Restaurant{
-		ID:      restID,
-		Name:    req.Name,
-		City:    req.City,
-		Address: req.Address,
+		ID:              restID,
+		Name:            req.Name,
+		AcceptingOrders: req.AcceptingOrders,
+		City:            req.City,
+		Address:         req.Address,
 	}
 }
 
@@ -43,6 +44,7 @@ func requestToMenu(restaurantID int, req *restaurantapi.MenuData) domain.Menu {
 			ID:     item.ID,
 			MenuID: 0,
 			Name:   item.Name,
+			Price:  item.Price,
 			Course: item.Course,
 		}
 
@@ -60,6 +62,7 @@ func requestToMenuItem(itemID int, req *restaurantapi.MenuItemData) domain.MenuI
 		ID:     itemID,
 		MenuID: 0,
 		Name:   req.Name,
+		Price:  req.Price,
 		Course: req.Course,
 	}
 }

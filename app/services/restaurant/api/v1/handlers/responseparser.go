@@ -7,10 +7,11 @@ import (
 
 func restaurantToResponse(restaurant domain.Restaurant) restaurantapi.ReturnRestaurant {
 	return restaurantapi.ReturnRestaurant{
-		ID:      restaurant.ID,
-		Name:    restaurant.Name,
-		City:    restaurant.City,
-		Address: restaurant.Address,
+		ID:              restaurant.ID,
+		Name:            restaurant.Name,
+		AcceptingOrders: restaurant.AcceptingOrders,
+		City:            restaurant.City,
+		Address:         restaurant.Address,
 	}
 }
 
@@ -45,6 +46,7 @@ func menuItemToResponse(menuItem domain.MenuItem) restaurantapi.ReturnMenuItem {
 	return restaurantapi.ReturnMenuItem{
 		ID:     menuItem.ID,
 		Name:   menuItem.Name,
+		Price:  menuItem.Price,
 		Course: menuItem.Course,
 	}
 }

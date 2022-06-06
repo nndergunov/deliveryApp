@@ -18,16 +18,20 @@ type App interface {
 }
 
 type Service struct {
-	storage       Storage
-	notificator   publisher.Publisher
-	statusChecker AppStatusChecker
+	storage          Storage
+	notificator      publisher.Publisher
+	accountingClient AccountingClient
+	restaurantClient RestaurantClient
 }
 
-func NewService(storage Storage, notificator publisher.Publisher, statusChecker AppStatusChecker) *Service {
+func NewService(storage Storage, notificator publisher.Publisher,
+	accountingClient AccountingClient, restaurantClient RestaurantClient,
+) *Service {
 	return &Service{
-		storage:       storage,
-		notificator:   notificator,
-		statusChecker: statusChecker,
+		storage:          storage,
+		notificator:      notificator,
+		accountingClient: accountingClient,
+		restaurantClient: restaurantClient,
 	}
 }
 
@@ -41,9 +45,22 @@ func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order
 }
 
 func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
-	err := s.statusChecker.CheckStatuses()
+	clientCanPay, err := s.accountingClient.CheckIfEnoughBalance(order)
 	if err != nil {
-		return nil, fmt.Errorf("checking initial service statuces: %w", err)
+		return nil, fmt.Errorf("checking client account: %w", err)
+	}
+
+	if !clientCanPay {
+		return nil, fmt.Errorf("impossible to create order: %w", ErrLowBalance)
+	}
+
+	restaurantOpen, err := s.restaurantClient.CheckIfAvailable(order.RestaurantID)
+	if err != nil {
+		return nil, fmt.Errorf("checking restaurant status: %w", err)
+	}
+
+	if !restaurantOpen {
+		return nil, fmt.Errorf("impossible to create order: %w", ErrRestaurantOffline)
 	}
 
 	orderID, err := s.storage.InsertOrder(order)

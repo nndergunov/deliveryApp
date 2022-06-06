@@ -1,10 +1,11 @@
 package restaurantapi
 
 type ReturnRestaurant struct {
-	ID      int
-	Name    string
-	City    string
-	Address string
+	ID              int
+	Name            string
+	AcceptingOrders bool
+	City            string
+	Address         string
 }
 
 type ReturnRestaurantList struct {
@@ -19,6 +20,7 @@ type ReturnMenu struct {
 type ReturnMenuItem struct {
 	ID     int
 	Name   string
+	Price  float64
 	Course string
 	// Photo []byte
 }

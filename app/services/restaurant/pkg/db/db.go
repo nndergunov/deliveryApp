@@ -29,8 +29,8 @@ func NewDatabase(dbURL string) (*Database, error) {
 }
 
 func (d Database) getRestaurantID(restaurant domain.Restaurant) (int, error) {
-	rest, err := models.Restaurants(qm.Where("name=? and city=? and address=?",
-		restaurant.Name, restaurant.City, restaurant.Address)).One(d.db)
+	rest, err := models.Restaurants(qm.Where("name=? and city=? and accepting_orders=? and address=?",
+		restaurant.Name, restaurant.City, restaurant.AcceptingOrders, restaurant.Address)).One(d.db)
 	if err != nil {
 		return 0, fmt.Errorf("getRestaurantID: %w", err)
 	}
@@ -57,10 +57,11 @@ func (d Database) GetAllRestaurants() ([]domain.Restaurant, error) {
 
 	for _, restaurant := range dbRestaurants {
 		restaurants = append(restaurants, domain.Restaurant{
-			ID:      restaurant.ID,
-			Name:    restaurant.Name,
-			City:    restaurant.City,
-			Address: restaurant.Address,
+			ID:              restaurant.ID,
+			Name:            restaurant.Name,
+			AcceptingOrders: restaurant.AcceptingOrders,
+			City:            restaurant.City,
+			Address:         restaurant.Address,
 		})
 	}
 
@@ -81,6 +82,7 @@ func (d Database) InsertRestaurant(restaurant domain.Restaurant) (int, error) {
 
 	dbRestaurant.Name = restaurant.Name
 	dbRestaurant.City = restaurant.City
+	dbRestaurant.AcceptingOrders = restaurant.AcceptingOrders
 	dbRestaurant.Address = restaurant.Address
 
 	err = dbRestaurant.Insert(d.db, boil.Infer())
@@ -103,10 +105,11 @@ func (d Database) GetRestaurant(restaurantID int) (*domain.Restaurant, error) {
 	}
 
 	rest := &domain.Restaurant{
-		ID:      dbRestaurant.ID,
-		Name:    dbRestaurant.Name,
-		City:    dbRestaurant.City,
-		Address: dbRestaurant.Address,
+		ID:              dbRestaurant.ID,
+		Name:            dbRestaurant.Name,
+		City:            dbRestaurant.City,
+		AcceptingOrders: dbRestaurant.AcceptingOrders,
+		Address:         dbRestaurant.Address,
 	}
 
 	return rest, nil
@@ -120,6 +123,7 @@ func (d Database) UpdateRestaurant(restaurant domain.Restaurant) error {
 
 	dbRestaurant.Name = restaurant.Name
 	dbRestaurant.City = restaurant.City
+	dbRestaurant.AcceptingOrders = restaurant.AcceptingOrders
 	dbRestaurant.Address = restaurant.Address
 
 	_, err = dbRestaurant.Update(d.db, boil.Infer())
@@ -297,8 +301,8 @@ func (d Database) DeleteMenu(restaurantID int) error {
 }
 
 func (d Database) getMenuItemID(menuItem domain.MenuItem) (int, error) {
-	dbMenuItem, err := models.MenuItems(qm.Where("menu_id=? and name=? and course=?",
-		menuItem.MenuID, menuItem.Name, menuItem.Course)).One(d.db)
+	dbMenuItem, err := models.MenuItems(qm.Where("menu_id=? and name=? and price=? and course=?",
+		menuItem.MenuID, menuItem.Name, menuItem.Price, menuItem.Course)).One(d.db)
 	if err != nil {
 		return 0, fmt.Errorf("getMenuItemID: %w", err)
 	}
@@ -340,6 +344,7 @@ func (d Database) InsertMenuItem(restaurantID int, menuItem domain.MenuItem) (in
 
 	dbMenuItem.MenuID = menuID
 	dbMenuItem.Name = menuItem.Name
+	dbMenuItem.Price = menuItem.Price
 	dbMenuItem.Course = menuItem.Course
 
 	err = dbMenuItem.Insert(d.db, boil.Infer())
@@ -365,6 +370,7 @@ func (d Database) GetMenuItem(menuItemID int) (*domain.MenuItem, error) {
 		ID:     dbMenuItem.ID,
 		MenuID: dbMenuItem.MenuID,
 		Name:   dbMenuItem.Name,
+		Price:  dbMenuItem.Price,
 		Course: dbMenuItem.Course,
 	}
 
@@ -384,6 +390,7 @@ func (d Database) getItemsFromMenu(menuID int) ([]domain.MenuItem, error) {
 			ID:     dbMenuItem.ID,
 			MenuID: menuID,
 			Name:   dbMenuItem.Name,
+			Price:  dbMenuItem.Price,
 			Course: dbMenuItem.Course,
 		}
 
@@ -400,6 +407,7 @@ func (d Database) UpdateMenuItem(menuItem domain.MenuItem) error {
 	}
 
 	dbMenuItem.Name = menuItem.Name
+	dbMenuItem.Price = menuItem.Price
 	dbMenuItem.Course = menuItem.Course
 
 	_, err = dbMenuItem.Update(d.db, boil.Infer())

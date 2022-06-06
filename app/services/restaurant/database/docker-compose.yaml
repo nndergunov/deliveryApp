@@ -11,12 +11,3 @@ services:
       - '5436:5432'
     volumes:
       - ./restaurant.sql:/docker-entrypoint-initdb.d/restaurant.sql
-    networks:
-      - dbnet
-
-volumes:
-  database_postgres:
-
-networks:
-  dbnet:
-    driver: bridge
