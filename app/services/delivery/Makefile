@@ -2,24 +2,30 @@ status-check:
 	-curl http://localhost:8081/status
 
 cl-start:
+	make -C database docker-build
 	go run main.go
 
 docker-build:
+	make -C database docker-build
 	docker-compose up -d
 
 docker-delete:
+	make -C database docker-delete
 	docker-compose down --remove-orphans --volumes
-	docker image rm delivery_app
+	docker image rm restaurant_app
 
 docker-rebuild:
+	make -C database docker-rebuild
 	make docker-delete
 	make docker-build
 
 docker-start:
-	docker container start delivery-service
+	make -C database docker-start
+	docker container start restaurant-service
 
 docker-stop:
-	docker container stop delivery-service
+	make -C database docker-stop
+	docker container stop restaurant-service
 
 update-gomod:
 	make download-gomod
@@ -31,6 +37,7 @@ download-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	go get -u github.com/gorilla/mux
+	go get -u github.com/lib/pq
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
