@@ -110,7 +110,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/consumer", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/consumers", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -160,7 +160,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/v1/consumer/1", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/v1/consumers/1", nil)
 
 		handler.ServeHTTP(resp, req)
 		var respData string
@@ -217,7 +217,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/consumers/1", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -267,7 +267,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/all", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/consumers", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -321,7 +321,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/1", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/consumers/1", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -399,7 +399,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/consumer/location/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/consumers/1/location", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -482,7 +482,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/location/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/1/location", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -548,7 +548,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			})
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/consumer/location/1", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/consumer/1/location", nil)
 
 			consumerHandler.ServeHTTP(resp, req)
 
