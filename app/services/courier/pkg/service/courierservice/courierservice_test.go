@@ -1,12 +1,14 @@
 package courierservice_test
 
 import (
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+
 	"bytes"
-	"courier/api/v1/courierapi"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
 	"strconv"
 	"testing"
+
+	"courier/api/v1/courierapi"
 )
 
 const baseAddr = "http://localhost:8081"

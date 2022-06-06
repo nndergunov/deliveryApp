@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Courier struct {
-	ID        uint64
+	ID        int
 	Username  string
 	Password  string
 	Firstname string

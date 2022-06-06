@@ -1,11 +1,12 @@
 package courierstorage
 
 import (
-	"courier/pkg/domain"
 	"database/sql"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"strconv"
+
+	"courier/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -47,7 +48,7 @@ func (c CourierStorage) InsertCourier(courier domain.Courier) (*domain.Courier, 
 	return &newCourier, nil
 }
 
-func (c CourierStorage) DeleteCourier(id uint64) error {
+func (c CourierStorage) DeleteCourier(id int) error {
 	sql := `DELETE FROM 
 				courier
 			WHERE id = $1
@@ -86,7 +87,7 @@ func (c CourierStorage) UpdateCourier(courier domain.Courier) (*domain.Courier, 
 	return &updatedCourier, nil
 }
 
-func (c CourierStorage) UpdateCourierAvailable(id uint64, available bool) (*domain.Courier, error) {
+func (c CourierStorage) UpdateCourierAvailable(id int, available bool) (*domain.Courier, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -138,7 +139,7 @@ func (c CourierStorage) GetAllCourier(param domain.SearchParam) ([]domain.Courie
 	return allCourier, nil
 }
 
-func (c CourierStorage) GetCourierByID(id uint64) (*domain.Courier, error) {
+func (c CourierStorage) GetCourierByID(id int) (*domain.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE
@@ -232,7 +233,7 @@ returning *
 	return &newCourierLocation, nil
 }
 
-func (c CourierStorage) DeleteCourierLocation(courierID uint64) error {
+func (c CourierStorage) DeleteCourierLocation(courierID int) error {
 	sql := `
     DELETE
 FROM courier_location
@@ -244,7 +245,7 @@ WHERE courier_id = $1
 	return nil
 }
 
-func (c CourierStorage) GetCourierLocation(id uint64) (*domain.CourierLocation, error) {
+func (c CourierStorage) GetCourierLocation(id int) (*domain.CourierLocation, error) {
 	sql := `SELECT
 				courier_id, altitude, longitude, country, city, region, street, home_number, floor, door
 			FROM 

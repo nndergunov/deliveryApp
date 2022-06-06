@@ -2,14 +2,16 @@
 package courierhandler
 
 import (
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"io"
+	"net/http"
+
 	"courier/api/v1/courierapi"
 	"courier/pkg/domain"
 	"courier/pkg/service/courierservice"
-	"github.com/gorilla/mux"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"io"
-	"net/http"
 )
 
 type Params struct {

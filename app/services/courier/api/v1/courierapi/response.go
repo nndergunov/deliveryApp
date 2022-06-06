@@ -1,7 +1,7 @@
 package courierapi
 
 type CourierResponse struct {
-	ID        uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+	ID        int    `json:"id,omitempty" yaml:"id,omitempty"`
 	Username  string `json:"username,omitempty" yaml:"username,omitempty"`
 	Firstname string `json:"firstname,omitempty" yaml:"firstname,omitempty"`
 	Lastname  string `json:"lastname,omitempty" yaml:"lastname,omitempty"`
@@ -15,7 +15,7 @@ type ReturnCourierResponseList struct {
 }
 
 type CourierLocationResponse struct {
-	CourierID  uint64 `json:"courier_id,omitempty" yaml:"courier_id,omitempty"`
+	CourierID  int    `json:"courier_id,omitempty" yaml:"courier_id,omitempty"`
 	Altitude   string `json:"altitude,omitempty" yaml:"altitude,omitempty"`
 	Longitude  string `json:"Longitude,omitempty" yaml:"Longitude,omitempty"`
 	Country    string `json:"country,omitempty" yaml:"country,omitempty"`
