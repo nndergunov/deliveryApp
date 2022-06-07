@@ -8,9 +8,10 @@ type OrderFilters struct {
 }
 
 type OrderData struct {
-	FromUserID   int
-	RestaurantID int
-	OrderItems   []int
+	FromUserID     int
+	RestaurantID   int
+	OrderItems     []int
+	PaymentHashKey string
 }
 
 type OrderStatusData struct {
