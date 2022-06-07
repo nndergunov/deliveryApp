@@ -22,11 +22,13 @@ import (
 
 // Restaurant is an object representing the database table.
 type Restaurant struct {
-	ID              int    `boil:"id" json:"id" toml:"id" yaml:"id"`
-	Name            string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	AcceptingOrders bool   `boil:"accepting_orders" json:"accepting_orders" toml:"accepting_orders" yaml:"accepting_orders"`
-	City            string `boil:"city" json:"city" toml:"city" yaml:"city"`
-	Address         string `boil:"address" json:"address" toml:"address" yaml:"address"`
+	ID              int     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	Name            string  `boil:"name" json:"name" toml:"name" yaml:"name"`
+	AcceptingOrders bool    `boil:"accepting_orders" json:"accepting_orders" toml:"accepting_orders" yaml:"accepting_orders"`
+	City            string  `boil:"city" json:"city" toml:"city" yaml:"city"`
+	Address         string  `boil:"address" json:"address" toml:"address" yaml:"address"`
+	Longitude       float64 `boil:"longitude" json:"longitude" toml:"longitude" yaml:"longitude"`
+	Altitude        float64 `boil:"altitude" json:"altitude" toml:"altitude" yaml:"altitude"`
 
 	R *restaurantR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L restaurantL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -38,12 +40,16 @@ var RestaurantColumns = struct {
 	AcceptingOrders string
 	City            string
 	Address         string
+	Longitude       string
+	Altitude        string
 }{
 	ID:              "id",
 	Name:            "name",
 	AcceptingOrders: "accepting_orders",
 	City:            "city",
 	Address:         "address",
+	Longitude:       "longitude",
+	Altitude:        "altitude",
 }
 
 var RestaurantTableColumns = struct {
@@ -52,12 +58,16 @@ var RestaurantTableColumns = struct {
 	AcceptingOrders string
 	City            string
 	Address         string
+	Longitude       string
+	Altitude        string
 }{
 	ID:              "restaurants.id",
 	Name:            "restaurants.name",
 	AcceptingOrders: "restaurants.accepting_orders",
 	City:            "restaurants.city",
 	Address:         "restaurants.address",
+	Longitude:       "restaurants.longitude",
+	Altitude:        "restaurants.altitude",
 }
 
 // Generated where
@@ -77,12 +87,16 @@ var RestaurantWhere = struct {
 	AcceptingOrders whereHelperbool
 	City            whereHelperstring
 	Address         whereHelperstring
+	Longitude       whereHelperfloat64
+	Altitude        whereHelperfloat64
 }{
 	ID:              whereHelperint{field: "\"restaurants\".\"id\""},
 	Name:            whereHelperstring{field: "\"restaurants\".\"name\""},
 	AcceptingOrders: whereHelperbool{field: "\"restaurants\".\"accepting_orders\""},
 	City:            whereHelperstring{field: "\"restaurants\".\"city\""},
 	Address:         whereHelperstring{field: "\"restaurants\".\"address\""},
+	Longitude:       whereHelperfloat64{field: "\"restaurants\".\"longitude\""},
+	Altitude:        whereHelperfloat64{field: "\"restaurants\".\"altitude\""},
 }
 
 // RestaurantRels is where relationship names are stored.
@@ -106,8 +120,8 @@ func (*restaurantR) NewStruct() *restaurantR {
 type restaurantL struct{}
 
 var (
-	restaurantAllColumns            = []string{"id", "name", "accepting_orders", "city", "address"}
-	restaurantColumnsWithoutDefault = []string{"name", "accepting_orders", "city", "address"}
+	restaurantAllColumns            = []string{"id", "name", "accepting_orders", "city", "address", "longitude", "altitude"}
+	restaurantColumnsWithoutDefault = []string{"name", "accepting_orders", "city", "address", "longitude", "altitude"}
 	restaurantColumnsWithDefault    = []string{"id"}
 	restaurantPrimaryKeyColumns     = []string{"id"}
 	restaurantGeneratedColumns      = []string{}

@@ -6,6 +6,8 @@ type ReturnRestaurant struct {
 	AcceptingOrders bool
 	City            string
 	Address         string
+	Longitude       float64
+	Altitude        float64
 }
 
 type ReturnRestaurantList struct {
