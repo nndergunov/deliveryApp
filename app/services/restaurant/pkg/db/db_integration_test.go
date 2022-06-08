@@ -19,10 +19,13 @@ func TestGetAllRestaurants(t *testing.T) {
 		{
 			name: "Simple fetch restaurants from db test",
 			restaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "GetAllName",
-				City:    "GetAllCity",
-				Address: "GetAllAddress",
+				ID:              0,
+				Name:            "GetAllName",
+				AcceptingOrders: false,
+				City:            "GetAllCity",
+				Address:         "GetAllAddress",
+				Longitude:       10,
+				Altitude:        20,
 			},
 		},
 	}
@@ -79,12 +82,25 @@ func TestGetAllRestaurants(t *testing.T) {
 				t.Errorf("Name: Expected: %s, Got: %s", test.restaurantData.Name, restaurant.Name)
 			}
 
+			if test.restaurantData.AcceptingOrders != restaurant.AcceptingOrders {
+				t.Errorf("AcceptingOrders: Expected: %v, Got: %v",
+					test.restaurantData.AcceptingOrders, restaurant.AcceptingOrders)
+			}
+
 			if test.restaurantData.City != restaurant.City {
 				t.Errorf("City: Expected: %s, Got: %s", test.restaurantData.City, restaurant.City)
 			}
 
 			if test.restaurantData.Address != restaurant.Address {
 				t.Errorf("Address: Expected: %s, Got: %s", test.restaurantData.Address, restaurant.Address)
+			}
+
+			if test.restaurantData.Longitude != restaurant.Longitude {
+				t.Errorf("Longitude: Expected: %f, Got: %f", test.restaurantData.Longitude, restaurant.Longitude)
+			}
+
+			if test.restaurantData.Altitude != restaurant.Altitude {
+				t.Errorf("Altitude: Expected: %f, Got: %f", test.restaurantData.Altitude, restaurant.Altitude)
 			}
 
 			_ = database.DeleteRestaurant(id)
@@ -102,10 +118,13 @@ func TestInsertRestaurant(t *testing.T) {
 		{
 			name: "Simple insert restaurant into db test",
 			restaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "InsertName",
-				City:    "InsertCity",
-				Address: "InsertAddress",
+				ID:              0,
+				Name:            "InsertName",
+				AcceptingOrders: true,
+				City:            "InsertCity",
+				Address:         "InsertAddress",
+				Longitude:       1.2,
+				Altitude:        3.4,
 			},
 		},
 	}
@@ -156,10 +175,13 @@ func TestGetRestaurant(t *testing.T) {
 		{
 			name: "Simple fetch single restaurant from db test",
 			restaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "GetName",
-				City:    "GetCity",
-				Address: "GetAddress",
+				ID:              0,
+				Name:            "GetName",
+				AcceptingOrders: true,
+				City:            "GetCity",
+				Address:         "GetAddress",
+				Longitude:       1.2,
+				Altitude:        3.4,
 			},
 		},
 	}
@@ -198,12 +220,25 @@ func TestGetRestaurant(t *testing.T) {
 				t.Errorf("Name: Expected: %s, Got: %s", test.restaurantData.Name, restaurant.Name)
 			}
 
+			if test.restaurantData.AcceptingOrders != restaurant.AcceptingOrders {
+				t.Errorf("AcceptingOrders: Expected: %v, Got: %v",
+					test.restaurantData.AcceptingOrders, restaurant.AcceptingOrders)
+			}
+
 			if test.restaurantData.City != restaurant.City {
 				t.Errorf("City: Expected: %s, Got: %s", test.restaurantData.City, restaurant.City)
 			}
 
 			if test.restaurantData.Address != restaurant.Address {
 				t.Errorf("Address: Expected: %s, Got: %s", test.restaurantData.Address, restaurant.Address)
+			}
+
+			if test.restaurantData.Longitude != restaurant.Longitude {
+				t.Errorf("Longitude: Expected: %f, Got: %f", test.restaurantData.Longitude, restaurant.Longitude)
+			}
+
+			if test.restaurantData.Altitude != restaurant.Altitude {
+				t.Errorf("Altitude: Expected: %f, Got: %f", test.restaurantData.Altitude, restaurant.Altitude)
 			}
 
 			_ = database.DeleteRestaurant(id)
@@ -222,16 +257,22 @@ func TestUpdateRestaurant(t *testing.T) {
 		{
 			name: "Simple update restaurant in db test",
 			initialRestaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "InitialName",
-				City:    "InitialCity",
-				Address: "InitialAddress",
+				ID:              0,
+				Name:            "InitialName",
+				AcceptingOrders: false,
+				City:            "InitialCity",
+				Address:         "InitialAddress",
+				Longitude:       1.0,
+				Altitude:        2.0,
 			},
 			updatedRestaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "UpdatedName",
-				City:    "UpdatedCity",
-				Address: "UpdatedAddress",
+				ID:              0,
+				Name:            "UpdatedName",
+				AcceptingOrders: true,
+				City:            "UpdatedCity",
+				Address:         "UpdatedAddress",
+				Longitude:       1.1,
+				Altitude:        2.2,
 			},
 		},
 	}
@@ -283,10 +324,13 @@ func TestDeleteRestaurant(t *testing.T) {
 		{
 			name: "Simple delete restaurant from db test",
 			restaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "DeleteName",
-				City:    "DeleteCity",
-				Address: "DeleteAddress",
+				ID:              0,
+				Name:            "DeleteName",
+				AcceptingOrders: false,
+				City:            "DeleteCity",
+				Address:         "DeleteAddress",
+				Longitude:       1.2,
+				Altitude:        3.4,
 			},
 		},
 	}

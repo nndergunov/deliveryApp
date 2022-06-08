@@ -29,8 +29,9 @@ func NewDatabase(dbURL string) (*Database, error) {
 }
 
 func (d Database) getRestaurantID(restaurant domain.Restaurant) (int, error) {
-	rest, err := models.Restaurants(qm.Where("name=? and city=? and accepting_orders=? and address=?",
-		restaurant.Name, restaurant.City, restaurant.AcceptingOrders, restaurant.Address)).One(d.db)
+	rest, err := models.Restaurants(qm.Where("name=? and city=? and accepting_orders=? and address=? "+
+		"and longitude=? and altitude=?", restaurant.Name, restaurant.City, restaurant.AcceptingOrders,
+		restaurant.Address, restaurant.Longitude, restaurant.Altitude)).One(d.db)
 	if err != nil {
 		return 0, fmt.Errorf("getRestaurantID: %w", err)
 	}
@@ -62,6 +63,8 @@ func (d Database) GetAllRestaurants() ([]domain.Restaurant, error) {
 			AcceptingOrders: restaurant.AcceptingOrders,
 			City:            restaurant.City,
 			Address:         restaurant.Address,
+			Longitude:       restaurant.Longitude,
+			Altitude:        restaurant.Altitude,
 		})
 	}
 
@@ -84,6 +87,8 @@ func (d Database) InsertRestaurant(restaurant domain.Restaurant) (int, error) {
 	dbRestaurant.City = restaurant.City
 	dbRestaurant.AcceptingOrders = restaurant.AcceptingOrders
 	dbRestaurant.Address = restaurant.Address
+	dbRestaurant.Longitude = restaurant.Longitude
+	dbRestaurant.Altitude = restaurant.Altitude
 
 	err = dbRestaurant.Insert(d.db, boil.Infer())
 	if err != nil {
@@ -107,9 +112,11 @@ func (d Database) GetRestaurant(restaurantID int) (*domain.Restaurant, error) {
 	rest := &domain.Restaurant{
 		ID:              dbRestaurant.ID,
 		Name:            dbRestaurant.Name,
-		City:            dbRestaurant.City,
 		AcceptingOrders: dbRestaurant.AcceptingOrders,
+		City:            dbRestaurant.City,
 		Address:         dbRestaurant.Address,
+		Longitude:       dbRestaurant.Longitude,
+		Altitude:        dbRestaurant.Altitude,
 	}
 
 	return rest, nil
@@ -125,6 +132,8 @@ func (d Database) UpdateRestaurant(restaurant domain.Restaurant) error {
 	dbRestaurant.City = restaurant.City
 	dbRestaurant.AcceptingOrders = restaurant.AcceptingOrders
 	dbRestaurant.Address = restaurant.Address
+	dbRestaurant.Longitude = restaurant.Longitude
+	dbRestaurant.Altitude = restaurant.Altitude
 
 	_, err = dbRestaurant.Update(d.db, boil.Infer())
 	if err != nil {
