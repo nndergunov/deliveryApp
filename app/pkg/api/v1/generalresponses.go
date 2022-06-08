@@ -5,3 +5,8 @@ type Status struct {
 	ServiceName string `json:"service"`
 	IsUp        string `json:"isUp"`
 }
+
+type ServiceError struct {
+	HTTPStatus int
+	ErrorText  string
+}
