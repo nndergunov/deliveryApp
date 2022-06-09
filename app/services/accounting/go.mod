@@ -9,7 +9,7 @@ require (
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220516080600-4954ce51ac52
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220516080600-4954ce51ac52
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52
-	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
+	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
 require (
@@ -25,6 +25,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.11.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
 	golang.org/x/sys v0.0.0-20220517195934-5e4e11fc645e // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
