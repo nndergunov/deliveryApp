@@ -468,7 +468,12 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 		e.log.Println(err)
 
 		if errors.Is(err, service.ErrItemIsNotInMenu) {
-			w.WriteHeader(http.StatusBadRequest)
+			err := v1.RespondWithError("requested item is not in menu", http.StatusBadRequest, w)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+
+				return
+			}
 
 			return
 		}
