@@ -48,7 +48,7 @@ func (a *accountHandler) handlerInit() {
 	a.serveMux.HandleFunc(version+"/accounts", a.InsertNewAccount).Methods(http.MethodPost)
 	a.serveMux.HandleFunc(version+"/accounts/{"+accountIDKey+"}", a.GetAccount).Methods(http.MethodGet)
 	a.serveMux.HandleFunc(version+"/accounts/{"+accountIDKey+"}", a.DeleteAccount).Methods(http.MethodDelete)
-	a.serveMux.HandleFunc(version+"/transaction", a.DoTransaction).Methods(http.MethodPut)
+	a.serveMux.HandleFunc(version+"/transaction", a.DoTransaction).Methods(http.MethodPost)
 }
 
 const accountIDKey = "account_id"
