@@ -11,7 +11,7 @@ import (
 
 type App interface {
 	ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error)
-	CreateOrder(order domain.Order) (*domain.Order, error)
+	CreateOrder(order domain.Order, accountID int) (*domain.Order, error)
 	ReturnOrder(orderID int) (*domain.Order, error)
 	UpdateOrder(order domain.Order) (*domain.Order, error)
 	UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error)
@@ -44,16 +44,7 @@ func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order
 	return orders, nil
 }
 
-func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
-	clientCanPay, err := s.accountingClient.CheckIfEnoughBalance(order)
-	if err != nil {
-		return nil, fmt.Errorf("checking client account: %w", err)
-	}
-
-	if !clientCanPay {
-		return nil, fmt.Errorf("impossible to create order: %w", ErrLowBalance)
-	}
-
+func (s Service) CreateOrder(order domain.Order, accountID int) (*domain.Order, error) {
 	restaurantOpen, err := s.restaurantClient.CheckIfAvailable(order.RestaurantID)
 	if err != nil {
 		return nil, fmt.Errorf("checking restaurant status: %w", err)
@@ -61,6 +52,20 @@ func (s Service) CreateOrder(order domain.Order) (*domain.Order, error) {
 
 	if !restaurantOpen {
 		return nil, fmt.Errorf("impossible to create order: %w", ErrRestaurantOffline)
+	}
+
+	orderPrice, err := s.restaurantClient.CalculateOrderPrice(order)
+	if err != nil {
+		return nil, fmt.Errorf("getting order price: %w", err)
+	}
+
+	orderPaid, err := s.accountingClient.CreateTransaction(accountID, order.RestaurantID, orderPrice)
+	if err != nil {
+		return nil, fmt.Errorf("checking client account: %w", err)
+	}
+
+	if !orderPaid {
+		return nil, fmt.Errorf("impossible to create order: %w", ErrLowBalance)
 	}
 
 	orderID, err := s.storage.InsertOrder(order)
