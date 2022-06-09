@@ -1,8 +1,8 @@
 package accountingapi
 
 type NewAccountRequest struct {
-	UserID   int    `json:"userID"`
-	UserType string `json:"userType"`
+	UserID   int    `json:"UserID"`
+	UserType string `json:"UserType"`
 }
 
 type TransactionRequest struct {
@@ -12,5 +12,5 @@ type TransactionRequest struct {
 }
 
 type SubBalanceConsumerAccountRequest struct {
-	Amount int `json:"amount"`
+	Amount int `json:"Amount"`
 }
