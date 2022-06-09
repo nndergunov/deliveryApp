@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -11,7 +12,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
-	"github.com/pkg/errors"
 )
 
 const orderID = "orderID"
