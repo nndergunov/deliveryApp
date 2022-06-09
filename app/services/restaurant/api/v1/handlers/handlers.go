@@ -465,20 +465,21 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 
 	err = e.service.DeleteMenuItem(restaurantID, menuItemID)
 	if err != nil {
-		e.log.Println(err)
+		if err != nil {
+			if errors.Is(err, service.ErrItemIsNotInMenu) {
+				err := v1.RespondWithError("requested item is not in menu", http.StatusBadRequest, w)
+				if err != nil {
+					e.log.Println(err)
 
-		if errors.Is(err, service.ErrItemIsNotInMenu) {
-			err := v1.RespondWithError("requested item is not in menu", http.StatusBadRequest, w)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
+					w.WriteHeader(http.StatusInternalServerError)
+
+				}
 
 				return
 			}
 
-			return
-		}
+			e.log.Println(err)
 
-		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 
 			return
