@@ -2,7 +2,6 @@ package deliveryhandler
 
 import (
 	"github.com/gorilla/mux"
-
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
