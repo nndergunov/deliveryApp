@@ -65,7 +65,7 @@ func TestInsertAccountEndpoint(t *testing.T) {
 			}
 
 			if respData.Balance != 0 {
-				t.Errorf("Firstname: Expected: %v, Got: %v", 0, respData.Balance)
+				t.Errorf("Balance: Expected: %v, Got: %v", 0, respData.Balance)
 			}
 
 			if respData.UserID != test.accountData.UserID {
