@@ -88,7 +88,7 @@ func (a accountHandler) StatusHandler(responseWriter http.ResponseWriter, _ *htt
 }
 
 func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
-	var newAccountRequest accountingapi.UserRequest
+	var newAccountRequest accountingapi.NewAccountRequest
 
 	if err := accountingapi.BindJson(r, &newAccountRequest); err != nil {
 		a.log.Println(err)
@@ -251,8 +251,8 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	userType := queryParams["user_type"][0]
 
 	if userID != "" && userType != "" {
-		searchParam[userID] = userID
-		searchParam[userType] = userType
+		searchParam["user_id"] = userID
+		searchParam["user_type"] = userType
 	}
 
 	data, err := a.service.GetAccountListByParam(searchParam)

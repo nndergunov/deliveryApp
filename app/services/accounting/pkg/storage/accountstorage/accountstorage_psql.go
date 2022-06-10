@@ -41,7 +41,7 @@ func (c Storage) GetAccountByID(id int) (*domain.Account, error) {
 
 	sql := `SELECT * 
 			FROM account
-			WHERE id = $1`
+			WHERE id = $1;`
 
 	account := domain.Account{}
 
@@ -58,7 +58,7 @@ func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Accou
 	sql := `SELECT * 
 			FROM account`
 
-	where := "WHERE 1=1"
+	where := " WHERE 1=1"
 
 	userID := param["user_id"]
 	if userID != "" {
@@ -67,7 +67,7 @@ func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Accou
 
 	userType := param["user_type"]
 	if userType != "" {
-		where = where + " AND user_type = " + userType + ""
+		where = where + " AND user_type = '" + userType + "'"
 	}
 
 	sql = sql + where

@@ -65,7 +65,7 @@ func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, erro
 		c.logger.Println(err)
 		return nil, systemErr
 	}
-	if len(gotAccountList) > 2 {
+	if len(gotAccountList) > 1 {
 		return nil, errMaxNumberOfAccount
 	}
 

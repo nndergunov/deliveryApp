@@ -5,7 +5,7 @@ import (
 	"accounting/pkg/domain"
 )
 
-func requestToNewAccount(req *accountingapi.UserRequest) domain.Account {
+func requestToNewAccount(req *accountingapi.NewAccountRequest) domain.Account {
 	return domain.Account{
 		UserID:   req.UserID,
 		UserType: req.UserType,

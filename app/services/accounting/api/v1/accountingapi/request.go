@@ -1,6 +1,6 @@
 package accountingapi
 
-type UserRequest struct {
+type NewAccountRequest struct {
 	UserID   int    `json:"user_id"`
 	UserType string `json:"user_type"`
 }
