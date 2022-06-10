@@ -13,7 +13,8 @@ import (
 // AccountService is the interface for the accounting service.
 type AccountService interface {
 	InsertNewAccount(account domain.Account) (*domain.Account, error)
-	GetAccount(ID string) (*domain.Account, error)
+	GetAccountByID(ID string) (*domain.Account, error)
+	GetAccountListByParam(param domain.SearchParam) ([]domain.Account, error)
 	DeleteAccount(id string) (string, error)
 
 	Transact(transaction domain.Transaction) (*domain.Transaction, error)
@@ -21,13 +22,13 @@ type AccountService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	Storage      ConsumerStorage
+	Storage      AccountStorage
 	TokenService tokenservice.TokenService
 	Logger       *logger.Logger
 }
 
 type Service struct {
-	storage      ConsumerStorage
+	storage      AccountStorage
 	tokenService tokenservice.TokenService
 	logger       *logger.Logger
 }
@@ -49,19 +50,26 @@ func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, erro
 		return nil, errWrongUserID
 	}
 
+	if account.UserType == "" {
+		return nil, errWrongUserType
+	}
 	_, ok := domain.UserType[account.UserType]
 	if !ok {
 		return nil, errWrongUserType
 	}
 
 	//check duplicate
-	gotAccount, err := c.storage.GetAccountByUserID(account.UserID, account.UserType)
+	param := domain.SearchParam{}
+	param["user_id"] = strconv.Itoa(account.UserID)
+	param["user_type"] = account.UserType
+
+	gotAccountList, err := c.storage.GetAccountListByParam(param)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
-	if gotAccount != nil {
-		return nil, errAccountExist
+	if len(gotAccountList) > 2 {
+		return nil, errMaxNumberOfAccount
 	}
 
 	//insertAccount
@@ -74,19 +82,14 @@ func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, erro
 	return newAccount, nil
 }
 
-func (c Service) GetAccountByUserID(userID string, userType string) (*domain.Account, error) {
-	idInt, err := strconv.Atoi(userID)
+func (c Service) GetAccountByID(id string) (*domain.Account, error) {
+	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	_, ok := domain.UserType[userType]
-	if !ok {
-		return nil, errWrongUserType
-	}
-
-	account, err := c.storage.GetAccountByUserID(idInt, userType)
+	account, err := c.storage.GetAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -98,23 +101,23 @@ func (c Service) GetAccountByUserID(userID string, userType string) (*domain.Acc
 	return account, nil
 }
 
-func (c Service) GetAccount(id string) (*domain.Account, error) {
-	idInt, err := strconv.Atoi(id)
+func (c Service) GetAccountListByParam(param domain.SearchParam) ([]domain.Account, error) {
+	_, err := strconv.Atoi(param["user_id"])
 	if err != nil {
 		c.logger.Println(err)
-		return nil, errWrongConsumerIDType
+		return nil, errWrongUserID
 	}
 
-	account, err := c.storage.GetAccount(idInt)
+	accountList, err := c.storage.GetAccountListByParam(param)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
-	if account == nil {
+	if accountList == nil {
 		return nil, errAccountNotFound
 	}
 
-	return account, nil
+	return accountList, nil
 }
 
 func (c Service) DeleteAccount(id string) (string, error) {
@@ -124,7 +127,7 @@ func (c Service) DeleteAccount(id string) (string, error) {
 		return "", errWrongUserType
 	}
 
-	gotAccount, err := c.storage.GetAccount(idInt)
+	gotAccount, err := c.storage.GetAccountByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -150,7 +153,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 
 	if transaction.FromAccountID == 0 && transaction.ToAccountID != 0 {
 		//add to balance
-		toAccount, err := c.storage.GetAccount(transaction.ToAccountID)
+		toAccount, err := c.storage.GetAccountByID(transaction.ToAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
 			return nil, systemErr
@@ -170,7 +173,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 
 	if transaction.FromAccountID != 0 && transaction.ToAccountID == 0 {
 		//sub from balance
-		fromAccount, err := c.storage.GetAccount(transaction.FromAccountID)
+		fromAccount, err := c.storage.GetAccountByID(transaction.FromAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
 			return nil, systemErr
@@ -194,7 +197,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 
 	if transaction.FromAccountID != 0 && transaction.ToAccountID != 0 {
 		//sub from balance and add to balance
-		fromAccount, err := c.storage.GetAccount(transaction.FromAccountID)
+		fromAccount, err := c.storage.GetAccountByID(transaction.FromAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
 			return nil, systemErr
@@ -207,7 +210,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 			return nil, errWrongAmount
 		}
 
-		toAccount, err := c.storage.GetAccount(transaction.ToAccountID)
+		toAccount, err := c.storage.GetAccountByID(transaction.ToAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
 			return nil, systemErr

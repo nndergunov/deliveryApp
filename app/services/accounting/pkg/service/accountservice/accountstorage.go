@@ -2,11 +2,11 @@ package accountservice
 
 import "accounting/pkg/domain"
 
-// ConsumerStorage is the interface for the accounting storage.
-type ConsumerStorage interface {
+// AccountStorage is the interface for the accounting storage.
+type AccountStorage interface {
 	InsertNewAccount(account domain.Account) (*domain.Account, error)
-	GetAccountByUserID(userID int, userType string) (*domain.Account, error)
-	GetAccount(id int) (*domain.Account, error)
+	GetAccountByID(id int) (*domain.Account, error)
+	GetAccountListByParam(params domain.SearchParam) ([]domain.Account, error)
 	DeleteAccount(consumerID int) error
 
 	AddToAccountBalance(tr domain.Transaction) (*domain.Transaction, error)

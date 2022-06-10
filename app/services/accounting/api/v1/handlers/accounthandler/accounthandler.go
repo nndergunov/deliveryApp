@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"accounting/api/v1/accountingapi"
+	"accounting/pkg/domain"
 	"accounting/pkg/service/accountservice"
 )
 
@@ -46,9 +47,11 @@ func (a *accountHandler) handlerInit() {
 	a.serveMux.HandleFunc(version+"/status", a.StatusHandler).Methods(http.MethodPost)
 
 	a.serveMux.HandleFunc(version+"/accounts", a.InsertNewAccount).Methods(http.MethodPost)
+	a.serveMux.HandleFunc(version+"/accounts", a.GetAccountList).Methods(http.MethodGet)
 	a.serveMux.HandleFunc(version+"/accounts/{"+accountIDKey+"}", a.GetAccount).Methods(http.MethodGet)
 	a.serveMux.HandleFunc(version+"/accounts/{"+accountIDKey+"}", a.DeleteAccount).Methods(http.MethodDelete)
-	a.serveMux.HandleFunc(version+"/transaction", a.DoTransaction).Methods(http.MethodPost)
+
+	a.serveMux.HandleFunc(version+"/transactions", a.InsertTransaction).Methods(http.MethodPost)
 }
 
 const accountIDKey = "account_id"
@@ -83,7 +86,7 @@ func (a accountHandler) StatusHandler(responseWriter http.ResponseWriter, _ *htt
 }
 
 func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
-	var newAccountRequest accountingapi.NewAccountRequest
+	var newAccountRequest accountingapi.UserRequest
 
 	if err := accountingapi.BindJson(r, &newAccountRequest); err != nil {
 		a.log.Println(err)
@@ -130,7 +133,7 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := a.service.GetAccount(id)
+	data, err := a.service.GetAccountByID(id)
 
 	if err != nil {
 		if err == systemErr {
@@ -196,7 +199,7 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a accountHandler) DoTransaction(rw http.ResponseWriter, r *http.Request) {
+func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
 
 	var transactionRequest accountingapi.TransactionRequest
 
@@ -228,6 +231,51 @@ func (a accountHandler) DoTransaction(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	response := transactionToResponse(data)
+	if err := accountingapi.Respond(rw, http.StatusOK, response); err != nil {
+		a.log.Println(err)
+		return
+	}
+}
+
+func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
+
+	searchParam := domain.SearchParam{}
+
+	queryParams := r.URL.Query()
+	userID := queryParams["user_id"][0]
+	userType := queryParams["user_type"][0]
+
+	if userID != "" && userType != "" {
+		searchParam[userID] = userID
+		searchParam[userType] = userType
+	}
+
+	data, err := a.service.GetAccountListByParam(searchParam)
+
+	if err != nil {
+		if err == systemErr {
+			a.log.Println(err)
+			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				a.log.Println(err)
+			}
+			return
+		}
+
+		if err == errAccountNotFound {
+			if err := accountingapi.Respond(rw, http.StatusOK, err.Error()); err != nil {
+				a.log.Println(err)
+			}
+		}
+
+		a.log.Println(err)
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+			a.log.Println(err)
+		}
+		return
+	}
+
+	response := accountListToResponse(data)
+
 	if err := accountingapi.Respond(rw, http.StatusOK, response); err != nil {
 		a.log.Println(err)
 		return

@@ -37,24 +37,7 @@ func (c Storage) InsertNewAccount(account domain.Account) (*domain.Account, erro
 	return &newAccount, nil
 }
 
-func (c Storage) GetAccountByUserID(id int, userType string) (*domain.Account, error) {
-
-	sql := `SELECT * 
-			FROM account
-			WHERE user_id = $1 
-			  AND user_type = $2`
-
-	account := domain.Account{}
-
-	if err := c.db.QueryRow(sql, id, userType).Scan(&account.ID, &account.UserID, &account.UserType, &account.Balance,
-		&account.CreatedAt, &account.UpdatedAt); err != nil {
-		return nil, err
-	}
-
-	return &account, nil
-}
-
-func (c Storage) GetAccount(id int) (*domain.Account, error) {
+func (c Storage) GetAccountByID(id int) (*domain.Account, error) {
 
 	sql := `SELECT * 
 			FROM account
@@ -70,9 +53,46 @@ func (c Storage) GetAccount(id int) (*domain.Account, error) {
 	return &account, nil
 }
 
+func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Account, error) {
+
+	sql := `SELECT * 
+			FROM account`
+
+	where := "WHERE 1=1"
+
+	userID := param["user_id"]
+	if userID != "" {
+		where = where + " AND user_id = " + userID + ""
+	}
+
+	userType := param["user_type"]
+	if userType != "" {
+		where = where + " AND user_type = " + userType + ""
+	}
+
+	sql = sql + where
+
+	var accountList []domain.Account
+
+	rows, err := c.db.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var account domain.Account
+		if err := rows.Scan(&account.ID, &account.UserID, &account.UserType, &account.Balance,
+			&account.CreatedAt, &account.UpdatedAt); err != nil {
+			break
+		}
+		accountList = append(accountList, account)
+	}
+
+	return accountList, nil
+}
+
 func (c Storage) DeleteAccount(id int) error {
-	sql := `DELETE FROM 
-				account
+	sql := `DELETE 
+			FROM account
 			WHERE id = $1
 	`
 	if _, err := c.db.Exec(sql, id); err != nil {
