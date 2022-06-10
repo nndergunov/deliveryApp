@@ -1,6 +1,7 @@
 package accounthandler
 
 import (
+	"errors"
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
@@ -100,21 +101,22 @@ func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request
 
 	data, err := a.service.InsertNewAccount(account)
 
-	if err != nil && err == systemErr {
-		a.log.Println(err)
-		if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			a.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
-		a.log.Println(err)
+
+		if errors.Is(err, systemErr) {
+			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				a.log.Println(err)
+			}
+			return
+		}
+
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			a.log.Println(err)
 		}
 		return
+
 	}
+
 	response := accountToResponse(*data)
 
 	if err := accountingapi.Respond(rw, http.StatusOK, response); err != nil {
@@ -127,7 +129,7 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
-		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam); err != nil {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoAccountIDParam); err != nil {
 			a.log.Println(err)
 		}
 		return
@@ -136,21 +138,21 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	data, err := a.service.GetAccountByID(id)
 
 	if err != nil {
-		if err == systemErr {
-			a.log.Println(err)
+
+		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
 			}
 			return
 		}
 
-		if err == errAccountNotFound {
+		if errors.Is(err, errAccountNotFound) {
 			if err := accountingapi.Respond(rw, http.StatusOK, err.Error()); err != nil {
 				a.log.Println(err)
 			}
+			return
 		}
 
-		a.log.Println(err)
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			a.log.Println(err)
 		}
@@ -170,7 +172,7 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
-		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoAccountIDParam.Error()); err != nil {
 			a.log.Println(err)
 		}
 		return
@@ -178,19 +180,20 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.DeleteAccount(id)
 
-	if err != nil && err == systemErr {
-		a.log.Println(err)
-		if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			a.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				a.log.Println(err)
+			}
+			return
+		}
+
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			a.log.Println(err)
 		}
 		return
+
 	}
 
 	if err := accountingapi.Respond(rw, http.StatusOK, data); err != nil {
@@ -215,19 +218,20 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 
 	data, err := a.service.Transact(transaction)
 
-	if err != nil && err == systemErr {
-		a.log.Println(err)
-		if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			a.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				a.log.Println(err)
+			}
+			return
+		}
+
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			a.log.Println(err)
 		}
 		return
+
 	}
 
 	response := transactionToResponse(data)
@@ -253,21 +257,21 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	data, err := a.service.GetAccountListByParam(searchParam)
 
 	if err != nil {
-		if err == systemErr {
-			a.log.Println(err)
+
+		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
 			}
 			return
 		}
 
-		if err == errAccountNotFound {
+		if errors.Is(err, errAccountNotFound) {
 			if err := accountingapi.Respond(rw, http.StatusOK, err.Error()); err != nil {
 				a.log.Println(err)
 			}
+			return
 		}
 
-		a.log.Println(err)
 		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			a.log.Println(err)
 		}

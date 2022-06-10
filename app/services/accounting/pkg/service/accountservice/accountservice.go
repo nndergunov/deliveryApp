@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"accounting/pkg/domain"
-	"accounting/pkg/service/tokenservice"
 )
 
 // AccountService is the interface for the accounting service.
@@ -22,23 +21,20 @@ type AccountService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	Storage      AccountStorage
-	TokenService tokenservice.TokenService
-	Logger       *logger.Logger
+	Storage AccountStorage
+	Logger  *logger.Logger
 }
 
 type Service struct {
-	storage      AccountStorage
-	tokenService tokenservice.TokenService
-	logger       *logger.Logger
+	storage AccountStorage
+	logger  *logger.Logger
 }
 
 // NewService constructs a new NewService.
 func NewService(p Params) *Service {
 	ServiceItem := &Service{
-		storage:      p.Storage,
-		tokenService: p.TokenService,
-		logger:       p.Logger,
+		storage: p.Storage,
+		logger:  p.Logger,
 	}
 
 	return ServiceItem
@@ -86,7 +82,7 @@ func (c Service) GetAccountByID(id string) (*domain.Account, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
-		return nil, errWrongConsumerIDType
+		return nil, errWrongUserType
 	}
 
 	account, err := c.storage.GetAccountByID(idInt)
