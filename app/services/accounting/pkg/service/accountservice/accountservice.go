@@ -1,9 +1,10 @@
 package accountservice
 
 import (
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
 	"database/sql"
 	"errors"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"strconv"
 
 	"accounting/pkg/domain"

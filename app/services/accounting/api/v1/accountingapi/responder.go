@@ -1,7 +1,7 @@
 package accountingapi
 
 import (
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
 )
 
