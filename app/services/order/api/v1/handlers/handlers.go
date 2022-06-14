@@ -128,7 +128,7 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	orderData := new(orderapi.OrderData)
+	orderData := new(orderapi.PostOrder)
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
@@ -139,9 +139,9 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	order := requestToOrder(*orderData)
+	order := requestToOrder(orderData.OrderData)
 
-	createdOrder, err := e.serviceInstance.CreateOrder(order)
+	createdOrder, err := e.serviceInstance.CreateOrder(order, orderData.UserAccount)
 	if err != nil {
 		e.log.Println(err)
 
