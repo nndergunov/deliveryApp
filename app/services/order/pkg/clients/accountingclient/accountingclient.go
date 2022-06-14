@@ -21,8 +21,7 @@ func NewAccountingClient(url string) *AccountingClient {
 func (a AccountingClient) CreateTransaction(accountID, restaurantID int, orderPrice float64) (bool, error) {
 	transactionDetails, err := v1.Encode(accountingapi.TransactionRequest{
 		FromAccountID: accountID,
-		ToReceiverID:  restaurantID,
-		ReceiverType:  "restaurant",
+		ToAccountID:   restaurantID,
 		Amount:        orderPrice,
 	}) // Not final form, is likely to change along the course of accounting service development.
 	if err != nil {
