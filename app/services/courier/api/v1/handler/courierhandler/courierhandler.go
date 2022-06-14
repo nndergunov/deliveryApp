@@ -249,8 +249,14 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 func (c *courierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) {
 	param := domain.SearchParam{}
 
+	var available string
 	queryParams := r.URL.Query()
-	available := queryParams["available"][0]
+
+	availableList := queryParams["available"]
+	if availableList != nil {
+		available = availableList[0]
+	}
+
 	// latitude := queryParams["latitude"][0]
 	// longitude := queryParams["longitude"][0]
 	// radius := queryParams["radius"][0]

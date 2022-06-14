@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"courier/api/v1/courierapi"
@@ -46,7 +46,7 @@ func (m MockService) InsertCourier(_ domain.Courier) (*domain.Courier, error) {
 	return MockCourierData, nil
 }
 
-func (m MockService) DeleteCourier(_ string) (data any, err error) {
+func (m MockService) DeleteCourier(_ string) (data string, err error) {
 	return "courier deleted", nil
 }
 
@@ -366,10 +366,10 @@ func TestGetCourierEndpoint(t *testing.T) {
 	})
 }
 
-func TestGetCourierAllEndpoint(t *testing.T) {
+func TestGetAllCourierEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("get courier all simple test", func(t *testing.T) {
+	t.Run("get all courier simple test", func(t *testing.T) {
 		t.Parallel()
 		testGetRespList := []*domain.Courier{MockCourierData}
 		mockService := new(MockService)

@@ -3,7 +3,7 @@ package courierapi
 import (
 	"net/http"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )
 
 // Respond converts a Go value to JSON and sends it to the client.

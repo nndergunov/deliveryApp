@@ -14,7 +14,7 @@ import (
 // CourierService is the interface for the user service.
 type CourierService interface {
 	InsertCourier(courier domain.Courier) (*domain.Courier, error)
-	DeleteCourier(id string) (data any, err error)
+	DeleteCourier(id string) (data string, err error)
 	UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error)
 	UpdateCourierAvailable(id, available string) (*domain.Courier, error)
 	GetAllCourier(params map[string]string) ([]domain.Courier, error)
@@ -73,30 +73,30 @@ func (c *courierService) InsertCourier(courier domain.Courier) (*domain.Courier,
 }
 
 // DeleteCourier prepare courier data for removing.
-func (c *courierService) DeleteCourier(id string) (data any, err error) {
+func (c *courierService) DeleteCourier(id string) (data string, err error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
-		return nil, errWrongCourierIDType
+		return "", errWrongCourierIDType
 	}
 
 	foundCourier, err := c.courierStorage.GetCourierByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
-		return nil, systemErr
+		return "", systemErr
 	}
 	if foundCourier == nil {
-		return nil, errCourierWithIDNotFound
+		return "", errCourierWithIDNotFound
 	}
 
 	if err = c.courierStorage.DeleteCourier(idInt); err != nil {
 		c.logger.Println(err)
-		return nil, err
+		return "", err
 	}
 
 	if err = c.courierStorage.DeleteLocation(idInt); err != nil {
 		c.logger.Println(err)
-		return nil, err
+		return "", err
 	}
 
 	return "courier deleted", nil

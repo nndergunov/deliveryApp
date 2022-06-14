@@ -86,7 +86,7 @@ func TestInsertCourierEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(insertCourierRespData.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(int(insertCourierRespData.ID)), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -347,7 +347,7 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 			client2 := http.DefaultClient
 
 			req, err := http.NewRequest(http.MethodPut,
-				baseAddr+"/v1/couriers/"+strconv.Itoa(InsertCourier.ID)+"/available"+"?available="+strconv.FormatBool(!InsertCourier.Available), nil)
+				baseAddr+"/v1/couriers-available/"+strconv.Itoa(InsertCourier.ID)+"?available="+strconv.FormatBool(!InsertCourier.Available), nil)
 			if err != nil {
 				t.Error(err)
 			}
