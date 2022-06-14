@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -143,6 +144,28 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 
 	createdOrder, err := e.serviceInstance.CreateOrder(order, orderData.UserAccount)
 	if err != nil {
+		if errors.Is(err, service.ErrRestaurantOffline) {
+			err := v1.RespondWithError("restaurant is not accepting orders", http.StatusBadRequest, responseWriter)
+			if err != nil {
+				e.log.Println(err)
+
+				responseWriter.WriteHeader(http.StatusInternalServerError)
+			}
+
+			return
+		}
+
+		if errors.Is(err, service.ErrLowBalance) {
+			err := v1.RespondWithError("user has not enough balance to create this order", http.StatusBadRequest, responseWriter)
+			if err != nil {
+				e.log.Println(err)
+
+				responseWriter.WriteHeader(http.StatusInternalServerError)
+			}
+
+			return
+		}
+
 		e.log.Println(err)
 
 		responseWriter.WriteHeader(http.StatusInternalServerError)
