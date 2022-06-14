@@ -1,4 +1,3 @@
-// Package handler contains a small handler framework extension.
 package courierhandler
 
 import (
@@ -55,9 +54,9 @@ func (c *courierHandler) handlerInit() {
 	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.getCourier).Methods(http.MethodGet)
 	c.serveMux.HandleFunc("/v1/couriers-available/{"+courierIDKey+"}", c.updateCourierAvailable).Methods(http.MethodPut)
 
-	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.insertNewCourierLocation).Methods(http.MethodPost)
-	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.updateCourierLocation).Methods(http.MethodPut)
-	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.getCourierLocation).Methods(http.MethodGet)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.insertNewLocation).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.updateLocation).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}/location", c.getLocation).Methods(http.MethodGet)
 }
 
 func (c *courierHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -255,12 +254,20 @@ func (c *courierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) 
 	param := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
-	queryParamsList := queryParams["available"]
-	if queryParamsList != nil {
-		available := queryParamsList[0]
-		param["available"] = available
+	available := queryParams["available"][0]
+	//latitude := queryParams["latitude"][0]
+	//longitude := queryParams["longitude"][0]
+	//radius := queryParams["radius"][0]
 
+	if available != "" {
+		param["available"] = available
 	}
+
+	//if latitude != "" && longitude != "" && radius != "" {
+	//	param["latitude"] = longitude
+	//	param["longitude"] = longitude
+	//	param["radius"] = radius
+	//}
 
 	data, err := c.courierService.GetAllCourier(param)
 
@@ -323,18 +330,18 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *courierHandler) insertNewCourierLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	consumerID, ok := vars[courierIDKey]
+	courierID, ok := vars[courierIDKey]
 	if !ok {
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var courierLocationRequest courierapi.NewCourierLocationRequest
+	var locationRequest courierapi.NewLocationRequest
 
-	if err := courierapi.BindJson(r, &courierLocationRequest); err != nil {
+	if err := courierapi.BindJson(r, &locationRequest); err != nil {
 		c.log.Println(err)
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -342,9 +349,9 @@ func (c *courierHandler) insertNewCourierLocation(rw http.ResponseWriter, r *htt
 		return
 	}
 
-	courierLocation := requestToNewCourierLocation(&courierLocationRequest)
+	location := requestToNewLocation(&locationRequest)
 
-	data, err := c.courierService.InsertCourierLocation(courierLocation, consumerID)
+	data, err := c.courierService.InsertLocation(location, courierID)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -362,7 +369,7 @@ func (c *courierHandler) insertNewCourierLocation(rw http.ResponseWriter, r *htt
 		return
 	}
 
-	response := courierLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
@@ -371,18 +378,18 @@ func (c *courierHandler) insertNewCourierLocation(rw http.ResponseWriter, r *htt
 
 }
 
-func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	consumerID, ok := vars[courierIDKey]
+	courierID, ok := vars[courierIDKey]
 	if !ok {
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var updateCourierLocationRequest courierapi.UpdateCourierLocationRequest
+	var updateLocationRequest courierapi.UpdateLocationRequest
 
-	if err := courierapi.BindJson(r, &updateCourierLocationRequest); err != nil {
+	if err := courierapi.BindJson(r, &updateLocationRequest); err != nil {
 		c.log.Println(err)
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -390,9 +397,9 @@ func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.R
 		return
 	}
 
-	courierLocation := requestToUpdateConsumerLocation(&updateCourierLocationRequest)
+	location := requestToUpdateLocation(&updateLocationRequest)
 
-	data, err := c.courierService.UpdateCourierLocation(courierLocation, consumerID)
+	data, err := c.courierService.UpdateLocation(location, courierID)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -410,7 +417,7 @@ func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.R
 		return
 	}
 
-	response := courierLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
@@ -418,16 +425,16 @@ func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.R
 	}
 }
 
-func (c *courierHandler) getCourierLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, ok := vars[courierIDKey]
+	userID, ok := vars[courierIDKey]
 	if !ok {
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	data, err := c.courierService.GetCourierLocation(id)
+	data, err := c.courierService.GetLocation(userID)
 
 	if err != nil && err == systemErr {
 		c.log.Println(err)
@@ -445,7 +452,7 @@ func (c *courierHandler) getCourierLocation(rw http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	response := courierLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)

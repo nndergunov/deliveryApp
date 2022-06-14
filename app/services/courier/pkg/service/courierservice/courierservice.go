@@ -20,9 +20,9 @@ type CourierService interface {
 	GetAllCourier(params map[string]string) ([]domain.Courier, error)
 	GetCourier(id string) (*domain.Courier, error)
 
-	InsertCourierLocation(courier domain.CourierLocation, id string) (*domain.CourierLocation, error)
-	UpdateCourierLocation(courier domain.CourierLocation, id string) (*domain.CourierLocation, error)
-	GetCourierLocation(id string) (*domain.CourierLocation, error)
+	InsertLocation(courier domain.Location, userID string) (*domain.Location, error)
+	UpdateLocation(courier domain.Location, id string) (*domain.Location, error)
+	GetLocation(userID string) (*domain.Location, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -95,7 +95,7 @@ func (c *courierService) DeleteCourier(id string) (data any, err error) {
 		return nil, err
 	}
 
-	if err = c.courierStorage.DeleteCourierLocation(idInt); err != nil {
+	if err = c.courierStorage.DeleteLocation(idInt); err != nil {
 		c.logger.Println(err)
 		return nil, err
 	}
@@ -249,15 +249,15 @@ func (c *courierService) GetCourier(id string) (*domain.Courier, error) {
 	return courier, nil
 }
 
-// InsertCourierLocation prepare and send data to courierStorage service.
-func (c *courierService) InsertCourierLocation(courierLocation domain.CourierLocation, id string) (*domain.CourierLocation, error) {
-	idInt, err := strconv.Atoi(id)
+// InsertLocation prepare and send data to courierStorage service.
+func (c *courierService) InsertLocation(location domain.Location, userID string) (*domain.Location, error) {
+	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongCourierIDType
 	}
 
-	foundCourier, err := c.courierStorage.GetCourierByID(idInt)
+	foundCourier, err := c.courierStorage.GetCourierByID(userIDInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -266,41 +266,41 @@ func (c *courierService) InsertCourierLocation(courierLocation domain.CourierLoc
 		return nil, errCourierWithIDNotFound
 	}
 
-	foundCourierLocation, err := c.courierStorage.GetCourierLocation(idInt)
+	foundLocation, err := c.courierStorage.GetLocation(userIDInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
 
-	courierLocation.CourierID = idInt
+	location.UserID = userIDInt
 
-	if foundCourierLocation != nil {
+	if foundLocation != nil {
 		return nil, fmt.Errorf("courier location already exist: please update old one")
 	}
 
-	newCourierLocation, err := c.courierStorage.InsertCourierLocation(courierLocation)
+	newLocation, err := c.courierStorage.InsertLocation(location)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, err
 	}
 
-	return newCourierLocation, nil
+	return newLocation, nil
 }
 
-// UpdateCourierLocation prepare data for updating.
-func (c *courierService) UpdateCourierLocation(courierLocation domain.CourierLocation, courierID string) (*domain.CourierLocation, error) {
+// UpdateLocation prepare data for updating.
+func (c *courierService) UpdateLocation(location domain.Location, courierID string) (*domain.Location, error) {
 	cidInt, err := strconv.Atoi(courierID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongCourierIDType
 	}
 
-	courierLocation.CourierID = cidInt
+	location.UserID = cidInt
 
-	updatedCourierLocation, err := c.courierStorage.UpdateCourierLocation(courierLocation)
+	updatedLocation, err := c.courierStorage.UpdateLocation(location)
 	if err != nil && err == sql.ErrNoRows {
 		c.logger.Println(err)
-		return nil, fmt.Errorf("couldn't update courierLocation")
+		return nil, fmt.Errorf("couldn't update location")
 	}
 
 	if err != nil && err != sql.ErrNoRows {
@@ -308,18 +308,18 @@ func (c *courierService) UpdateCourierLocation(courierLocation domain.CourierLoc
 		return nil, systemErr
 	}
 
-	return updatedCourierLocation, nil
+	return updatedLocation, nil
 }
 
-// GetCourierLocation prepare data to get it from customerStorage.
-func (c *courierService) GetCourierLocation(id string) (*domain.CourierLocation, error) {
-	idInt, err := strconv.Atoi(id)
+// GetLocation prepare data to get it from customerStorage.
+func (c *courierService) GetLocation(userID string) (*domain.Location, error) {
+	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongCourierIDType
 	}
 
-	courierLocation, err := c.courierStorage.GetCourierLocation(idInt)
+	location, err := c.courierStorage.GetLocation(userIDInt)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -329,6 +329,6 @@ func (c *courierService) GetCourierLocation(id string) (*domain.CourierLocation,
 		return nil, systemErr
 	}
 
-	return courierLocation, nil
+	return location, nil
 
 }

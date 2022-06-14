@@ -14,9 +14,9 @@ type ReturnCourierResponseList struct {
 	CourierResponseList []CourierResponse
 }
 
-type CourierLocationResponse struct {
-	CourierID  int    `json:"courier_id,omitempty" yaml:"courier_id,omitempty"`
-	Altitude   string `json:"altitude,omitempty" yaml:"altitude,omitempty"`
+type LocationResponse struct {
+	UserID     int    `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Latitude   string `json:"latitude,omitempty" yaml:"latitude,omitempty"`
 	Longitude  string `json:"Longitude,omitempty" yaml:"Longitude,omitempty"`
 	Country    string `json:"country,omitempty" yaml:"country,omitempty"`
 	City       string `json:"city,omitempty" yaml:"city,omitempty"`

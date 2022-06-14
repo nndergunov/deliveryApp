@@ -16,8 +16,8 @@ type CourierStorage interface {
 
 	CleanCourierTable() error
 
-	InsertCourierLocation(courier domain.CourierLocation) (*domain.CourierLocation, error)
-	DeleteCourierLocation(courierID int) error
-	UpdateCourierLocation(courier domain.CourierLocation) (*domain.CourierLocation, error)
-	GetCourierLocation(id int) (*domain.CourierLocation, error)
+	InsertLocation(courier domain.Location) (*domain.Location, error)
+	DeleteLocation(courierID int) error
+	UpdateLocation(courier domain.Location) (*domain.Location, error)
+	GetLocation(userID int) (*domain.Location, error)
 }
