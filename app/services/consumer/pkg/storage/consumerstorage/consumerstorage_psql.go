@@ -24,7 +24,6 @@ func NewConsumerStorage(p Params) *ConsumerStorage {
 
 // InsertConsumer inserts a new consumer into the database.
 func (c ConsumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
-
 	sql := `INSERT INTO consumer (firstname, lastname, email, phone, created_at, updated_at)
         	VALUES ($1, $2, $3, $4, now(), now())
         	returning *
@@ -54,7 +53,6 @@ func (c ConsumerStorage) DeleteConsumer(id int) error {
 }
 
 func (c ConsumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
-
 	sql := `UPDATE consumer
             SET firstname = $1,
                 lastname = $2,
@@ -101,7 +99,6 @@ func (c ConsumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 }
 
 func (c ConsumerStorage) GetConsumerByID(id int) (*domain.Consumer, error) {
-
 	sql := `SELECT id, firstname, lastname, email, phone, created_at, updated_at
 			FROM consumer 
 			WHERE id = $1;`
@@ -163,7 +160,6 @@ func (c ConsumerStorage) CleanConsumerTable() error {
 
 // InsertLocation inserts a new consumer into the database.
 func (c ConsumerStorage) InsertLocation(location domain.Location) (*domain.Location, error) {
-
 	sql := `INSERT INTO
     				location (user_id, latitude, longitude, country, city, region, street, home_number, floor, door)
 			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
@@ -195,6 +191,7 @@ func (c ConsumerStorage) DeleteLocation(consumerID int) error {
 	}
 	return nil
 }
+
 func (c ConsumerStorage) GetLocation(userID int) (*domain.Location, error) {
 	sql := `SELECT user_id, latitude, longitude, country, city, region, street, home_number, floor, door
 			FROM location`
@@ -220,7 +217,6 @@ func (c ConsumerStorage) GetLocation(userID int) (*domain.Location, error) {
 }
 
 func (c ConsumerStorage) UpdateLocation(location domain.Location) (*domain.Location, error) {
-
 	sql := `UPDATE 
 				location
 			SET 

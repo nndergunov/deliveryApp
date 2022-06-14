@@ -1,12 +1,12 @@
 package consumerstorage_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
-
 	"database/sql"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 
 	"consumer/pkg/db"
 	"consumer/pkg/domain"
@@ -35,11 +35,9 @@ func TestInsertConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -89,7 +87,6 @@ func TestInsertConsumer(t *testing.T) {
 			if err := database.Close(); err != nil {
 				t.Error(err)
 			}
-
 		})
 	}
 }
@@ -114,11 +111,9 @@ func TestDeleteConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -163,7 +158,6 @@ func TestDeleteConsumer(t *testing.T) {
 			if err := database.Close(); err != nil {
 				t.Error(err)
 			}
-
 		})
 	}
 }
@@ -195,11 +189,9 @@ func TestUpdateConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -264,12 +256,13 @@ func TestGetAllConsumer(t *testing.T) {
 	}{
 		{
 			name: "Test Get ALl Consumer",
-			initialConsumerList: []domain.Consumer{domain.Consumer{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
-				Phone:     "123456789",
-			},
+			initialConsumerList: []domain.Consumer{
+				{
+					Firstname: "vasya",
+					Lastname:  "",
+					Email:     "vasya@gmail.com",
+					Phone:     "123456789",
+				},
 			},
 		},
 	}
@@ -278,11 +271,9 @@ func TestGetAllConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -351,11 +342,9 @@ func TestGetConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -441,11 +430,9 @@ func TestInsertConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -552,11 +539,9 @@ func TestUpdateConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -654,11 +639,9 @@ func TestGetConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 

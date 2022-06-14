@@ -1,12 +1,12 @@
 package consumerservice_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-
 	"bytes"
 	"net/http"
 	"strconv"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 
 	"consumer/api/v1/consumerapi"
 )
@@ -14,7 +14,6 @@ import (
 const baseAddr = "http://localhost:8080"
 
 func TestInsertNewConsumerEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name         string
 		consumerData consumerapi.NewConsumerRequest
@@ -34,7 +33,6 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.consumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -95,13 +93,11 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete created consumer: %v", err)
 			}
-
 		})
 	}
 }
 
 func TestDeleteConsumerEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name         string
 		consumerData consumerapi.NewConsumerRequest
@@ -123,7 +119,6 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.consumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -181,7 +176,6 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 }
 
 func TestUpdateConsumerEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name                string
 		initialConsumerData consumerapi.NewConsumerRequest
@@ -209,7 +203,6 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.initialConsumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -302,7 +295,6 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 }
 
 func TestGetAllConsumerEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name             string
 		consumerDataList []consumerapi.NewConsumerRequest
@@ -310,27 +302,27 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		{
 			"TestGetAllConsumerEndpoint test",
 			[]consumerapi.NewConsumerRequest{
-				consumerapi.NewConsumerRequest{
+				{
 					Firstname: "consumer1FName",
 					Lastname:  "consumer1LName",
 					Email:     "consumer1@gmail.com",
 					Phone:     "111111111",
 				},
 
-				consumerapi.NewConsumerRequest{
+				{
 					Firstname: "consumer2FName",
 					Lastname:  "consumer2LName",
 					Email:     "consumer2@gmail.com",
 					Phone:     "222222222",
 				},
-			}},
+			},
+		},
 	}
 
 	for _, currentTest := range tests {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			var createdConsumerList []consumerapi.ConsumerResponse
 
 			for _, consumer := range test.consumerDataList {
@@ -406,7 +398,6 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 }
 
 func TestGetConsumerEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name         string
 		consumerData consumerapi.NewConsumerRequest
@@ -418,14 +409,14 @@ func TestGetConsumerEndpoint(t *testing.T) {
 				Lastname:  "consumer1LName",
 				Email:     "consumer1@gmail.com",
 				Phone:     "111111111",
-			}},
+			},
+		},
 	}
 
 	for _, currentTest := range tests {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.consumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -496,13 +487,11 @@ func TestGetConsumerEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete created consumer: %v", err)
 			}
-
 		})
 	}
 }
 
 func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name                 string
 		consumerData         consumerapi.NewConsumerRequest
@@ -534,7 +523,6 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody1, err := v1.Encode(test.consumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -552,7 +540,6 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			consumerCreatedRespData := consumerapi.ConsumerResponse{}
 			if err = consumerapi.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
 				t.Fatal(err)
-
 			}
 
 			reqBody2, err := v1.Encode(test.consumerLocationData)
@@ -562,7 +549,6 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 
 			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
 				"application/json", bytes.NewBuffer(reqBody2))
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -629,13 +615,11 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete created consumer: %v", err)
 			}
-
 		})
 	}
 }
 
 func TestUpdateConsumerLocationEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name                        string
 		consumerData                consumerapi.NewConsumerRequest
@@ -679,7 +663,6 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody1, err := v1.Encode(test.consumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -697,7 +680,6 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			consumerCreatedRespData := consumerapi.ConsumerResponse{}
 			if err = consumerapi.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
 				t.Fatal(err)
-
 			}
 
 			reqBody2, err := v1.Encode(test.consumerLocationInitialData)
@@ -707,7 +689,6 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 
 			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
 				"application/json", bytes.NewBuffer(reqBody2))
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -728,12 +709,10 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			client := http.Client{}
 
 			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location", bytes.NewBuffer(reqBody3))
-
 			if err != nil {
 				t.Fatal(err)
 			}
 			resp3, err := client.Do(req)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -745,7 +724,6 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			consumerLocationUpdatedRespData := consumerapi.LocationResponse{}
 			if err = consumerapi.DecodeJSON(resp3.Body, &consumerLocationUpdatedRespData); err != nil {
 				t.Fatal(err)
-
 			}
 
 			if err := resp3.Body.Close(); err != nil {
@@ -801,13 +779,11 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete created consumer: %v", err)
 			}
-
 		})
 	}
 }
 
 func TestGetConsumerLocationEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name                 string
 		consumerData         consumerapi.NewConsumerRequest
@@ -839,7 +815,6 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody1, err := v1.Encode(test.consumerData)
 			if err != nil {
 				t.Fatal(err)
@@ -857,7 +832,6 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			consumerCreatedRespData := consumerapi.ConsumerResponse{}
 			if err = consumerapi.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
 				t.Fatal(err)
-
 			}
 
 			reqBody2, err := v1.Encode(test.consumerLocationData)
@@ -867,7 +841,6 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 
 			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
 				"application/json", bytes.NewBuffer(reqBody2))
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -877,7 +850,6 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			}
 
 			resp3, err := http.Get(baseAddr + "/v1/consumers/" + strconv.Itoa(consumerCreatedRespData.ID) + "/location")
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -944,7 +916,6 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete created consumer: %v", err)
 			}
-
 		})
 	}
 }

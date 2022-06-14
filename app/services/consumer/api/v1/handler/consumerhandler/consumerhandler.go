@@ -1,13 +1,13 @@
 package consumerhandler
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
 	"errors"
 	"io"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"consumer/api/v1/consumerapi"
 	"consumer/pkg/service/consumerservice"
@@ -44,7 +44,6 @@ const consumerIDKey = "consumer_id"
 
 // NewConsumerHandler creates an consumerHandler value that handle a set of routes for the application.
 func (c *consumerHandler) handlerInit() {
-
 	c.serveMux.HandleFunc("/status", c.insertNewConsumer).Methods(http.MethodPost)
 
 	c.serveMux.HandleFunc("/v1/consumers", c.insertNewConsumer).Methods(http.MethodPost)
@@ -101,7 +100,6 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 	consumer := requestToNewConsumer(&consumerRequest)
 
 	data, err := c.consumerService.InsertConsumer(consumer)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -124,11 +122,9 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 		c.log.Println(err)
 		return
 	}
-
 }
 
 func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
 	if !ok {
@@ -182,7 +178,6 @@ func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request
 	consumer := requestToUpdateConsumer(&updateConsumerRequest)
 
 	data, err := c.consumerService.UpdateConsumer(consumer, id)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -243,7 +238,6 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := c.consumerService.GetConsumer(id)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -311,7 +305,6 @@ func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *h
 		c.log.Println(err)
 		return
 	}
-
 }
 
 func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http.Request) {
@@ -336,7 +329,6 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 	location := requestToUpdateLocation(&updateLocationRequest)
 
 	data, err := c.consumerService.UpdateLocation(location, consumerID)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -371,7 +363,6 @@ func (c *consumerHandler) getConsumerLocation(rw http.ResponseWriter, r *http.Re
 	}
 
 	data, err := c.consumerService.GetLocation(id)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {

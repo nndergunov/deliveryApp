@@ -47,7 +47,6 @@ func NewConsumerService(p Params) ConsumerService {
 
 // InsertConsumer prepare and send data to consumerStorage service.
 func (c *consumerService) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
-
 	if consumer.Phone == "" && consumer.Email == "" {
 		return nil, fmt.Errorf("wrong phone or email")
 	}
@@ -104,7 +103,7 @@ func (c *consumerService) DeleteConsumer(id string) (data string, err error) {
 
 // UpdateConsumer prepare data for updating.
 func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*domain.Consumer, error) {
-	//todo: if updating phone number or email send otp first and then update
+	// todo: if updating phone number or email send otp first and then update
 
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
@@ -167,7 +166,6 @@ func (c *consumerService) GetConsumer(id string) (*domain.Consumer, error) {
 	}
 
 	return consumer, nil
-
 }
 
 // InsertLocation prepare and send data to consumerStorage service.
@@ -242,5 +240,4 @@ func (c *consumerService) GetLocation(userID string) (*domain.Location, error) {
 	}
 
 	return location, nil
-
 }

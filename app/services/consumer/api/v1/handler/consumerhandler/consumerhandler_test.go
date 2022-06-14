@@ -1,14 +1,14 @@
 package consumerhandler_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
 	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"consumer/api/v1/consumerapi"
 	"consumer/api/v1/handler/consumerhandler"
@@ -44,7 +44,7 @@ func (m MockService) InsertConsumer(_ domain.Consumer) (*domain.Consumer, error)
 	return MockConsumerData, nil
 }
 
-func (m MockService) DeleteConsumer(_ string) (data any, err error) {
+func (m MockService) DeleteConsumer(_ string) (data string, err error) {
 	return "consumer deleted", nil
 }
 
@@ -352,7 +352,6 @@ func TestGetConsumerEndpoint(t *testing.T) {
 		if respData.Phone != MockConsumerData.Phone {
 			t.Errorf("Phone: Expected: %s, Got: %s", MockConsumerData.Phone, respData.Phone)
 		}
-
 	})
 }
 
