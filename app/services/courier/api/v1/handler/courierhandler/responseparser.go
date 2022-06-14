@@ -38,17 +38,17 @@ func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourie
 	}
 }
 
-func courierLocationToResponse(courierLocation domain.CourierLocation) courierapi.CourierLocationResponse {
-	return courierapi.CourierLocationResponse{
-		CourierID:  courierLocation.CourierID,
-		Altitude:   courierLocation.Altitude,
-		Longitude:  courierLocation.Longitude,
-		Country:    courierLocation.Country,
-		City:       courierLocation.City,
-		Region:     courierLocation.Region,
-		Street:     courierLocation.Street,
-		HomeNumber: courierLocation.HomeNumber,
-		Floor:      courierLocation.Floor,
-		Door:       courierLocation.Door,
+func locationToResponse(location domain.Location) courierapi.LocationResponse {
+	return courierapi.LocationResponse{
+		UserID:     location.UserID,
+		Latitude:   location.Latitude,
+		Longitude:  location.Longitude,
+		Country:    location.Country,
+		City:       location.City,
+		Region:     location.Region,
+		Street:     location.Street,
+		HomeNumber: location.HomeNumber,
+		Floor:      location.Floor,
+		Door:       location.Door,
 	}
 }

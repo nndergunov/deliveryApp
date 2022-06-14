@@ -1,8 +1,8 @@
 package domain
 
-type CourierLocation struct {
-	CourierID  uint64
-	Altitude   string
+type Location struct {
+	UserID     int
+	Latitude   string
 	Longitude  string
 	Country    string
 	City       string

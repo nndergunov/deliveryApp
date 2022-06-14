@@ -1,18 +1,20 @@
 package main
 
 import (
-	"courier/api/v1/handler/courierhandler"
-	"courier/pkg/db"
-	"courier/pkg/service/courierservice"
-	"courier/pkg/storage/courierstorage"
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+
 	"log"
 	"net/http"
 	"os"
+
+	"courier/api/v1/handler/courierhandler"
+	"courier/pkg/db"
+	"courier/pkg/service/courierservice"
+	"courier/pkg/storage/courierstorage"
 )
 
 const configFile = "/config.yaml"
