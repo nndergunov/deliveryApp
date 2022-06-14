@@ -3,8 +3,9 @@ package courierstorage
 import (
 	"database/sql"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"strconv"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"courier/pkg/domain"
 )
@@ -218,7 +219,6 @@ func (c CourierStorage) CleanCourierTable() error {
 
 // InsertLocation inserts a new courier into the database.
 func (c CourierStorage) InsertLocation(location domain.Location) (*domain.Location, error) {
-
 	sql := `INSERT 
 			INTO
 			    location (user_id, latitude, longitude, country, city, region, street, home_number, floor, door)
@@ -279,7 +279,6 @@ func (c CourierStorage) GetLocation(userID int) (*domain.Location, error) {
 }
 
 func (c CourierStorage) UpdateLocation(location domain.Location) (*domain.Location, error) {
-
 	sql := `UPDATE 
 				location
 			SET 

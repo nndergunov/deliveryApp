@@ -1,12 +1,12 @@
 package courierhandler
 
 import (
+	"io"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
-	"io"
-	"net/http"
 
 	"courier/api/v1/courierapi"
 	"courier/pkg/domain"
@@ -44,7 +44,6 @@ const courierIDKey = "courier_id"
 
 // NewCourierHandler creates an courierHandler value that handle a set of routes for the application.
 func (c *courierHandler) handlerInit() {
-
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
 	c.serveMux.HandleFunc("/v1/couriers", c.insertNewCourier).Methods(http.MethodPost)
@@ -124,11 +123,9 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 		c.log.Println(err)
 		return
 	}
-
 }
 
 func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
 	if !ok {
@@ -250,14 +247,19 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 }
 
 func (c *courierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) {
-
 	param := domain.SearchParam{}
 
+	var available string
 	queryParams := r.URL.Query()
-	available := queryParams["available"][0]
-	//latitude := queryParams["latitude"][0]
-	//longitude := queryParams["longitude"][0]
-	//radius := queryParams["radius"][0]
+
+	availableList := queryParams["available"]
+	if availableList != nil {
+		available = availableList[0]
+	}
+
+	// latitude := queryParams["latitude"][0]
+	// longitude := queryParams["longitude"][0]
+	// radius := queryParams["radius"][0]
 
 	if available != "" {
 		param["available"] = available
@@ -375,7 +377,6 @@ func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Reque
 		c.log.Println(err)
 		return
 	}
-
 }
 
 func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request) {

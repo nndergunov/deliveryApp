@@ -14,7 +14,7 @@ import (
 // CourierService is the interface for the user service.
 type CourierService interface {
 	InsertCourier(courier domain.Courier) (*domain.Courier, error)
-	DeleteCourier(id string) (data any, err error)
+	DeleteCourier(id string) (data string, err error)
 	UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error)
 	UpdateCourierAvailable(id, available string) (*domain.Courier, error)
 	GetAllCourier(params map[string]string) ([]domain.Courier, error)
@@ -48,7 +48,6 @@ func NewCourierService(p Params) CourierService {
 
 // InsertCourier prepare and send data to courierStorage service.
 func (c *courierService) InsertCourier(courier domain.Courier) (*domain.Courier, error) {
-
 	if len(courier.Username) < 4 || len(courier.Password) < 8 {
 		return nil, fmt.Errorf("username or password don't meet requirement")
 	}
@@ -74,30 +73,30 @@ func (c *courierService) InsertCourier(courier domain.Courier) (*domain.Courier,
 }
 
 // DeleteCourier prepare courier data for removing.
-func (c *courierService) DeleteCourier(id string) (data any, err error) {
+func (c *courierService) DeleteCourier(id string) (data string, err error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
-		return nil, errWrongCourierIDType
+		return "", errWrongCourierIDType
 	}
 
 	foundCourier, err := c.courierStorage.GetCourierByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
-		return nil, systemErr
+		return "", systemErr
 	}
 	if foundCourier == nil {
-		return nil, errCourierWithIDNotFound
+		return "", errCourierWithIDNotFound
 	}
 
 	if err = c.courierStorage.DeleteCourier(idInt); err != nil {
 		c.logger.Println(err)
-		return nil, err
+		return "", err
 	}
 
 	if err = c.courierStorage.DeleteLocation(idInt); err != nil {
 		c.logger.Println(err)
-		return nil, err
+		return "", err
 	}
 
 	return "courier deleted", nil
@@ -105,7 +104,7 @@ func (c *courierService) DeleteCourier(id string) (data any, err error) {
 
 // UpdateCourier prepare data for updating.
 func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error) {
-	//todo: if updating phone number or email send otp first and then update
+	// todo: if updating phone number or email send otp first and then update
 
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
@@ -115,9 +114,9 @@ func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*doma
 
 	param := domain.SearchParam{}
 	param["id"] = id
-	//check duplicate by:
+	// check duplicate by:
 
-	//username
+	// username
 	if courier.Username != "" {
 
 		param["username"] = courier.Username
@@ -131,7 +130,7 @@ func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*doma
 			return nil, fmt.Errorf("courier with this username already exist")
 		}
 	}
-	//email
+	// email
 	if courier.Email != "" {
 
 		param["email"] = courier.Email
@@ -145,7 +144,7 @@ func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*doma
 			return nil, fmt.Errorf("courier with this email already exist")
 		}
 	}
-	//phone
+	// phone
 	if courier.Phone != "" {
 
 		param["phone"] = courier.Phone
@@ -209,7 +208,6 @@ func (c *courierService) UpdateCourierAvailable(id, available string) (*domain.C
 
 // GetAllCourier prepare data to get it from courierStorage.
 func (c *courierService) GetAllCourier(param map[string]string) ([]domain.Courier, error) {
-
 	availableStr := param["available"]
 	if availableStr != "" {
 		if _, err := strconv.ParseBool(availableStr); err != nil {
@@ -330,5 +328,4 @@ func (c *courierService) GetLocation(userID string) (*domain.Location, error) {
 	}
 
 	return location, nil
-
 }
