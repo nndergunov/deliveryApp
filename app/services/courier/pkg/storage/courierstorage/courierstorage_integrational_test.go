@@ -2,11 +2,12 @@ package courierstorage_test
 
 import (
 	"database/sql"
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 
 	"courier/pkg/db"
 	"courier/pkg/domain"
@@ -42,7 +43,6 @@ func TestInsertCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -111,7 +111,6 @@ func TestDeleteCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -193,7 +192,6 @@ func TestUpdateCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -277,7 +275,6 @@ func TestUpdateCourierAvailable(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -328,14 +325,15 @@ func TestGetAllCourier(t *testing.T) {
 	}{
 		{
 			name: "Test Get ALl Courier",
-			initialCourierList: []domain.Courier{domain.Courier{
-				Username:  "vasyauser",
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
-				Phone:     "123456789",
-				Available: true,
-			},
+			initialCourierList: []domain.Courier{
+				{
+					Username:  "vasyauser",
+					Firstname: "vasya",
+					Lastname:  "",
+					Email:     "vasya@gmail.com",
+					Phone:     "123456789",
+					Available: true,
+				},
 			},
 		},
 	}
@@ -349,7 +347,6 @@ func TestGetAllCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -385,7 +382,6 @@ func TestGetAllCourier(t *testing.T) {
 
 			if len(allCourier) != len(test.initialCourierList) {
 				t.Errorf("get all coureir len: Expected: %v, Got: %v", len(test.initialCourierList), len(allCourier))
-
 			}
 
 			if err := courierStorage.CleanCourierTable(); err != nil {
@@ -425,7 +421,6 @@ func TestGetCourierByID(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -511,7 +506,6 @@ func TestGetCourierDuplicateByParam(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -586,11 +580,9 @@ func TestInsertLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -697,11 +689,9 @@ func TestUpdateLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -799,11 +789,9 @@ func TestGetLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 

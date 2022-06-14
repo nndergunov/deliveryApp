@@ -2,12 +2,13 @@ package courierhandler_test
 
 import (
 	"bytes"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"courier/api/v1/courierapi"
 	"courier/api/v1/handler/courierhandler"
@@ -156,7 +157,6 @@ func TestInsertNewCourierEndpoint(t *testing.T) {
 			if respData.Available != MockCourierData.Available {
 				t.Errorf("Available: Expected: %s, Got: %s", test.courierData.Phone, respData.Phone)
 			}
-
 		})
 	}
 }
@@ -273,7 +273,6 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 			if respData.Available != MockCourierData.Available {
 				t.Errorf("Available: Expected: %s, Got: %s", test.courierData.Phone, respData.Phone)
 			}
-
 		})
 	}
 }
@@ -364,7 +363,6 @@ func TestGetCourierEndpoint(t *testing.T) {
 		if respData.Available != MockCourierData.Available {
 			t.Errorf("Available: Expected: %s, Got: %s", MockCourierData.Phone, respData.Phone)
 		}
-
 	})
 }
 
@@ -430,7 +428,6 @@ func TestGetCourierAllEndpoint(t *testing.T) {
 			}
 
 		}
-
 	})
 }
 
