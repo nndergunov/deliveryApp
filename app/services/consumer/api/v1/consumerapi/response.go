@@ -1,7 +1,7 @@
 package consumerapi
 
 type ConsumerResponse struct {
-	ID        uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+	ID        int    `json:"id,omitempty" yaml:"id,omitempty"`
 	Firstname string `json:"firstname,omitempty" yaml:"firstname,omitempty"`
 	Lastname  string `json:"lastname,omitempty" yaml:"lastname,omitempty"`
 	Email     string `json:"email,omitempty" yaml:"email,omitempty"`
@@ -12,8 +12,8 @@ type ReturnConsumerResponseList struct {
 	ConsumerResponseList []ConsumerResponse
 }
 
-type ConsumerLocationResponse struct {
-	ConsumerID uint64 `json:"consumer_id,omitempty" yaml:"consumer_id,omitempty"`
+type LocationResponse struct {
+	UserID     int    `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Altitude   string `json:"altitude,omitempty" yaml:"altitude,omitempty"`
 	Longitude  string `json:"Longitude,omitempty" yaml:"Longitude,omitempty"`
 	Country    string `json:"country,omitempty" yaml:"country,omitempty"`

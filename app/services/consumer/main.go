@@ -1,24 +1,25 @@
 package main
 
 import (
-	"consumer/api/v1/handler/consumerhandler"
-	"consumer/pkg/db"
-	"consumer/pkg/service/consumerservice"
-	"consumer/pkg/storage/consumerstorage"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-	"log"
-	"net/http"
-	"os"
+
+	"consumer/api/v1/handler/consumerhandler"
+	"consumer/pkg/db"
+	"consumer/pkg/service/consumerservice"
+	"consumer/pkg/storage/consumerstorage"
 )
 
 const configFile = "/config.yaml"
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "main: ")
 
@@ -50,7 +51,8 @@ func run(log *logger.Logger) error {
 
 	consumerService := consumerservice.NewConsumerService(consumerservice.Params{
 		ConsumerStorage: consumerStorage,
-		Logger:          logger.NewLogger(os.Stdout, "service: ")})
+		Logger:          logger.NewLogger(os.Stdout, "service: "),
+	})
 
 	consumerHandler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
 		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
