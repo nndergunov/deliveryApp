@@ -13,8 +13,8 @@ type UpdateConsumerRequest struct {
 	Email     string `json:"email" yaml:"email"`
 	Phone     string `json:"phone" yaml:"phone"`
 }
-type NewConsumerLocationRequest struct {
-	Altitude   string `json:"altitude" yaml:"altitude"`
+type NewLocationRequest struct {
+	Latitude   string `json:"latitude" yaml:"latitude"`
 	Longitude  string `json:"longitude" yaml:"longitude"`
 	Country    string `json:"country" yaml:"country"`
 	City       string `json:"city" yaml:"city"`
@@ -24,8 +24,8 @@ type NewConsumerLocationRequest struct {
 	Floor      string `json:"floor" yaml:"floor"`
 	Door       string `json:"door" yaml:"door"`
 }
-type UpdateConsumerLocationRequest struct {
-	Altitude   string `json:"altitude" yaml:"altitude"`
+type UpdateLocationRequest struct {
+	Latitude   string `json:"latitude" yaml:"latitude"`
 	Longitude  string `json:"longitude" yaml:"longitude"`
 	Country    string `json:"country" yaml:"country"`
 	City       string `json:"city" yaml:"city"`

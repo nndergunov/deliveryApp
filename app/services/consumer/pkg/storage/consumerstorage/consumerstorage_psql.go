@@ -25,11 +25,9 @@ func NewConsumerStorage(p Params) *ConsumerStorage {
 // InsertConsumer inserts a new consumer into the database.
 func (c ConsumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
 
-	sql := `
-    INSERT INTO
-        consumer (firstname, lastname, email, phone, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, now(), now())
-        returning *
+	sql := `INSERT INTO consumer (firstname, lastname, email, phone, created_at, updated_at)
+        	VALUES ($1, $2, $3, $4, now(), now())
+        	returning *
 `
 	var newConsumer domain.Consumer
 	err := c.db.QueryRow(sql,
@@ -44,10 +42,8 @@ func (c ConsumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consu
 }
 
 func (c ConsumerStorage) DeleteConsumer(id int) error {
-	sql := `
-    DELETE
-        FROM
-            consumer
+	sql := `DELETE
+			FROM consumer
             WHERE id = $1
             returning id
 ;`
@@ -59,17 +55,13 @@ func (c ConsumerStorage) DeleteConsumer(id int) error {
 
 func (c ConsumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
 
-	sql := `
-    UPDATE
-        consumer
-            SET
-                firstname = $1,
+	sql := `UPDATE consumer
+            SET firstname = $1,
                 lastname = $2,
                 email = $3,
                 phone = $4,
                 updated_at = now()
-            WHERE
-                id = $5
+            WHERE id = $5
             returning *`
 
 	var updatedConsumer domain.Consumer
@@ -109,12 +101,11 @@ func (c ConsumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 }
 
 func (c ConsumerStorage) GetConsumerByID(id int) (*domain.Consumer, error) {
-	sql := `SELECT
-				id, firstname, lastname, email, phone, created_at, updated_at
-			FROM 
-				consumer 
-			WHERE id = $1
-	`
+
+	sql := `SELECT id, firstname, lastname, email, phone, created_at, updated_at
+			FROM consumer 
+			WHERE id = $1;`
+
 	var consumer domain.Consumer
 
 	if err := c.db.QueryRow(sql, id).Scan(&consumer.ID, &consumer.Firstname, &consumer.Lastname,
@@ -126,10 +117,10 @@ func (c ConsumerStorage) GetConsumerByID(id int) (*domain.Consumer, error) {
 }
 
 func (c ConsumerStorage) GetConsumerDuplicateByParam(param domain.SearchParam) (*domain.Consumer, error) {
-	sql := `SELECT * FROM 
-				consumer
+	sql := `SELECT *
+			FROM consumer
 	`
-	where := "WHERE 1=1"
+	where := " WHERE 1=1"
 
 	id := param["id"]
 	if id != "" {
@@ -159,11 +150,10 @@ func (c ConsumerStorage) GetConsumerDuplicateByParam(param domain.SearchParam) (
 }
 
 func (c ConsumerStorage) CleanConsumerTable() error {
-	sql := `DELETE FROM
-				consumer
-			WHERE 
-				 1=1
-	`
+	sql := `DELETE
+			FROM consumer
+			WHERE 1=1;`
+
 	if _, err := c.db.Exec(sql); err != nil {
 		return err
 	}
@@ -171,74 +161,70 @@ func (c ConsumerStorage) CleanConsumerTable() error {
 	return nil
 }
 
-// InsertConsumerLocation inserts a new consumer into the database.
-func (c ConsumerStorage) InsertConsumerLocation(consumerLocation domain.ConsumerLocation) (*domain.ConsumerLocation, error) {
+// InsertLocation inserts a new consumer into the database.
+func (c ConsumerStorage) InsertLocation(location domain.Location) (*domain.Location, error) {
 
-	sql := `
-   INSERT INTO
-    consumer_location (consumer_id, altitude, longitude, country, city, region, street, home_number, floor, door)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-returning *
+	sql := `INSERT INTO
+    				location (user_id, latitude, longitude, country, city, region, street, home_number, floor, door)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+			 returning *
 `
-	var newConsumerLocation domain.ConsumerLocation
-	err := c.db.QueryRow(sql, &consumerLocation.ConsumerID, &consumerLocation.Altitude,
-		&consumerLocation.Longitude, &consumerLocation.Country, &consumerLocation.City,
-		&consumerLocation.Region, &consumerLocation.Street, &consumerLocation.HomeNumber,
-		&consumerLocation.Floor, &consumerLocation.Door).
-		Scan(&newConsumerLocation.ConsumerID, &newConsumerLocation.Altitude,
-			&newConsumerLocation.Longitude, &newConsumerLocation.Country, &newConsumerLocation.City,
-			&newConsumerLocation.Region, &newConsumerLocation.Street, &newConsumerLocation.HomeNumber,
-			&newConsumerLocation.Floor, &newConsumerLocation.Door)
+	var newLocation domain.Location
+	err := c.db.QueryRow(sql, &location.UserID, &location.Latitude,
+		&location.Longitude, &location.Country, &location.City,
+		&location.Region, &location.Street, &location.HomeNumber,
+		&location.Floor, &location.Door).
+		Scan(&newLocation.UserID, &newLocation.Latitude,
+			&newLocation.Longitude, &newLocation.Country, &newLocation.City,
+			&newLocation.Region, &newLocation.Street, &newLocation.HomeNumber,
+			&newLocation.Floor, &newLocation.Door)
 	if err != nil {
 		return nil, err
 	}
 
-	return &newConsumerLocation, nil
+	return &newLocation, nil
 }
 
-func (c ConsumerStorage) DeleteConsumerLocation(consumerID int) error {
-	sql := `
-    DELETE
-FROM consumer_location
-WHERE consumer_id = $1
+func (c ConsumerStorage) DeleteLocation(consumerID int) error {
+	sql := `DELETE
+			FROM location
+			WHERE user_id = $1
 ;`
 	if _, err := c.db.Exec(sql, consumerID); err != nil {
 		return err
 	}
 	return nil
 }
-func (c ConsumerStorage) GetConsumerLocation(id int) (*domain.ConsumerLocation, error) {
-	sql := `SELECT
-				consumer_id, altitude, longitude, country, city, region, street, home_number, floor, door
-			FROM 
-				consumer_location 
-	`
-	where := `WHERE 1=1`
+func (c ConsumerStorage) GetLocation(userID int) (*domain.Location, error) {
+	sql := `SELECT user_id, latitude, longitude, country, city, region, street, home_number, floor, door
+			FROM location`
 
-	if id != 0 {
-		where = where + "AND consumer_id =" + strconv.FormatInt(int64(id), 10)
+	where := ` WHERE 1=1`
+
+	if userID != 0 {
+		where = where + " AND user_id =" + strconv.FormatInt(int64(userID), 10)
 	}
 
 	sql = sql + where
 
-	var consumerLocation domain.ConsumerLocation
+	var location domain.Location
 
-	if err := c.db.QueryRow(sql).Scan(&consumerLocation.ConsumerID, &consumerLocation.Altitude,
-		&consumerLocation.Longitude, &consumerLocation.Country, &consumerLocation.City,
-		&consumerLocation.Region, &consumerLocation.Street, &consumerLocation.HomeNumber,
-		&consumerLocation.Floor, &consumerLocation.Door); err != nil {
+	if err := c.db.QueryRow(sql).Scan(&location.UserID, &location.Latitude,
+		&location.Longitude, &location.Country, &location.City,
+		&location.Region, &location.Street, &location.HomeNumber,
+		&location.Floor, &location.Door); err != nil {
 		return nil, err
 	}
 
-	return &consumerLocation, nil
+	return &location, nil
 }
 
-func (c ConsumerStorage) UpdateConsumerLocation(consumerLocation domain.ConsumerLocation) (*domain.ConsumerLocation, error) {
+func (c ConsumerStorage) UpdateLocation(location domain.Location) (*domain.Location, error) {
 
 	sql := `UPDATE 
-				consumer_location
+				location
 			SET 
-			    altitude = $1,
+			    latitude = $1,
 			    longitude = $2,
 			    country = $3,
 			    city = $4,
@@ -248,21 +234,21 @@ func (c ConsumerStorage) UpdateConsumerLocation(consumerLocation domain.Consumer
 			    floor = $8,
 			    door = $9 
 			WHERE 
-			    consumer_id = $10
+			    user_id = $10
 			returning *
 	`
-	var updatedConsumerLocation domain.ConsumerLocation
+	var updatedLocation domain.Location
 
 	if err := c.db.QueryRow(sql,
-		consumerLocation.Altitude, consumerLocation.Longitude,
-		consumerLocation.Country, consumerLocation.City, consumerLocation.Region, consumerLocation.Street,
-		consumerLocation.HomeNumber, consumerLocation.Floor, consumerLocation.Door, consumerLocation.ConsumerID).
-		Scan(&updatedConsumerLocation.ConsumerID, &updatedConsumerLocation.Altitude, &updatedConsumerLocation.Longitude,
-			&updatedConsumerLocation.Country, &updatedConsumerLocation.City, &updatedConsumerLocation.Region,
-			&updatedConsumerLocation.Street, &updatedConsumerLocation.HomeNumber,
-			&updatedConsumerLocation.Floor, &updatedConsumerLocation.Door); err != nil {
+		location.Latitude, location.Longitude,
+		location.Country, location.City, location.Region, location.Street,
+		location.HomeNumber, location.Floor, location.Door, location.UserID).
+		Scan(&updatedLocation.UserID, &updatedLocation.Latitude, &updatedLocation.Longitude,
+			&updatedLocation.Country, &updatedLocation.City, &updatedLocation.Region,
+			&updatedLocation.Street, &updatedLocation.HomeNumber,
+			&updatedLocation.Floor, &updatedLocation.Door); err != nil {
 		return nil, err
 	}
 
-	return &updatedConsumerLocation, nil
+	return &updatedLocation, nil
 }

@@ -14,8 +14,8 @@ type ConsumerStorage interface {
 	GetConsumerDuplicateByParam(param domain.SearchParam) (*domain.Consumer, error)
 	CleanConsumerTable() error
 
-	InsertConsumerLocation(consumer domain.ConsumerLocation) (*domain.ConsumerLocation, error)
-	DeleteConsumerLocation(consumerID int) error
-	UpdateConsumerLocation(consumer domain.ConsumerLocation) (*domain.ConsumerLocation, error)
-	GetConsumerLocation(id int) (*domain.ConsumerLocation, error)
+	InsertLocation(location domain.Location) (*domain.Location, error)
+	DeleteLocation(userID int) error
+	UpdateLocation(location domain.Location) (*domain.Location, error)
+	GetLocation(userID int) (*domain.Location, error)
 }

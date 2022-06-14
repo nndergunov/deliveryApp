@@ -40,7 +40,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody))
+			resp, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -86,7 +86,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(respData.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(respData.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -129,7 +129,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody))
+			resp, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -159,7 +159,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(respData.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(int(respData.ID)), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -215,7 +215,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp1, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody))
+			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -245,7 +245,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			client2 := http.DefaultClient
 
 			req, err := http.NewRequest(http.MethodPut,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(respData.ID)), bytes.NewBuffer(reqBody2))
+				baseAddr+"/v1/consumers/"+strconv.Itoa(int(respData.ID)), bytes.NewBuffer(reqBody2))
 			if err != nil {
 				t.Error(err)
 			}
@@ -288,7 +288,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(respData.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(int(respData.ID)), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -340,7 +340,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				resp1, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody))
+				resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -361,7 +361,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 				createdConsumerList = append(createdConsumerList, createdConsumer)
 			}
 
-			resp2, err := http.Get(baseAddr + "/v1/consumer/all")
+			resp2, err := http.Get(baseAddr + "/v1/consumers")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -390,7 +390,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 				deleter := http.DefaultClient
 
 				delReq, err := http.NewRequest(http.MethodDelete,
-					baseAddr+"/v1/consumer/"+strconv.Itoa(int(createdConsumer.ID)), nil)
+					baseAddr+"/v1/consumers/"+strconv.Itoa(int(createdConsumer.ID)), nil)
 				if err != nil {
 					t.Error(err)
 				}
@@ -431,7 +431,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			respPostConsumer, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody))
+			respPostConsumer, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -449,7 +449,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 				t.Error(err)
 			}
 
-			respGetConsumer, err := http.Get(baseAddr + "/v1/consumer/" + strconv.Itoa(int(createdConsumerResponse.ID)))
+			respGetConsumer, err := http.Get(baseAddr + "/v1/consumers/" + strconv.Itoa(int(createdConsumerResponse.ID)))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -487,7 +487,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(createdConsumerResponse.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(int(createdConsumerResponse.ID)), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -506,7 +506,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                 string
 		consumerData         consumerapi.NewConsumerRequest
-		consumerLocationData consumerapi.NewConsumerLocationRequest
+		consumerLocationData consumerapi.NewLocationRequest
 	}{
 		{
 			"InsertNewConsumerLocationEndpoint simple test",
@@ -516,8 +516,8 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			consumerapi.NewConsumerLocationRequest{
-				Altitude:   "987654321",
+			consumerapi.NewLocationRequest{
+				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -540,7 +540,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp1, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody1))
+			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody1))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -560,7 +560,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp2, err := http.Post(baseAddr+"/v1/consumer/location/"+strconv.Itoa(int(consumerCreatedRespData.ID)),
+			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
 				"application/json", bytes.NewBuffer(reqBody2))
 
 			if err != nil {
@@ -571,7 +571,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			consumerLocationRespData := consumerapi.ConsumerLocationResponse{}
+			consumerLocationRespData := consumerapi.LocationResponse{}
 			if err = consumerapi.DecodeJSON(resp2.Body, &consumerLocationRespData); err != nil {
 				t.Fatal(err)
 			}
@@ -580,12 +580,12 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Error(err)
 			}
 
-			if consumerLocationRespData.ConsumerID < 1 {
-				t.Errorf("ConsumerID: Expected : > 1, Got: %v", consumerLocationRespData.ConsumerID)
+			if consumerLocationRespData.UserID < 1 {
+				t.Errorf("UserID: Expected : > 1, Got: %v", consumerLocationRespData.UserID)
 			}
 
-			if consumerLocationRespData.Altitude != test.consumerLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.consumerLocationData.Altitude, consumerLocationRespData.Altitude)
+			if consumerLocationRespData.Altitude != test.consumerLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Altitude)
 			}
 
 			if consumerLocationRespData.Longitude != test.consumerLocationData.Longitude {
@@ -620,7 +620,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(consumerCreatedRespData.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -639,8 +639,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                        string
 		consumerData                consumerapi.NewConsumerRequest
-		consumerLocationInitialData consumerapi.NewConsumerLocationRequest
-		consumerLocationUpdatedData consumerapi.UpdateConsumerLocationRequest
+		consumerLocationInitialData consumerapi.NewLocationRequest
+		consumerLocationUpdatedData consumerapi.UpdateLocationRequest
 	}{
 		{
 			"UpdateConsumerLocationEndpoint simple test",
@@ -650,8 +650,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			consumerapi.NewConsumerLocationRequest{
-				Altitude:   "987654321",
+			consumerapi.NewLocationRequest{
+				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -661,8 +661,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				Floor:      "TestFloor",
 				Door:       "TestDoor",
 			},
-			consumerapi.UpdateConsumerLocationRequest{
-				Altitude:   "123456789",
+			consumerapi.UpdateLocationRequest{
+				Latitude:   "123456789",
 				Longitude:  "987654321",
 				Country:    "UpdatedTestCountry",
 				City:       "UpdatedTestCity",
@@ -685,7 +685,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp1, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody1))
+			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody1))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -705,7 +705,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp2, err := http.Post(baseAddr+"/v1/consumer/location/"+strconv.Itoa(int(consumerCreatedRespData.ID)),
+			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
 				"application/json", bytes.NewBuffer(reqBody2))
 
 			if err != nil {
@@ -727,7 +727,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 
 			client := http.Client{}
 
-			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/consumer/location/"+strconv.Itoa(int(consumerCreatedRespData.ID)), bytes.NewBuffer(reqBody3))
+			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location", bytes.NewBuffer(reqBody3))
 
 			if err != nil {
 				t.Fatal(err)
@@ -742,7 +742,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp3.StatusCode)
 			}
 
-			consumerLocationUpdatedRespData := consumerapi.ConsumerLocationResponse{}
+			consumerLocationUpdatedRespData := consumerapi.LocationResponse{}
 			if err = consumerapi.DecodeJSON(resp3.Body, &consumerLocationUpdatedRespData); err != nil {
 				t.Fatal(err)
 
@@ -752,12 +752,12 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Error(err)
 			}
 
-			if consumerLocationUpdatedRespData.ConsumerID != consumerCreatedRespData.ID {
-				t.Errorf("ConsumerID: Expected :  %v , Got: %v", consumerCreatedRespData.ID, consumerLocationUpdatedRespData.ConsumerID)
+			if consumerLocationUpdatedRespData.UserID != consumerCreatedRespData.ID {
+				t.Errorf("UserID: Expected :  %v , Got: %v", consumerCreatedRespData.ID, consumerLocationUpdatedRespData.UserID)
 			}
 
-			if consumerLocationUpdatedRespData.Altitude != test.consumerLocationUpdatedData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Altitude, consumerLocationUpdatedRespData.Altitude)
+			if consumerLocationUpdatedRespData.Altitude != test.consumerLocationUpdatedData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Latitude, consumerLocationUpdatedRespData.Altitude)
 			}
 
 			if consumerLocationUpdatedRespData.Longitude != test.consumerLocationUpdatedData.Longitude {
@@ -792,7 +792,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(consumerCreatedRespData.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -811,7 +811,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                 string
 		consumerData         consumerapi.NewConsumerRequest
-		consumerLocationData consumerapi.NewConsumerLocationRequest
+		consumerLocationData consumerapi.NewLocationRequest
 	}{
 		{
 			"GetConsumerLocationEndpoint simple test",
@@ -821,8 +821,8 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			consumerapi.NewConsumerLocationRequest{
-				Altitude:   "987654321",
+			consumerapi.NewLocationRequest{
+				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -845,7 +845,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp1, err := http.Post(baseAddr+"/v1/consumer", "application/json", bytes.NewBuffer(reqBody1))
+			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody1))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -865,7 +865,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp2, err := http.Post(baseAddr+"/v1/consumer/location/"+strconv.Itoa(int(consumerCreatedRespData.ID)),
+			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
 				"application/json", bytes.NewBuffer(reqBody2))
 
 			if err != nil {
@@ -876,7 +876,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			resp3, err := http.Get(baseAddr + "/v1/consumer/location/" + strconv.Itoa(int(consumerCreatedRespData.ID)))
+			resp3, err := http.Get(baseAddr + "/v1/consumers/" + strconv.Itoa(consumerCreatedRespData.ID) + "/location")
 
 			if err != nil {
 				t.Fatal(err)
@@ -886,7 +886,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			consumerLocationRespData := consumerapi.ConsumerLocationResponse{}
+			consumerLocationRespData := consumerapi.LocationResponse{}
 			if err = consumerapi.DecodeJSON(resp3.Body, &consumerLocationRespData); err != nil {
 				t.Fatal(err)
 			}
@@ -895,12 +895,12 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Error(err)
 			}
 
-			if consumerLocationRespData.ConsumerID != consumerCreatedRespData.ID {
-				t.Errorf("ConsumerID: Expected : %v, Got: %v", consumerCreatedRespData.ID, consumerLocationRespData.ConsumerID)
+			if consumerLocationRespData.UserID != consumerCreatedRespData.ID {
+				t.Errorf("UserID: Expected : %v, Got: %v", consumerCreatedRespData.ID, consumerLocationRespData.UserID)
 			}
 
-			if consumerLocationRespData.Altitude != test.consumerLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.consumerLocationData.Altitude, consumerLocationRespData.Altitude)
+			if consumerLocationRespData.Altitude != test.consumerLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Altitude)
 			}
 
 			if consumerLocationRespData.Longitude != test.consumerLocationData.Longitude {
@@ -935,7 +935,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumer/"+strconv.Itoa(int(consumerCreatedRespData.ID)), nil)
+				baseAddr+"/v1/consumers/"+strconv.Itoa(int(consumerCreatedRespData.ID)), nil)
 			if err != nil {
 				t.Error(err)
 			}

@@ -5,6 +5,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
+	"errors"
 	"io"
 	"net/http"
 
@@ -100,14 +101,17 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 	consumer := requestToNewConsumer(&consumerRequest)
 
 	data, err := c.consumerService.InsertConsumer(consumer)
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
 
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
@@ -126,7 +130,7 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	id, ok := vars["consumer_id"]
+	id, ok := vars[consumerIDKey]
 	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
@@ -134,14 +138,16 @@ func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request
 	}
 
 	data, err := c.consumerService.DeleteConsumer(id)
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
@@ -156,7 +162,7 @@ func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request
 
 func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, ok := vars["consumer_id"]
+	id, ok := vars[consumerIDKey]
 	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
@@ -177,14 +183,16 @@ func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request
 
 	data, err := c.consumerService.UpdateConsumer(consumer, id)
 
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
@@ -201,14 +209,16 @@ func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request
 
 func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request) {
 	data, err := c.consumerService.GetAllConsumer()
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
@@ -225,7 +235,7 @@ func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request
 
 func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, ok := vars["consumer_id"]
+	id, ok := vars[consumerIDKey]
 	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
@@ -234,14 +244,16 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := c.consumerService.GetConsumer(id)
 
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
@@ -258,41 +270,42 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 
 func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	consumerID, ok := vars["consumer_id"]
+	consumerID, ok := vars[consumerIDKey]
 	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var consumerLocationRequest consumerapi.NewConsumerLocationRequest
+	var locationRequest consumerapi.NewLocationRequest
 
-	if err := consumerapi.BindJson(r, &consumerLocationRequest); err != nil {
+	if err := consumerapi.BindJson(r, &locationRequest); err != nil {
 		c.log.Println(err)
-		if err := consumerapi.Respond(rw, http.StatusBadRequest, "incorrect input data"); err != nil {
+		if err := consumerapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	consumerLocation := requestToNewConsumerLocation(&consumerLocationRequest)
+	location := requestToNewLocation(&locationRequest)
 
-	data, err := c.consumerService.InsertConsumerLocation(consumerLocation, consumerID)
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
+	data, err := c.consumerService.InsertLocation(location, consumerID)
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
-
-	response := consumerLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := consumerapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
@@ -303,16 +316,16 @@ func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *h
 
 func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	consumerID, ok := vars["consumer_id"]
+	consumerID, ok := vars[consumerIDKey]
 	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var updateConsumerLocationRequest consumerapi.UpdateConsumerLocationRequest
+	var updateLocationRequest consumerapi.UpdateLocationRequest
 
-	if err := consumerapi.BindJson(r, &updateConsumerLocationRequest); err != nil {
+	if err := consumerapi.BindJson(r, &updateLocationRequest); err != nil {
 		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -320,25 +333,27 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 		return
 	}
 
-	consumerLocation := requestToUpdateConsumerLocation(&updateConsumerLocationRequest)
+	location := requestToUpdateLocation(&updateLocationRequest)
 
-	data, err := c.consumerService.UpdateConsumerLocation(consumerLocation, consumerID)
-
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
+	data, err := c.consumerService.UpdateLocation(location, consumerID)
 
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	response := consumerLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := consumerapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
@@ -348,30 +363,31 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 
 func (c *consumerHandler) getConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, ok := vars["consumer_id"]
+	id, ok := vars[consumerIDKey]
 	if !ok {
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, errNoConsumerIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	data, err := c.consumerService.GetConsumerLocation(id)
-
-	if err != nil && err == systemErr {
-		if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
+	data, err := c.consumerService.GetLocation(id)
 
 	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := consumerapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+
+		c.log.Println(err)
 		if err := consumerapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
-
-	response := consumerLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := consumerapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
