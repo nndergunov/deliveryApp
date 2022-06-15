@@ -58,15 +58,15 @@ func (m MockService) UpdateCourierAvailable(_, _ string) (*domain.Courier, error
 	return MockCourierData, nil
 }
 
-func (m MockService) GetAllCourier(_ map[string]string) ([]domain.Courier, error) {
+func (m MockService) GetCourierList(_ domain.SearchParam) ([]domain.Courier, error) {
 	return []domain.Courier{*MockCourierData}, nil
 }
 
-func (m MockService) GetCourier(id string) (*domain.Courier, error) {
+func (m MockService) GetCourier(_ string) (*domain.Courier, error) {
 	return MockCourierData, nil
 }
 
-func (m MockService) InsertLocation(_ domain.Location, id string) (*domain.Location, error) {
+func (m MockService) InsertLocation(_ domain.Location, _ string) (*domain.Location, error) {
 	return MockLocationData, nil
 }
 
@@ -76,6 +76,10 @@ func (m MockService) GetLocation(_ string) (*domain.Location, error) {
 
 func (m MockService) UpdateLocation(_ domain.Location, id string) (*domain.Location, error) {
 	return MockLocationData, nil
+}
+
+func (m MockService) GetLocationList(_ domain.SearchParam) ([]domain.Location, error) {
+	return []domain.Location{*MockLocationData}, nil
 }
 
 func TestInsertNewCourierEndpoint(t *testing.T) {
@@ -366,14 +370,14 @@ func TestGetCourierEndpoint(t *testing.T) {
 	})
 }
 
-func TestGetAllCourierEndpoint(t *testing.T) {
+func TestGetCourierListEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("get all courier simple test", func(t *testing.T) {
+	t.Run("get courier list simple test", func(t *testing.T) {
 		t.Parallel()
 		testGetRespList := []*domain.Courier{MockCourierData}
 		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "get-all courier simple test")
+		log := logger.NewLogger(os.Stdout, "get courier list simple test")
 		handler := courierhandler.NewCourierHandler(courierhandler.Params{
 			Logger:         log,
 			CourierService: mockService,
@@ -388,7 +392,7 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 			t.Fatalf("StatusCode: %d", resp.Code)
 		}
 
-		respDataList := courierapi.ReturnCourierResponseList{}
+		respDataList := courierapi.CourierResponseList{}
 		if err := courierapi.DecodeJSON(resp.Body, &respDataList); err != nil {
 			t.Fatal(err)
 		}
@@ -474,7 +478,7 @@ func TestInsertNewLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/couriers/1/location", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/locations/1", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -557,7 +561,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/couriers/1/location", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/locations/1", bytes.NewBuffer(reqBody))
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -623,7 +627,7 @@ func TestGetLocationEndpoint(t *testing.T) {
 			})
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/couriers/1/location", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/locations/1", nil)
 
 			courierHandler.ServeHTTP(resp, req)
 
@@ -658,6 +662,82 @@ func TestGetLocationEndpoint(t *testing.T) {
 
 			if respData.Region != MockLocationData.Region {
 				t.Errorf("Region: Expected: %s, Got: %s", MockLocationData.Region, respData.Region)
+			}
+		})
+	}
+}
+
+func TestGetLocationListEndpoint(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+	}{
+		{
+			"Get Location list simple test",
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+		testGetRespList := []*domain.Location{MockLocationData}
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			mockService := new(MockService)
+
+			log := logger.NewLogger(os.Stdout, test.name)
+			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         log,
+				CourierService: mockService,
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/locations", nil)
+
+			courierHandler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			respDataList := courierapi.LocationResponseList{}
+
+			if err := courierapi.DecodeJSON(resp.Body, &respDataList); err != nil {
+				t.Fatal(err)
+			}
+
+			if len(respDataList.LocationResponseList) != len(testGetRespList) {
+				t.Errorf("len: Expected: %v, Got: %v", len(testGetRespList), len(respDataList.LocationResponseList))
+			}
+
+			for _, respData := range respDataList.LocationResponseList {
+
+				if respData.UserID != MockLocationData.UserID {
+					t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
+				}
+
+				if respData.Latitude != MockLocationData.Latitude {
+					t.Errorf("Latitude: Expected: %s, Got: %s", MockLocationData.Latitude, respData.Latitude)
+				}
+
+				if respData.Longitude != MockLocationData.Longitude {
+					t.Errorf("Longitude: Expected: %s, Got: %s", MockLocationData.Longitude, respData.Longitude)
+				}
+
+				if respData.Country != MockLocationData.Country {
+					t.Errorf("Country: Expected: %s, Got: %s", MockLocationData.Country, respData.Country)
+				}
+
+				if respData.City != MockLocationData.City {
+					t.Errorf("City: Expected: %s, Got: %s", MockLocationData.City, respData.City)
+				}
+
+				if respData.Region != MockLocationData.Region {
+					t.Errorf("Region: Expected: %s, Got: %s", MockLocationData.Region, respData.Region)
+				}
+
 			}
 		})
 	}

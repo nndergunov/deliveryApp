@@ -391,13 +391,13 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 	}
 }
 
-func TestGetAllCourierEndpoint(t *testing.T) {
+func TestGetCourierListEndpoint(t *testing.T) {
 	tests := []struct {
 		name            string
 		courierDataList []courierapi.NewCourierRequest
 	}{
 		{
-			"TestGetAllCourierEndpoint test",
+			"TestGetCourierListEndpoint test",
 			[]courierapi.NewCourierRequest{
 				{
 					Username:  "TestUsername",
@@ -463,7 +463,7 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getAllCourierResp.StatusCode)
 			}
 
-			getAllCourier := courierapi.ReturnCourierResponseList{}
+			getAllCourier := courierapi.CourierResponseList{}
 			if err = courierapi.DecodeJSON(getAllCourierResp.Body, &getAllCourier); err != nil {
 				t.Fatal(err)
 			}
@@ -504,7 +504,7 @@ func TestGetCourierEndpoint(t *testing.T) {
 		courierData courierapi.NewCourierRequest
 	}{
 		{
-			"TestGetAllCourierEndpoint test",
+			"TestGetCourierListEndpoint test",
 			courierapi.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
@@ -652,7 +652,7 @@ func TestInsertLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			locationResp, err := http.Post(baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID)+"/location",
+			locationResp, err := http.Post(baseAddr+"/v1/location"+strconv.Itoa(courierInsert.ID),
 				"application/json", bytes.NewBuffer(locationReqBody))
 			if err != nil {
 				t.Fatal(err)
@@ -794,7 +794,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			locationResp, err := http.Post(baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID)+"/location",
+			locationResp, err := http.Post(baseAddr+"/v1/locations"+strconv.Itoa(courierInsert.ID),
 				"application/json", bytes.NewBuffer(locationReqBody))
 			if err != nil {
 				t.Fatal(err)
@@ -815,7 +815,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 
 			client := http.Client{}
 
-			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID)+"/location", bytes.NewBuffer(locationUpdateReqBody))
+			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/locations"+strconv.Itoa(courierInsert.ID), bytes.NewBuffer(locationUpdateReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -948,7 +948,7 @@ func TestGetLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			InsertLocationResp, err := http.Post(baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID)+"/location",
+			InsertLocationResp, err := http.Post(baseAddr+"/v1/locations"+strconv.Itoa(courierInsert.ID),
 				"application/json", bytes.NewBuffer(InsertLocationReqBody))
 			if err != nil {
 				t.Fatal(err)
@@ -1010,6 +1010,148 @@ func TestGetLocationEndpoint(t *testing.T) {
 
 			if getLocation.Door != test.locationData.Door {
 				t.Errorf("Door: Expected: %s, Got: %s", test.locationData.Door, getLocation.Door)
+			}
+
+			// Deleting courier instance.
+			deleter := http.DefaultClient
+
+			delReq, err := http.NewRequest(http.MethodDelete,
+				baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID), nil)
+			if err != nil {
+				t.Error(err)
+			}
+
+			_, err = deleter.Do(delReq)
+			if err != nil {
+				t.Errorf("Could not delete Insert courier: %v", err)
+			}
+		})
+	}
+}
+
+func TestGetLocationListEndpoint(t *testing.T) {
+	tests := []struct {
+		name         string
+		courierData  courierapi.NewCourierRequest
+		locationData courierapi.NewLocationRequest
+	}{
+		{
+			"GetLocationListEndpoint simple test",
+			courierapi.NewCourierRequest{
+				Username:  "TestUsername",
+				Password:  "TestPassword",
+				Firstname: "TestFName",
+				Lastname:  "TestLName",
+				Email:     "TestEmail",
+				Phone:     "TestPhone",
+			},
+			courierapi.NewLocationRequest{
+				Latitude:   "987654321",
+				Longitude:  "123456789",
+				Country:    "TestCountry",
+				City:       "TestCity",
+				Region:     "",
+				Street:     "",
+				HomeNumber: "",
+				Floor:      "",
+				Door:       "",
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			InsertCourierReqBody, err := v1.Encode(test.courierData)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if InsertCourierResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
+			}
+
+			courierInsert := courierapi.CourierResponse{}
+			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+				t.Fatal(err)
+			}
+
+			InsertLocationReqBody, err := v1.Encode(test.locationData)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			InsertLocationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
+				"application/json", bytes.NewBuffer(InsertLocationReqBody))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if InsertLocationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", InsertLocationResp.StatusCode)
+			}
+
+			getLocationListResp, err := http.Get(baseAddr + "/v1/locations?city=" + test.locationData.City)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if getLocationListResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", getLocationListResp.StatusCode)
+			}
+
+			getLocationList := courierapi.LocationResponseList{}
+			if err = courierapi.DecodeJSON(getLocationListResp.Body, &getLocationList); err != nil {
+				t.Fatal(err)
+			}
+
+			if err := getLocationListResp.Body.Close(); err != nil {
+				t.Error(err)
+			}
+
+			for _, getLocation := range getLocationList.LocationResponseList {
+
+				if getLocation.UserID != courierInsert.ID {
+					t.Errorf("UserID: Expected : %v, Got: %v", courierInsert.ID, getLocation.UserID)
+				}
+
+				if getLocation.Latitude != test.locationData.Latitude {
+					t.Errorf("Latitude: Expected: %s, Got: %s", test.locationData.Latitude, getLocation.Latitude)
+				}
+
+				if getLocation.Longitude != test.locationData.Longitude {
+					t.Errorf("Longitude: Expected: %s, Got: %s", test.locationData.Longitude, getLocation.Longitude)
+				}
+
+				if getLocation.Country != test.locationData.Country {
+					t.Errorf("Country: Expected: %s, Got: %s", test.locationData.Country, getLocation.Country)
+				}
+
+				if getLocation.Region != test.locationData.Region {
+					t.Errorf("Region: Expected: %s, Got: %s", test.locationData.Region, getLocation.Region)
+				}
+
+				if getLocation.Street != test.locationData.Street {
+					t.Errorf("Street: Expected: %s, Got: %s", test.locationData.Street, getLocation.Street)
+				}
+
+				if getLocation.HomeNumber != test.locationData.HomeNumber {
+					t.Errorf("HomeNumber: Expected: %s, Got: %s", test.locationData.HomeNumber, getLocation.HomeNumber)
+				}
+
+				if getLocation.Floor != test.locationData.Floor {
+					t.Errorf("Floor: Expected: %s, Got: %s", test.locationData.Floor, getLocation.Floor)
+				}
+
+				if getLocation.Door != test.locationData.Door {
+					t.Errorf("Door: Expected: %s, Got: %s", test.locationData.Door, getLocation.Door)
+				}
 			}
 
 			// Deleting courier instance.

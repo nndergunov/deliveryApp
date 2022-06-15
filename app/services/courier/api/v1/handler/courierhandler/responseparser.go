@@ -17,7 +17,7 @@ func courierToResponse(courier domain.Courier) courierapi.CourierResponse {
 	}
 }
 
-func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourierResponseList {
+func courierListToResponse(courierList []domain.Courier) courierapi.CourierResponseList {
 	courierResponseList := make([]courierapi.CourierResponse, 0, len(courierList))
 
 	for _, courier := range courierList {
@@ -33,7 +33,7 @@ func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourie
 
 		courierResponseList = append(courierResponseList, courierResponse)
 	}
-	return courierapi.ReturnCourierResponseList{
+	return courierapi.CourierResponseList{
 		CourierResponseList: courierResponseList,
 	}
 }
@@ -50,5 +50,29 @@ func locationToResponse(location domain.Location) courierapi.LocationResponse {
 		HomeNumber: location.HomeNumber,
 		Floor:      location.Floor,
 		Door:       location.Door,
+	}
+}
+
+func locationListToResponse(locationList []domain.Location) courierapi.LocationResponseList {
+	locationResponseList := make([]courierapi.LocationResponse, 0, len(locationList))
+
+	for _, location := range locationList {
+		locationResponse := courierapi.LocationResponse{
+			UserID:     location.UserID,
+			Latitude:   location.Latitude,
+			Longitude:  location.Longitude,
+			Country:    location.Country,
+			City:       location.City,
+			Region:     location.Region,
+			Street:     location.Street,
+			HomeNumber: location.HomeNumber,
+			Floor:      location.Floor,
+			Door:       location.Door,
+		}
+
+		locationResponseList = append(locationResponseList, locationResponse)
+	}
+	return courierapi.LocationResponseList{
+		LocationResponseList: locationResponseList,
 	}
 }
