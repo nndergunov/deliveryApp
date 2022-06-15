@@ -1,13 +1,13 @@
 package deliveryhandler
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
 	"errors"
 	"io"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"delivery/api/v1/deliveryapi"
 	"delivery/pkg/service/deliveryservice"
@@ -44,7 +44,6 @@ const orderIDKey = "order_id"
 
 // NewDeliveryHandler creates an deliveryHandler value that handle a set of routes for the application.
 func (c *deliveryHandler) handlerInit() {
-
 	version := "/v1"
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
@@ -95,7 +94,6 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 	estimateDelivery := requestToEstimateDelivery(&estimateDeliveryRequest)
 
 	data, err := c.deliveryService.GetEstimateDelivery(estimateDelivery)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -117,7 +115,6 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 		c.log.Println(err)
 		return
 	}
-
 }
 
 func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
@@ -142,7 +139,6 @@ func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 	order := requestToOrder(&assignOrderRequest)
 
 	data, err := c.deliveryService.AssignOrder(orderID, order)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -164,5 +160,4 @@ func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 		c.log.Println(err)
 		return
 	}
-
 }

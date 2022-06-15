@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 )
 
 type googleApiResponse struct {
@@ -30,14 +31,12 @@ type Coordinates struct {
 }
 
 func GetCoordinates(address string) (*Coordinates, error) {
-
 	googleApiUri := configreader.GetString("googleApiUri")
 	if googleApiUri == "" {
 		return nil, errors.New("no google api uri in config")
 	}
 
 	resp, err := http.Get(googleApiUri + address)
-
 	if err != nil {
 		return nil, fmt.Errorf("fetching google api uri data error: %q", err)
 	}
