@@ -1,13 +1,13 @@
 package deliveryapi
 
 import (
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )
 
 // Respond converts a Go value to JSON and sends it to the client.
 func Respond(w http.ResponseWriter, status int, data any) error {
-
 	// Convert the response value to JSON.
 	jsonData, err := v1.Encode(data)
 	if err != nil {
