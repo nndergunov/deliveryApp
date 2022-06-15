@@ -17,12 +17,13 @@ type CourierService interface {
 	DeleteCourier(id string) (data string, err error)
 	UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error)
 	UpdateCourierAvailable(id, available string) (*domain.Courier, error)
-	GetAllCourier(params map[string]string) ([]domain.Courier, error)
+	GetCourierList(params domain.SearchParam) ([]domain.Courier, error)
 	GetCourier(id string) (*domain.Courier, error)
 
 	InsertLocation(courier domain.Location, userID string) (*domain.Location, error)
 	UpdateLocation(courier domain.Location, id string) (*domain.Location, error)
 	GetLocation(userID string) (*domain.Location, error)
+	GetLocationList(param domain.SearchParam) ([]domain.Location, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -206,8 +207,8 @@ func (c *courierService) UpdateCourierAvailable(id, available string) (*domain.C
 	return updatedCourier, nil
 }
 
-// GetAllCourier prepare data to get it from courierStorage.
-func (c *courierService) GetAllCourier(param map[string]string) ([]domain.Courier, error) {
+// GetCourierList prepare data to get it from courierStorage.
+func (c *courierService) GetCourierList(param domain.SearchParam) ([]domain.Courier, error) {
 	availableStr := param["available"]
 	if availableStr != "" {
 		if _, err := strconv.ParseBool(availableStr); err != nil {
@@ -217,13 +218,13 @@ func (c *courierService) GetAllCourier(param map[string]string) ([]domain.Courie
 		}
 	}
 
-	allCourier, err := c.courierStorage.GetAllCourier(param)
+	courierList, err := c.courierStorage.GetCourierList(param)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
 
-	return allCourier, nil
+	return courierList, nil
 }
 
 // GetCourier prepare data to get it from courierStorage.
@@ -328,4 +329,15 @@ func (c *courierService) GetLocation(userID string) (*domain.Location, error) {
 	}
 
 	return location, nil
+}
+
+// GetLocationList prepare data to get it from courierStorage.
+func (c *courierService) GetLocationList(param domain.SearchParam) ([]domain.Location, error) {
+	locationList, err := c.courierStorage.GetLocationList(param)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, systemErr
+	}
+
+	return locationList, nil
 }
