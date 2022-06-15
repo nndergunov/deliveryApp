@@ -547,7 +547,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
+			resp2, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID),
 				"application/json", bytes.NewBuffer(reqBody2))
 			if err != nil {
 				t.Fatal(err)
@@ -687,7 +687,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
+			resp2, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID),
 				"application/json", bytes.NewBuffer(reqBody2))
 			if err != nil {
 				t.Fatal(err)
@@ -708,7 +708,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 
 			client := http.Client{}
 
-			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location", bytes.NewBuffer(reqBody3))
+			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID), bytes.NewBuffer(reqBody3))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -839,7 +839,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp2, err := http.Post(baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID)+"/location",
+			resp2, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID),
 				"application/json", bytes.NewBuffer(reqBody2))
 			if err != nil {
 				t.Fatal(err)
@@ -849,7 +849,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			resp3, err := http.Get(baseAddr + "/v1/consumers/" + strconv.Itoa(consumerCreatedRespData.ID) + "/location")
+			resp3, err := http.Get(baseAddr + "/v1/locations/" + strconv.Itoa(consumerCreatedRespData.ID))
 			if err != nil {
 				t.Fatal(err)
 			}
