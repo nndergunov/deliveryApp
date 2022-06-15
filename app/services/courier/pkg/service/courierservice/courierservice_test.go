@@ -652,7 +652,7 @@ func TestInsertLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			locationResp, err := http.Post(baseAddr+"/v1/location"+strconv.Itoa(courierInsert.ID),
+			locationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
 				"application/json", bytes.NewBuffer(locationReqBody))
 			if err != nil {
 				t.Fatal(err)
@@ -794,7 +794,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			locationResp, err := http.Post(baseAddr+"/v1/locations"+strconv.Itoa(courierInsert.ID),
+			locationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
 				"application/json", bytes.NewBuffer(locationReqBody))
 			if err != nil {
 				t.Fatal(err)
@@ -815,7 +815,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 
 			client := http.Client{}
 
-			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/locations"+strconv.Itoa(courierInsert.ID), bytes.NewBuffer(locationUpdateReqBody))
+			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID), bytes.NewBuffer(locationUpdateReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -948,7 +948,7 @@ func TestGetLocationEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			InsertLocationResp, err := http.Post(baseAddr+"/v1/locations"+strconv.Itoa(courierInsert.ID),
+			InsertLocationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
 				"application/json", bytes.NewBuffer(InsertLocationReqBody))
 			if err != nil {
 				t.Fatal(err)
@@ -958,21 +958,21 @@ func TestGetLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertLocationResp.StatusCode)
 			}
 
-			getCoruierLocationResp, err := http.Get(baseAddr + "/v1/couriers/" + strconv.Itoa(courierInsert.ID) + "/location")
+			getCourierLocationResp, err := http.Get(baseAddr + "/v1/locations/" + strconv.Itoa(courierInsert.ID))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if getCoruierLocationResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", InsertLocationResp.StatusCode)
+			if getCourierLocationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", getCourierLocationResp.StatusCode)
 			}
 
 			getLocation := courierapi.LocationResponse{}
-			if err = courierapi.DecodeJSON(getCoruierLocationResp.Body, &getLocation); err != nil {
+			if err = courierapi.DecodeJSON(getCourierLocationResp.Body, &getLocation); err != nil {
 				t.Fatal(err)
 			}
 
-			if err := getCoruierLocationResp.Body.Close(); err != nil {
+			if err := getCourierLocationResp.Body.Close(); err != nil {
 				t.Error(err)
 			}
 
