@@ -1,10 +1,10 @@
 package tokenservice
 
 import (
+	"time"
+
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
-
-	"time"
 
 	"accounting/pkg/domain"
 )
@@ -26,17 +26,14 @@ type TokenService interface {
 
 // NewTokenService constructs a new AuthService.
 func NewTokenService(p Params) (TokenService, error) {
-
 	tokenServiceItem := &tokenService{
 		key: p.Keys,
 	}
 
 	return tokenServiceItem, nil
-
 }
 
 func (t *tokenService) CreateToken(tr *domain.Transaction) (*string, error) {
-
 	privateCl := struct {
 		Transaction *domain.Transaction `json:"transaction"`
 	}{
@@ -52,7 +49,6 @@ func (t *tokenService) CreateToken(tr *domain.Transaction) (*string, error) {
 }
 
 func (t *tokenService) getTokens(privateCl interface{}) (string, error) {
-
 	sig, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.RS512, Key: t.key},
 		(&jose.SignerOptions{}).WithType("JWT"))
 	if err != nil {

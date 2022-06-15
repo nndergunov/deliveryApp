@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"accounting/api/v1/handlers/accounthandler"
 	"accounting/pkg/db"
 	"accounting/pkg/service/accountservice"
@@ -11,16 +15,11 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-
-	"log"
-	"net/http"
-	"os"
 )
 
 const configFile = "/config.yaml"
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "main: ")
 
@@ -53,7 +52,8 @@ func run(log *logger.Logger) error {
 
 	accountAccountingService := accountservice.NewService(accountservice.Params{
 		Storage: accountStorage,
-		Logger:  logger.NewLogger(os.Stdout, "service: ")})
+		Logger:  logger.NewLogger(os.Stdout, "service: "),
+	})
 
 	handler := accounthandler.NewAccountHandler(accounthandler.Params{
 		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),

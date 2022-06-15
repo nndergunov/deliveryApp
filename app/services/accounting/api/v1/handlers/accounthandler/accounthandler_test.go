@@ -2,13 +2,14 @@ package accounthandler_test
 
 import (
 	"bytes"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"accounting/api/v1/accountingapi"
 	"accounting/api/v1/handlers/accounthandler"
@@ -121,7 +122,6 @@ func TestInsertNewAccountEndpoint(t *testing.T) {
 			if respData.Balance != MockAccountData.Balance {
 				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, respData.Balance)
 			}
-
 		})
 	}
 }

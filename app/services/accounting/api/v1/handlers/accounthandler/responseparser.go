@@ -17,7 +17,6 @@ func accountToResponse(account domain.Account) accountingapi.AccountResponse {
 }
 
 func accountListToResponse(accountList []domain.Account) accountingapi.AccountListResponse {
-
 	accountResponseList := make([]accountingapi.AccountResponse, 0, len(accountList))
 
 	for _, account := range accountList {

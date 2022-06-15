@@ -1,13 +1,13 @@
 package accounthandler
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
 	"errors"
 	"io"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"accounting/api/v1/accountingapi"
 	"accounting/pkg/domain"
@@ -43,7 +43,6 @@ func NewAccountHandler(p Params) *mux.Router {
 
 // NewAccountHandler creates an accountHandler value that handle a set of routes for the application.
 func (a *accountHandler) handlerInit() {
-
 	version := "/v1"
 
 	a.serveMux.HandleFunc(version+"/status", a.StatusHandler).Methods(http.MethodPost)
@@ -101,7 +100,6 @@ func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request
 	account := requestToNewAccount(&newAccountRequest)
 
 	data, err := a.service.InsertNewAccount(account)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -137,7 +135,6 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := a.service.GetAccountByID(id)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -169,7 +166,6 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
@@ -180,7 +176,6 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := a.service.DeleteAccount(id)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -204,7 +199,6 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
-
 	var transactionRequest accountingapi.TransactionRequest
 
 	if err := accountingapi.BindJson(r, &transactionRequest); err != nil {
@@ -218,7 +212,6 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 	transaction := requestToTransaction(&transactionRequest)
 
 	data, err := a.service.Transact(transaction)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -243,7 +236,6 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 }
 
 func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
-
 	searchParam := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
@@ -256,7 +248,6 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	data, err := a.service.GetAccountListByParam(searchParam)
-
 	if err != nil {
 
 		if errors.Is(err, systemErr) {

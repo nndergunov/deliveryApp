@@ -1,11 +1,11 @@
 package accountservice
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
 	"database/sql"
 	"errors"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"accounting/pkg/domain"
 )
@@ -42,7 +42,6 @@ func NewService(p Params) *Service {
 }
 
 func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, error) {
-
 	if account.UserID < 1 {
 		return nil, errWrongUserID
 	}
@@ -55,7 +54,7 @@ func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, erro
 		return nil, errWrongUserType
 	}
 
-	//check duplicate
+	// check duplicate
 	param := domain.SearchParam{}
 	param["user_id"] = strconv.Itoa(account.UserID)
 	param["user_type"] = account.UserType
@@ -69,7 +68,7 @@ func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, erro
 		return nil, errMaxNumberOfAccount
 	}
 
-	//insertAccount
+	// insertAccount
 	newAccount, err := c.storage.InsertNewAccount(account)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
@@ -143,13 +142,12 @@ func (c Service) DeleteAccount(id string) (string, error) {
 }
 
 func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, error) {
-
 	if transaction.Amount < 1 {
 		return nil, errWrongAmount
 	}
 
 	if transaction.FromAccountID == 0 && transaction.ToAccountID != 0 {
-		//add to balance
+		// add to balance
 		toAccount, err := c.storage.GetAccountByID(transaction.ToAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
@@ -169,7 +167,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 	}
 
 	if transaction.FromAccountID != 0 && transaction.ToAccountID == 0 {
-		//sub from balance
+		// sub from balance
 		fromAccount, err := c.storage.GetAccountByID(transaction.FromAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
@@ -193,7 +191,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 	}
 
 	if transaction.FromAccountID != 0 && transaction.ToAccountID != 0 {
-		//sub from balance and add to balance
+		// sub from balance and add to balance
 		fromAccount, err := c.storage.GetAccountByID(transaction.FromAccountID)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)

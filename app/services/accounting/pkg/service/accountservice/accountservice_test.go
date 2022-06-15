@@ -1,12 +1,12 @@
 package accountservice_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-
 	"bytes"
 	"net/http"
 	"strconv"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 
 	"accounting/api/v1/accountingapi"
 )
@@ -14,7 +14,6 @@ import (
 const baseAddr = "http://localhost:8081"
 
 func TestInsertAccountEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name        string
 		accountData accountingapi.NewAccountRequest
@@ -32,7 +31,6 @@ func TestInsertAccountEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.accountData)
 			if err != nil {
 				t.Fatal(err)
@@ -89,7 +87,6 @@ func TestInsertAccountEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete: %v", err)
 			}
-
 		})
 	}
 }

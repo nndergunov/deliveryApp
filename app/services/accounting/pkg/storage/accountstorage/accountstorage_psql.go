@@ -22,7 +22,6 @@ func NewStorage(p Params) *Storage {
 }
 
 func (c Storage) InsertNewAccount(account domain.Account) (*domain.Account, error) {
-
 	sql := `INSERT INTO account
     			(user_id, user_type, created_at, updated_at)
 			VALUES ($1, $2, now(), now())
@@ -38,7 +37,6 @@ func (c Storage) InsertNewAccount(account domain.Account) (*domain.Account, erro
 }
 
 func (c Storage) GetAccountByID(id int) (*domain.Account, error) {
-
 	sql := `SELECT * 
 			FROM account
 			WHERE id = $1;`
@@ -54,7 +52,6 @@ func (c Storage) GetAccountByID(id int) (*domain.Account, error) {
 }
 
 func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Account, error) {
-
 	sql := `SELECT * 
 			FROM account`
 
@@ -103,13 +100,15 @@ func (c Storage) DeleteAccount(id int) error {
 }
 
 func (c Storage) AddToAccountBalance(tr domain.Transaction) (*domain.Transaction, error) {
-
+	var err error
 	tx, err := c.db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	sql := `
 			UPDATE account
@@ -136,17 +135,19 @@ func (c Storage) AddToAccountBalance(tr domain.Transaction) (*domain.Transaction
 		return nil, err
 	}
 
-	return &newTr, nil
+	return &newTr, err
 }
 
 func (c Storage) SubFromAccountBalance(tr domain.Transaction) (*domain.Transaction, error) {
-
+	var err error
 	tx, err := c.db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	sql := `UPDATE account
     		SET balance = (SELECT balance FROM account WHERE id = $1) - $2
@@ -172,16 +173,19 @@ func (c Storage) SubFromAccountBalance(tr domain.Transaction) (*domain.Transacti
 		return nil, err
 	}
 
-	return &newTr, nil
+	return &newTr, err
 }
 
 func (c Storage) Transact(tr domain.Transaction) (*domain.Transaction, error) {
+	var err error
 	tx, err := c.db.Begin()
 	if err != nil {
 		return nil, err
 	}
 
-	defer tx.Rollback()
+	defer func() {
+		err = tx.Rollback()
+	}()
 
 	sql := `UPDATE account
 			SET balance = (SELECT balance FROM account WHERE id = $1) - $2
@@ -216,5 +220,4 @@ func (c Storage) Transact(tr domain.Transaction) (*domain.Transaction, error) {
 	}
 
 	return &newTr, nil
-
 }
