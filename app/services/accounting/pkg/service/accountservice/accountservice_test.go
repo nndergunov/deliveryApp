@@ -2,13 +2,12 @@ package accountservice_test
 
 import (
 	"bytes"
+	accountingapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"net/http"
 	"strconv"
 	"testing"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-
-	"accounting/api/v1/accountingapi"
 )
 
 const baseAddr = "http://localhost:8081"
@@ -16,11 +15,11 @@ const baseAddr = "http://localhost:8081"
 func TestInsertAccountEndpoint(t *testing.T) {
 	tests := []struct {
 		name        string
-		accountData accountingapi.NewAccountRequest
+		accountData accountingapi2.NewAccountRequest
 	}{
 		{
 			"Insert account simple test",
-			accountingapi.NewAccountRequest{
+			accountingapi2.NewAccountRequest{
 				UserID:   1,
 				UserType: "courier",
 			},
@@ -49,8 +48,8 @@ func TestInsertAccountEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", insertCourierResp.StatusCode)
 			}
 
-			respData := accountingapi.AccountResponse{}
-			if err = accountingapi.DecodeJSON(insertCourierResp.Body, &respData); err != nil {
+			respData := accountingapi2.AccountResponse{}
+			if err = accountingapi2.DecodeJSON(insertCourierResp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 

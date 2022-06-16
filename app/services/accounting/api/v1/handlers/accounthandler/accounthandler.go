@@ -2,6 +2,7 @@ package accounthandler
 
 import (
 	"errors"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"io"
 	"net/http"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"accounting/api/v1/accountingapi"
 	"accounting/pkg/domain"
 	"accounting/pkg/service/accountservice"
 )
