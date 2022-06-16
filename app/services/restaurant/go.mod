@@ -6,10 +6,10 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220531111828-d6e41387463e
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220531111828-d6e41387463e
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220531111828-d6e41387463e
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220531111828-d6e41387463e
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220608092305-41a44b721688
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220608092305-41a44b721688
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220608092305-41a44b721688
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220608092305-41a44b721688
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
 )
@@ -26,9 +26,9 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
-	github.com/subosito/gotenv v1.3.0 // indirect
+	github.com/subosito/gotenv v1.4.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
-	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
+	golang.org/x/sys v0.0.0-20220608164250-635b8c9b7f68 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect

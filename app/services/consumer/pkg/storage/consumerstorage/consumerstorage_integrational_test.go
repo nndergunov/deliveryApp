@@ -1,14 +1,16 @@
 package consumerstorage_test
 
 import (
-	"consumer/pkg/db"
-	"consumer/pkg/domain"
-	"consumer/pkg/storage/consumerstorage"
 	"database/sql"
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+
+	"consumer/pkg/db"
+	"consumer/pkg/domain"
+	"consumer/pkg/storage/consumerstorage"
 )
 
 const configFile = "/config.yaml"
@@ -33,11 +35,9 @@ func TestInsertConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -87,7 +87,6 @@ func TestInsertConsumer(t *testing.T) {
 			if err := database.Close(); err != nil {
 				t.Error(err)
 			}
-
 		})
 	}
 }
@@ -112,11 +111,9 @@ func TestDeleteConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -161,7 +158,6 @@ func TestDeleteConsumer(t *testing.T) {
 			if err := database.Close(); err != nil {
 				t.Error(err)
 			}
-
 		})
 	}
 }
@@ -193,11 +189,9 @@ func TestUpdateConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -262,12 +256,13 @@ func TestGetAllConsumer(t *testing.T) {
 	}{
 		{
 			name: "Test Get ALl Consumer",
-			initialConsumerList: []domain.Consumer{domain.Consumer{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
-				Phone:     "123456789",
-			},
+			initialConsumerList: []domain.Consumer{
+				{
+					Firstname: "vasya",
+					Lastname:  "",
+					Email:     "vasya@gmail.com",
+					Phone:     "123456789",
+				},
 			},
 		},
 	}
@@ -276,11 +271,9 @@ func TestGetAllConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -349,11 +342,9 @@ func TestGetConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -416,13 +407,13 @@ func TestGetConsumer(t *testing.T) {
 func TestInsertConsumerLocation(t *testing.T) {
 	tests := []struct {
 		name             string
-		consumerLocation domain.ConsumerLocation
+		consumerLocation domain.Location
 	}{
 		{
 			name: "TestInsertConsumerLocation",
-			consumerLocation: domain.ConsumerLocation{
-				ConsumerID: 1,
-				Altitude:   "0123456789",
+			consumerLocation: domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -439,11 +430,9 @@ func TestInsertConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -462,7 +451,7 @@ func TestInsertConsumerLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			insertedConsumerLocation, err := consumerStorage.InsertConsumerLocation(test.consumerLocation)
+			insertedConsumerLocation, err := consumerStorage.InsertLocation(test.consumerLocation)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -475,12 +464,12 @@ func TestInsertConsumerLocation(t *testing.T) {
 				t.Errorf("updatedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if insertedConsumerLocation.ConsumerID != test.consumerLocation.ConsumerID {
-				t.Errorf("insertedConsumerLocation ConsumerID: Expected: %v, Got: %v", test.consumerLocation.ConsumerID, insertedConsumerLocation.ConsumerID)
+			if insertedConsumerLocation.UserID != test.consumerLocation.UserID {
+				t.Errorf("insertedConsumerLocation UserID: Expected: %v, Got: %v", test.consumerLocation.UserID, insertedConsumerLocation.UserID)
 			}
 
-			if insertedConsumerLocation.Altitude != test.consumerLocation.Altitude {
-				t.Errorf("insertedConsumerLocation Altitude: Expected: %v, Got: %v", test.consumerLocation.Altitude, insertedConsumerLocation.Altitude)
+			if insertedConsumerLocation.Latitude != test.consumerLocation.Latitude {
+				t.Errorf("insertedConsumerLocation Latitude: Expected: %v, Got: %v", test.consumerLocation.Latitude, insertedConsumerLocation.Latitude)
 			}
 
 			if insertedConsumerLocation.Longitude != test.consumerLocation.Longitude {
@@ -499,7 +488,7 @@ func TestInsertConsumerLocation(t *testing.T) {
 				t.Errorf("insertedConsumerLocation Region: Expected: %v, Got: %v", test.consumerLocation.Region, insertedConsumerLocation.Region)
 			}
 
-			if err = consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID); err != nil {
+			if err = consumerStorage.DeleteLocation(insertedConsumerLocation.UserID); err != nil {
 				t.Error(err)
 			}
 
@@ -513,14 +502,14 @@ func TestInsertConsumerLocation(t *testing.T) {
 func TestUpdateConsumerLocation(t *testing.T) {
 	tests := []struct {
 		name                    string
-		initialConsumerLocation domain.ConsumerLocation
-		updateConsumerLocation  domain.ConsumerLocation
+		initialConsumerLocation domain.Location
+		updateConsumerLocation  domain.Location
 	}{
 		{
 			name: "Test Update Consumer",
-			initialConsumerLocation: domain.ConsumerLocation{
-				ConsumerID: 1,
-				Altitude:   "0123456789",
+			initialConsumerLocation: domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -531,9 +520,9 @@ func TestUpdateConsumerLocation(t *testing.T) {
 				Door:       "",
 			},
 
-			updateConsumerLocation: domain.ConsumerLocation{
-				ConsumerID: 1,
-				Altitude:   "9876543210",
+			updateConsumerLocation: domain.Location{
+				UserID:     1,
+				Latitude:   "9876543210",
 				Longitude:  "9876543210",
 				Country:    "CountryTest",
 				City:       "CityTest",
@@ -550,11 +539,9 @@ func TestUpdateConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -573,7 +560,7 @@ func TestUpdateConsumerLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			insertedConsumerLocation, err := consumerStorage.InsertConsumerLocation(test.initialConsumerLocation)
+			insertedConsumerLocation, err := consumerStorage.InsertLocation(test.initialConsumerLocation)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -582,7 +569,7 @@ func TestUpdateConsumerLocation(t *testing.T) {
 				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			updatedConsumerLocation, err := consumerStorage.UpdateConsumerLocation(test.updateConsumerLocation)
+			updatedConsumerLocation, err := consumerStorage.UpdateLocation(test.updateConsumerLocation)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -591,12 +578,12 @@ func TestUpdateConsumerLocation(t *testing.T) {
 				t.Errorf("updatedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if updatedConsumerLocation.ConsumerID != test.updateConsumerLocation.ConsumerID {
-				t.Errorf("updatedConsumerLocation ConsumerID: Expected: %v, Got: %v", test.updateConsumerLocation.ConsumerID, updatedConsumerLocation.ConsumerID)
+			if updatedConsumerLocation.UserID != test.updateConsumerLocation.UserID {
+				t.Errorf("updatedConsumerLocation UserID: Expected: %v, Got: %v", test.updateConsumerLocation.UserID, updatedConsumerLocation.UserID)
 			}
 
-			if updatedConsumerLocation.Altitude != test.updateConsumerLocation.Altitude {
-				t.Errorf("updatedConsumerLocation Altitude: Expected: %v, Got: %v", test.updateConsumerLocation.Altitude, updatedConsumerLocation.Altitude)
+			if updatedConsumerLocation.Latitude != test.updateConsumerLocation.Latitude {
+				t.Errorf("updatedConsumerLocation Latitude: Expected: %v, Got: %v", test.updateConsumerLocation.Latitude, updatedConsumerLocation.Latitude)
 			}
 
 			if updatedConsumerLocation.Longitude != test.updateConsumerLocation.Longitude {
@@ -615,7 +602,7 @@ func TestUpdateConsumerLocation(t *testing.T) {
 				t.Errorf("updatedConsumerLocation Region: Expected: %v, Got: %v", test.updateConsumerLocation.Region, updatedConsumerLocation.Region)
 			}
 
-			if err = consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID); err != nil {
+			if err = consumerStorage.DeleteLocation(insertedConsumerLocation.UserID); err != nil {
 				t.Error(err)
 			}
 
@@ -629,13 +616,13 @@ func TestUpdateConsumerLocation(t *testing.T) {
 func TestGetConsumerLocation(t *testing.T) {
 	tests := []struct {
 		name             string
-		consumerLocation domain.ConsumerLocation
+		consumerLocation domain.Location
 	}{
 		{
 			name: "TestGetConsumerLocation",
-			consumerLocation: domain.ConsumerLocation{
-				ConsumerID: 1,
-				Altitude:   "0123456789",
+			consumerLocation: domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -652,11 +639,9 @@ func TestGetConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
 
@@ -675,7 +660,7 @@ func TestGetConsumerLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			insertedConsumerLocation, err := consumerStorage.InsertConsumerLocation(test.consumerLocation)
+			insertedConsumerLocation, err := consumerStorage.InsertLocation(test.consumerLocation)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -684,7 +669,7 @@ func TestGetConsumerLocation(t *testing.T) {
 				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			getConsumerLocation, err := consumerStorage.GetConsumerLocation(insertedConsumerLocation.ConsumerID)
+			getConsumerLocation, err := consumerStorage.GetLocation(insertedConsumerLocation.UserID)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -693,12 +678,12 @@ func TestGetConsumerLocation(t *testing.T) {
 				t.Errorf("getConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if getConsumerLocation.ConsumerID != test.consumerLocation.ConsumerID {
-				t.Errorf("getConsumerLocation ConsumerID: Expected: %v, Got: %v", test.consumerLocation.ConsumerID, getConsumerLocation.ConsumerID)
+			if getConsumerLocation.UserID != test.consumerLocation.UserID {
+				t.Errorf("getConsumerLocation UserID: Expected: %v, Got: %v", test.consumerLocation.UserID, getConsumerLocation.UserID)
 			}
 
-			if getConsumerLocation.Altitude != test.consumerLocation.Altitude {
-				t.Errorf("getConsumerLocation Altitude: Expected: %v, Got: %v", test.consumerLocation.Altitude, getConsumerLocation.Altitude)
+			if getConsumerLocation.Latitude != test.consumerLocation.Latitude {
+				t.Errorf("getConsumerLocation Latitude: Expected: %v, Got: %v", test.consumerLocation.Latitude, getConsumerLocation.Latitude)
 			}
 
 			if getConsumerLocation.Longitude != test.consumerLocation.Longitude {
@@ -717,7 +702,7 @@ func TestGetConsumerLocation(t *testing.T) {
 				t.Errorf("getConsumerLocation Region: Expected: %v, Got: %v", test.consumerLocation.Region, getConsumerLocation.Region)
 			}
 
-			if err = consumerStorage.DeleteConsumerLocation(insertedConsumerLocation.ConsumerID); err != nil {
+			if err = consumerStorage.DeleteLocation(insertedConsumerLocation.UserID); err != nil {
 				t.Error(err)
 			}
 

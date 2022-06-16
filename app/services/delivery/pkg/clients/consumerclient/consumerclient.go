@@ -21,7 +21,7 @@ func (a ConsumerClient) GetRestaurant(consumerID int) (*domain.Location, error) 
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
-	//todo when restaurant add this rout
+	// todo when restaurant add this rout
 
 	return &domain.Location{}, nil
 }

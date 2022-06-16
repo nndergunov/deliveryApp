@@ -34,17 +34,17 @@ func consumerListToResponse(consumerList []domain.Consumer) consumerapi.ReturnCo
 	}
 }
 
-func consumerLocationToResponse(consumerLocation domain.ConsumerLocation) consumerapi.ConsumerLocationResponse {
-	return consumerapi.ConsumerLocationResponse{
-		ConsumerID: consumerLocation.ConsumerID,
-		Altitude:   consumerLocation.Altitude,
-		Longitude:  consumerLocation.Longitude,
-		Country:    consumerLocation.Country,
-		City:       consumerLocation.City,
-		Region:     consumerLocation.Region,
-		Street:     consumerLocation.Street,
-		HomeNumber: consumerLocation.HomeNumber,
-		Floor:      consumerLocation.Floor,
-		Door:       consumerLocation.Door,
+func locationToResponse(location domain.Location) consumerapi.LocationResponse {
+	return consumerapi.LocationResponse{
+		UserID:     location.UserID,
+		Altitude:   location.Latitude,
+		Longitude:  location.Longitude,
+		Country:    location.Country,
+		City:       location.City,
+		Region:     location.Region,
+		Street:     location.Street,
+		HomeNumber: location.HomeNumber,
+		Floor:      location.Floor,
+		Door:       location.Door,
 	}
 }

@@ -1,15 +1,17 @@
 package courierstorage_test
 
 import (
-	"courier/pkg/db"
-	"courier/pkg/domain"
-	"courier/pkg/storage/courierstorage"
 	"database/sql"
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+
+	"courier/pkg/db"
+	"courier/pkg/domain"
+	"courier/pkg/storage/courierstorage"
 )
 
 const configFile = "/config.yaml"
@@ -41,7 +43,6 @@ func TestInsertCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -110,7 +111,6 @@ func TestDeleteCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -124,11 +124,9 @@ func TestDeleteCourier(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			couierStorage := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			courierStorage := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
 
-			defer couierStorage.CleanCourierTable()
-
-			insertedCourier, err := couierStorage.InsertCourier(test.courier)
+			insertedCourier, err := courierStorage.InsertCourier(test.courier)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -137,12 +135,12 @@ func TestDeleteCourier(t *testing.T) {
 				t.Errorf("createCourier: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			err = couierStorage.DeleteCourier(insertedCourier.ID)
+			err = courierStorage.DeleteCourier(insertedCourier.ID)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			foundCourier, err := couierStorage.GetCourierByID(insertedCourier.ID)
+			foundCourier, err := courierStorage.GetCourierByID(insertedCourier.ID)
 			if err != nil && err != sql.ErrNoRows {
 				t.Fatal(err)
 			}
@@ -192,7 +190,6 @@ func TestUpdateCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -276,7 +273,6 @@ func TestUpdateCourierAvailable(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -320,21 +316,22 @@ func TestUpdateCourierAvailable(t *testing.T) {
 	}
 }
 
-func TestGetAllCourier(t *testing.T) {
+func TestGetCourierList(t *testing.T) {
 	tests := []struct {
 		name               string
 		initialCourierList []domain.Courier
 	}{
 		{
-			name: "Test Get ALl Courier",
-			initialCourierList: []domain.Courier{domain.Courier{
-				Username:  "vasyauser",
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
-				Phone:     "123456789",
-				Available: true,
-			},
+			name: "Test Get Courier List",
+			initialCourierList: []domain.Courier{
+				{
+					Username:  "vasyauser",
+					Firstname: "vasya",
+					Lastname:  "",
+					Email:     "vasya@gmail.com",
+					Phone:     "123456789",
+					Available: true,
+				},
 			},
 		},
 	}
@@ -348,7 +345,6 @@ func TestGetAllCourier(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -377,14 +373,13 @@ func TestGetAllCourier(t *testing.T) {
 			param := domain.SearchParam{}
 			param["available"] = "true"
 
-			allCourier, err := courierStorage.GetAllCourier(param)
+			allCourier, err := courierStorage.GetCourierList(param)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			if len(allCourier) != len(test.initialCourierList) {
 				t.Errorf("get all coureir len: Expected: %v, Got: %v", len(test.initialCourierList), len(allCourier))
-
 			}
 
 			if err := courierStorage.CleanCourierTable(); err != nil {
@@ -424,7 +419,6 @@ func TestGetCourierByID(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -510,7 +504,6 @@ func TestGetCourierDuplicateByParam(t *testing.T) {
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -559,16 +552,16 @@ func TestGetCourierDuplicateByParam(t *testing.T) {
 	}
 }
 
-func TestInsertCourierLocation(t *testing.T) {
+func TestInsertLocation(t *testing.T) {
 	tests := []struct {
-		name            string
-		courierLocation domain.CourierLocation
+		name     string
+		location domain.Location
 	}{
 		{
-			name: "TestInsertCourierLocation",
-			courierLocation: domain.CourierLocation{
-				CourierID:  1,
-				Altitude:   "0123456789",
+			name: "TestInsertLocation",
+			location: domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -585,11 +578,9 @@ func TestInsertCourierLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -608,44 +599,44 @@ func TestInsertCourierLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			insertedCourierLocation, err := courierStorage.InsertCourierLocation(test.courierLocation)
+			insertedLocation, err := courierStorage.InsertLocation(test.location)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if insertedCourierLocation == nil {
-				t.Errorf("insertedCourierLocation: Expected: %s, Got: %s", "not nill", "nil")
+			if insertedLocation == nil {
+				t.Errorf("insertedLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if insertedCourierLocation == nil {
-				t.Errorf("updatedCourierLocation: Expected: %s, Got: %s", "not nill", "nil")
+			if insertedLocation == nil {
+				t.Errorf("updatedLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if insertedCourierLocation.CourierID != test.courierLocation.CourierID {
-				t.Errorf("insertedCourierLocation CourierID: Expected: %v, Got: %v", test.courierLocation.CourierID, insertedCourierLocation.CourierID)
+			if insertedLocation.UserID != test.location.UserID {
+				t.Errorf("insertedLocation UserID: Expected: %v, Got: %v", test.location.UserID, insertedLocation.UserID)
 			}
 
-			if insertedCourierLocation.Altitude != test.courierLocation.Altitude {
-				t.Errorf("insertedCourierLocation Altitude: Expected: %v, Got: %v", test.courierLocation.Altitude, insertedCourierLocation.Altitude)
+			if insertedLocation.Latitude != test.location.Latitude {
+				t.Errorf("insertedLocation Latitude: Expected: %v, Got: %v", test.location.Latitude, insertedLocation.Latitude)
 			}
 
-			if insertedCourierLocation.Longitude != test.courierLocation.Longitude {
-				t.Errorf("insertedCourierLocation Longitude: Expected: %v, Got: %v", test.courierLocation.Longitude, insertedCourierLocation.Longitude)
+			if insertedLocation.Longitude != test.location.Longitude {
+				t.Errorf("insertedLocation Longitude: Expected: %v, Got: %v", test.location.Longitude, insertedLocation.Longitude)
 			}
 
-			if insertedCourierLocation.Country != test.courierLocation.Country {
-				t.Errorf("insertedCourierLocation Country: Expected: %v, Got: %v", test.courierLocation.Country, insertedCourierLocation.Country)
+			if insertedLocation.Country != test.location.Country {
+				t.Errorf("insertedLocation Country: Expected: %v, Got: %v", test.location.Country, insertedLocation.Country)
 			}
 
-			if insertedCourierLocation.City != test.courierLocation.City {
-				t.Errorf("insertedCourierLocation City: Expected: %v, Got: %v", test.courierLocation.City, insertedCourierLocation.City)
+			if insertedLocation.City != test.location.City {
+				t.Errorf("insertedLocation City: Expected: %v, Got: %v", test.location.City, insertedLocation.City)
 			}
 
-			if insertedCourierLocation.Region != test.courierLocation.Region {
-				t.Errorf("insertedCourierLocation Region: Expected: %v, Got: %v", test.courierLocation.Region, insertedCourierLocation.Region)
+			if insertedLocation.Region != test.location.Region {
+				t.Errorf("insertedLocation Region: Expected: %v, Got: %v", test.location.Region, insertedLocation.Region)
 			}
 
-			if err = courierStorage.DeleteCourierLocation(insertedCourierLocation.CourierID); err != nil {
+			if err = courierStorage.DeleteLocation(insertedLocation.UserID); err != nil {
 				t.Error(err)
 			}
 
@@ -656,17 +647,17 @@ func TestInsertCourierLocation(t *testing.T) {
 	}
 }
 
-func TestUpdateCourierLocation(t *testing.T) {
+func TestUpdateLocation(t *testing.T) {
 	tests := []struct {
-		name                   string
-		initialCourierLocation domain.CourierLocation
-		updateCourierLocation  domain.CourierLocation
+		name            string
+		initialLocation domain.Location
+		updateLocation  domain.Location
 	}{
 		{
 			name: "Test Update Courier",
-			initialCourierLocation: domain.CourierLocation{
-				CourierID:  1,
-				Altitude:   "0123456789",
+			initialLocation: domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -677,9 +668,9 @@ func TestUpdateCourierLocation(t *testing.T) {
 				Door:       "",
 			},
 
-			updateCourierLocation: domain.CourierLocation{
-				CourierID:  1,
-				Altitude:   "9876543210",
+			updateLocation: domain.Location{
+				UserID:     1,
+				Latitude:   "9876543210",
 				Longitude:  "9876543210",
 				Country:    "CountryTest",
 				City:       "CityTest",
@@ -696,11 +687,9 @@ func TestUpdateCourierLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -719,49 +708,49 @@ func TestUpdateCourierLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			insertedCourierLocation, err := courierStorage.InsertCourierLocation(test.initialCourierLocation)
+			insertedLocation, err := courierStorage.InsertLocation(test.initialLocation)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if insertedCourierLocation == nil {
-				t.Errorf("insertedCourierLocation: Expected: %s, Got: %s", "not nill", "nil")
+			if insertedLocation == nil {
+				t.Errorf("insertedLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			updatedCourierLocation, err := courierStorage.UpdateCourierLocation(test.updateCourierLocation)
+			updatedLocation, err := courierStorage.UpdateLocation(test.updateLocation)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if updatedCourierLocation == nil {
-				t.Errorf("updatedCourierLocation: Expected: %s, Got: %s", "not nill", "nil")
+			if updatedLocation == nil {
+				t.Errorf("updatedLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if updatedCourierLocation.CourierID != test.updateCourierLocation.CourierID {
-				t.Errorf("updatedCourierLocation CourierID: Expected: %v, Got: %v", test.updateCourierLocation.CourierID, updatedCourierLocation.CourierID)
+			if updatedLocation.UserID != test.updateLocation.UserID {
+				t.Errorf("updatedLocation UserID: Expected: %v, Got: %v", test.updateLocation.UserID, updatedLocation.UserID)
 			}
 
-			if updatedCourierLocation.Altitude != test.updateCourierLocation.Altitude {
-				t.Errorf("updatedCourierLocation Altitude: Expected: %v, Got: %v", test.updateCourierLocation.Altitude, updatedCourierLocation.Altitude)
+			if updatedLocation.Latitude != test.updateLocation.Latitude {
+				t.Errorf("updatedLocation Latitude: Expected: %v, Got: %v", test.updateLocation.Latitude, updatedLocation.Latitude)
 			}
 
-			if updatedCourierLocation.Longitude != test.updateCourierLocation.Longitude {
-				t.Errorf("updatedCourierLocation Longitude: Expected: %v, Got: %v", test.updateCourierLocation.Longitude, updatedCourierLocation.Longitude)
+			if updatedLocation.Longitude != test.updateLocation.Longitude {
+				t.Errorf("updatedLocation Longitude: Expected: %v, Got: %v", test.updateLocation.Longitude, updatedLocation.Longitude)
 			}
 
-			if updatedCourierLocation.Country != test.updateCourierLocation.Country {
-				t.Errorf("updatedCourierLocation Country: Expected: %v, Got: %v", test.updateCourierLocation.Country, updatedCourierLocation.Country)
+			if updatedLocation.Country != test.updateLocation.Country {
+				t.Errorf("updatedLocation Country: Expected: %v, Got: %v", test.updateLocation.Country, updatedLocation.Country)
 			}
 
-			if updatedCourierLocation.City != test.updateCourierLocation.City {
-				t.Errorf("updatedCourierLocation City: Expected: %v, Got: %v", test.updateCourierLocation.City, updatedCourierLocation.City)
+			if updatedLocation.City != test.updateLocation.City {
+				t.Errorf("updatedLocation City: Expected: %v, Got: %v", test.updateLocation.City, updatedLocation.City)
 			}
 
-			if updatedCourierLocation.Region != test.updateCourierLocation.Region {
-				t.Errorf("updatedCourierLocation Region: Expected: %v, Got: %v", test.updateCourierLocation.Region, updatedCourierLocation.Region)
+			if updatedLocation.Region != test.updateLocation.Region {
+				t.Errorf("updatedLocation Region: Expected: %v, Got: %v", test.updateLocation.Region, updatedLocation.Region)
 			}
 
-			if err = courierStorage.DeleteCourierLocation(insertedCourierLocation.CourierID); err != nil {
+			if err = courierStorage.DeleteLocation(insertedLocation.UserID); err != nil {
 				t.Error(err)
 			}
 
@@ -772,16 +761,16 @@ func TestUpdateCourierLocation(t *testing.T) {
 	}
 }
 
-func TestGetCourierLocation(t *testing.T) {
+func TestGetLocation(t *testing.T) {
 	tests := []struct {
-		name            string
-		courierLocation domain.CourierLocation
+		name     string
+		location domain.Location
 	}{
 		{
-			name: "TestGetCourierLocation",
-			courierLocation: domain.CourierLocation{
-				CourierID:  1,
-				Altitude:   "0123456789",
+			name: "TestGetLocation",
+			location: domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -798,11 +787,9 @@ func TestGetCourierLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			line, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
-
 			}
 			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
 
@@ -821,49 +808,133 @@ func TestGetCourierLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			insertedCourierLocation, err := courierStorage.InsertCourierLocation(test.courierLocation)
+			insertedLocation, err := courierStorage.InsertLocation(test.location)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if insertedCourierLocation == nil {
-				t.Errorf("insertedCourierLocation: Expected: %s, Got: %s", "not nill", "nil")
+			if insertedLocation == nil {
+				t.Errorf("insertedLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			getCourierLocation, err := courierStorage.GetCourierLocation(insertedCourierLocation.CourierID)
+			getLocation, err := courierStorage.GetLocation(insertedLocation.UserID)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if getCourierLocation == nil {
-				t.Errorf("getCourierLocation: Expected: %s, Got: %s", "not nill", "nil")
+			if getLocation == nil {
+				t.Errorf("getLocation: Expected: %s, Got: %s", "not nill", "nil")
 			}
 
-			if getCourierLocation.CourierID != test.courierLocation.CourierID {
-				t.Errorf("getCourierLocation CourierID: Expected: %v, Got: %v", test.courierLocation.CourierID, getCourierLocation.CourierID)
+			if getLocation.UserID != test.location.UserID {
+				t.Errorf("getLocation UserID: Expected: %v, Got: %v", test.location.UserID, getLocation.UserID)
 			}
 
-			if getCourierLocation.Altitude != test.courierLocation.Altitude {
-				t.Errorf("getCourierLocation Altitude: Expected: %v, Got: %v", test.courierLocation.Altitude, getCourierLocation.Altitude)
+			if getLocation.Latitude != test.location.Latitude {
+				t.Errorf("getLocation Latitude: Expected: %v, Got: %v", test.location.Latitude, getLocation.Latitude)
 			}
 
-			if getCourierLocation.Longitude != test.courierLocation.Longitude {
-				t.Errorf("getCourierLocation Longitude: Expected: %v, Got: %v", test.courierLocation.Longitude, getCourierLocation.Longitude)
+			if getLocation.Longitude != test.location.Longitude {
+				t.Errorf("getLocation Longitude: Expected: %v, Got: %v", test.location.Longitude, getLocation.Longitude)
 			}
 
-			if getCourierLocation.Country != test.courierLocation.Country {
-				t.Errorf("getCourierLocation Country: Expected: %v, Got: %v", test.courierLocation.Country, getCourierLocation.Country)
+			if getLocation.Country != test.location.Country {
+				t.Errorf("getLocation Country: Expected: %v, Got: %v", test.location.Country, getLocation.Country)
 			}
 
-			if getCourierLocation.City != test.courierLocation.City {
-				t.Errorf("getCourierLocation City: Expected: %v, Got: %v", test.courierLocation.City, getCourierLocation.City)
+			if getLocation.City != test.location.City {
+				t.Errorf("getLocation City: Expected: %v, Got: %v", test.location.City, getLocation.City)
 			}
 
-			if getCourierLocation.Region != test.courierLocation.Region {
-				t.Errorf("getCourierLocation Region: Expected: %v, Got: %v", test.courierLocation.Region, getCourierLocation.Region)
+			if getLocation.Region != test.location.Region {
+				t.Errorf("getLocation Region: Expected: %v, Got: %v", test.location.Region, getLocation.Region)
 			}
 
-			if err = courierStorage.DeleteCourierLocation(insertedCourierLocation.CourierID); err != nil {
+			if err = courierStorage.DeleteLocation(insertedLocation.UserID); err != nil {
+				t.Error(err)
+			}
+
+			if err := database.Close(); err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
+
+func TestGetLocationList(t *testing.T) {
+	tests := []struct {
+		name                string
+		initialLocationList []domain.Location
+	}{
+		{
+			name: "TestGetLocation List",
+			initialLocationList: []domain.Location{
+				{
+					UserID:     1,
+					Latitude:   "0123456789",
+					Longitude:  "0123456789",
+					Country:    "TestCountry",
+					City:       "TestCity",
+					Region:     "",
+					Street:     "",
+					HomeNumber: "",
+					Floor:      "",
+					Door:       "",
+				},
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			line, err := os.Getwd()
+			if err != nil {
+				t.Fatal(err)
+			}
+			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\courierstorage")
+
+			err = configreader.SetConfigFile(confPath + configFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			courierStorage := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			param := domain.SearchParam{}
+
+			for _, initialLocation := range test.initialLocationList {
+				insertedLocation, err := courierStorage.InsertLocation(initialLocation)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if insertedLocation == nil {
+					t.Errorf("insertedLocation: Expected: %s, Got: %s", "not nill", "nil")
+				}
+
+				param["city"] = insertedLocation.City
+
+			}
+
+			getLocationList, err := courierStorage.GetLocationList(param)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if len(getLocationList) != len(test.initialLocationList) {
+				t.Errorf("get locaiton list len: Expected: %v, Got: %v", len(test.initialLocationList), len(getLocationList))
+			}
+
+			if err = courierStorage.CleanLocationTable(); err != nil {
 				t.Error(err)
 			}
 

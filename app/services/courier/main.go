@@ -1,24 +1,25 @@
 package main
 
 import (
-	"courier/api/v1/handler/courierhandler"
-	"courier/pkg/db"
-	"courier/pkg/service/courierservice"
-	"courier/pkg/storage/courierstorage"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-	"log"
-	"net/http"
-	"os"
+
+	"courier/api/v1/handler/courierhandler"
+	"courier/pkg/db"
+	"courier/pkg/service/courierservice"
+	"courier/pkg/storage/courierstorage"
 )
 
 const configFile = "/config.yaml"
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "main: ")
 
@@ -50,7 +51,8 @@ func run(log *logger.Logger) error {
 
 	courierService := courierservice.NewCourierService(courierservice.Params{
 		CourierStorage: courierStorage,
-		Logger:         logger.NewLogger(os.Stdout, "service: ")})
+		Logger:         logger.NewLogger(os.Stdout, "service: "),
+	})
 
 	consumerHandler := courierhandler.NewCourierHandler(courierhandler.Params{
 		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),

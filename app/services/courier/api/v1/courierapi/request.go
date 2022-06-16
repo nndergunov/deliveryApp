@@ -16,8 +16,8 @@ type UpdateCourierRequest struct {
 	Email     string `json:"email,omitempty" yaml:"email,omitempty"`
 	Phone     string `json:"phone,omitempty" yaml:"phone,omitempty"`
 }
-type NewCourierLocationRequest struct {
-	Altitude   string `json:"altitude" yaml:"altitude"`
+type NewLocationRequest struct {
+	Latitude   string `json:"latitude" yaml:"latitude"`
 	Longitude  string `json:"longitude" yaml:"longitude"`
 	Country    string `json:"country" yaml:"country"`
 	City       string `json:"city" yaml:"city"`
@@ -27,8 +27,8 @@ type NewCourierLocationRequest struct {
 	Floor      string `json:"floor" yaml:"floor"`
 	Door       string `json:"door" yaml:"door"`
 }
-type UpdateCourierLocationRequest struct {
-	Altitude   string `json:"altitude" yaml:"altitude"`
+type UpdateLocationRequest struct {
+	Latitude   string `json:"latitude" yaml:"latitude"`
 	Longitude  string `json:"longitude" yaml:"longitude"`
 	Country    string `json:"country" yaml:"country"`
 	City       string `json:"city" yaml:"city"`

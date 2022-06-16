@@ -23,9 +23,9 @@ func requestToUpdateConsumer(req *consumerapi.UpdateConsumerRequest) domain.Cons
 	}
 }
 
-func requestToNewConsumerLocation(req *consumerapi.NewConsumerLocationRequest) domain.ConsumerLocation {
-	return domain.ConsumerLocation{
-		Altitude:   req.Altitude,
+func requestToNewLocation(req *consumerapi.NewLocationRequest) domain.Location {
+	return domain.Location{
+		Latitude:   req.Latitude,
 		Longitude:  req.Longitude,
 		Country:    req.Country,
 		City:       req.City,
@@ -37,9 +37,9 @@ func requestToNewConsumerLocation(req *consumerapi.NewConsumerLocationRequest) d
 	}
 }
 
-func requestToUpdateConsumerLocation(req *consumerapi.UpdateConsumerLocationRequest) domain.ConsumerLocation {
-	return domain.ConsumerLocation{
-		Altitude:   req.Altitude,
+func requestToUpdateLocation(req *consumerapi.UpdateLocationRequest) domain.Location {
+	return domain.Location{
+		Latitude:   req.Latitude,
 		Longitude:  req.Longitude,
 		Country:    req.Country,
 		City:       req.City,

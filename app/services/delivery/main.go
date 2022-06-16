@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"os"
+
 	"delivery/api/v1/handler/deliveryhandler"
 	"delivery/pkg/clients/courierclient"
 	"delivery/pkg/clients/restaurantclient"
@@ -12,15 +16,11 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-	"log"
-	"net/http"
-	"os"
 )
 
 const configFile = "/config.yaml"
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "main: ")
 
@@ -57,7 +57,8 @@ func run(log *logger.Logger) error {
 		DeliveryStorage:  DeliveryStorage,
 		Logger:           logger.NewLogger(os.Stdout, "service: "),
 		CourierClient:    courierClient,
-		RestaurantClient: restaurantClient})
+		RestaurantClient: restaurantClient,
+	})
 
 	deliveryHandler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
 		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),

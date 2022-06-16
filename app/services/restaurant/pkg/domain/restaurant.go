@@ -6,4 +6,6 @@ type Restaurant struct {
 	AcceptingOrders bool
 	City            string
 	Address         string
+	Longitude       float64
+	Altitude        float64
 }

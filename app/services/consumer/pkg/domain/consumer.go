@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Consumer struct {
-	ID        uint64
+	ID        int
 	Firstname string
 	Lastname  string
 	Email     string

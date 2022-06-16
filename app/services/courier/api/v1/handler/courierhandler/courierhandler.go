@@ -1,15 +1,17 @@
-// Package handler contains a small handler framework extension.
 package courierhandler
 
 import (
+	"errors"
+	"io"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
 	"courier/api/v1/courierapi"
 	"courier/pkg/domain"
 	"courier/pkg/service/courierservice"
-	"github.com/gorilla/mux"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"io"
-	"net/http"
 )
 
 type Params struct {
@@ -43,19 +45,20 @@ const courierIDKey = "courier_id"
 
 // NewCourierHandler creates an courierHandler value that handle a set of routes for the application.
 func (c *courierHandler) handlerInit() {
-
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
-	c.serveMux.HandleFunc("/v1/courier", c.insertNewCourier).Methods(http.MethodPost)
-	c.serveMux.HandleFunc("/v1/courier/all", c.getAllCourier).Methods(http.MethodGet)
-	c.serveMux.HandleFunc("/v1/courier/{"+courierIDKey+"}", c.deleteCourier).Methods(http.MethodDelete)
-	c.serveMux.HandleFunc("/v1/courier/{"+courierIDKey+"}", c.updateCourier).Methods(http.MethodPut)
-	c.serveMux.HandleFunc("/v1/courier/{"+courierIDKey+"}", c.getCourier).Methods(http.MethodGet)
-	c.serveMux.HandleFunc("/v1/courier/available/{"+courierIDKey+"}", c.updateCourierAvailable).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/couriers", c.insertNewCourier).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/v1/couriers", c.getCourierList).Methods(http.MethodGet)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.deleteCourier).Methods(http.MethodDelete)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.updateCourier).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/couriers/{"+courierIDKey+"}", c.getCourier).Methods(http.MethodGet)
 
-	c.serveMux.HandleFunc("/v1/courier/location/{"+courierIDKey+"}", c.insertNewCourierLocation).Methods(http.MethodPost)
-	c.serveMux.HandleFunc("/v1/courier/location/{"+courierIDKey+"}", c.updateCourierLocation).Methods(http.MethodPut)
-	c.serveMux.HandleFunc("/v1/courier/location/{"+courierIDKey+"}", c.getCourierLocation).Methods(http.MethodGet)
+	c.serveMux.HandleFunc("/v1/couriers-available/{"+courierIDKey+"}", c.updateCourierAvailable).Methods(http.MethodPut)
+
+	c.serveMux.HandleFunc("/v1/locations", c.getLocationList).Methods(http.MethodGet)
+	c.serveMux.HandleFunc("/v1/locations/{"+courierIDKey+"}", c.insertNewLocation).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/v1/locations/{"+courierIDKey+"}", c.updateLocation).Methods(http.MethodPut)
+	c.serveMux.HandleFunc("/v1/locations/{"+courierIDKey+"}", c.getLocation).Methods(http.MethodGet)
 }
 
 func (c *courierHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
@@ -101,16 +104,14 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 	courier := requestToNewCourier(&courierRequest)
 
 	data, err := c.courierService.InsertCourier(courier)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
 		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
@@ -123,11 +124,9 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 		c.log.Println(err)
 		return
 	}
-
 }
 
 func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
 	if !ok {
@@ -137,17 +136,16 @@ func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	data, err := c.courierService.DeleteCourier(id)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+		c.log.Println(err)
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -181,21 +179,21 @@ func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 	courier := requestToUpdateCourier(&updateCourierRequest)
 
 	data, err := c.courierService.UpdateCourier(courier, id)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+		c.log.Println(err)
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
+
 	response := courierToResponse(*data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
@@ -224,18 +222,16 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 	available := queryParamsList[0]
 
 	data, err := c.courierService.UpdateCourierAvailable(id, available)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -248,29 +244,28 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 	}
 }
 
-func (c *courierHandler) getAllCourier(rw http.ResponseWriter, r *http.Request) {
-
+func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request) {
 	param := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
-	queryParamsList := queryParams["available"]
-	if queryParamsList != nil {
-		available := queryParamsList[0]
-		param["available"] = available
 
-	}
-
-	data, err := c.courierService.GetAllCourier(param)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, err.Error()); err != nil {
-			c.log.Println(err)
+	availableList := queryParams["available"]
+	if availableList != nil {
+		available := availableList[0]
+		if available != "" {
+			param["available"] = available
 		}
-		return
 	}
 
+	data, err := c.courierService.GetCourierList(param)
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
 		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
@@ -296,18 +291,16 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := c.courierService.GetCourier(id)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -321,18 +314,18 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (c *courierHandler) insertNewCourierLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	consumerID, ok := vars[courierIDKey]
+	courierID, ok := vars[courierIDKey]
 	if !ok {
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var courierLocationRequest courierapi.NewCourierLocationRequest
+	var locationRequest courierapi.NewLocationRequest
 
-	if err := courierapi.BindJson(r, &courierLocationRequest); err != nil {
+	if err := courierapi.BindJson(r, &locationRequest); err != nil {
 		c.log.Println(err)
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -340,47 +333,44 @@ func (c *courierHandler) insertNewCourierLocation(rw http.ResponseWriter, r *htt
 		return
 	}
 
-	courierLocation := requestToNewCourierLocation(&courierLocationRequest)
+	location := requestToNewLocation(&locationRequest)
 
-	data, err := c.courierService.InsertCourierLocation(courierLocation, consumerID)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
+	data, err := c.courierService.InsertLocation(location, courierID)
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	response := courierLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
-
 }
 
-func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	consumerID, ok := vars[courierIDKey]
+	courierID, ok := vars[courierIDKey]
 	if !ok {
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var updateCourierLocationRequest courierapi.UpdateCourierLocationRequest
+	var updateLocationRequest courierapi.UpdateLocationRequest
 
-	if err := courierapi.BindJson(r, &updateCourierLocationRequest); err != nil {
+	if err := courierapi.BindJson(r, &updateLocationRequest); err != nil {
 		c.log.Println(err)
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
@@ -388,27 +378,25 @@ func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.R
 		return
 	}
 
-	courierLocation := requestToUpdateConsumerLocation(&updateCourierLocationRequest)
+	location := requestToUpdateLocation(&updateLocationRequest)
 
-	data, err := c.courierService.UpdateCourierLocation(courierLocation, consumerID)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
+	data, err := c.courierService.UpdateLocation(location, courierID)
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	response := courierLocationToResponse(*data)
+	response := locationToResponse(*data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
@@ -416,34 +404,68 @@ func (c *courierHandler) updateCourierLocation(rw http.ResponseWriter, r *http.R
 	}
 }
 
-func (c *courierHandler) getCourierLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, ok := vars[courierIDKey]
+	userID, ok := vars[courierIDKey]
 	if !ok {
 		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	data, err := c.courierService.GetCourierLocation(id)
-
-	if err != nil && err == systemErr {
-		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
-			c.log.Println(err)
-		}
-		return
-	}
-
+	data, err := c.courierService.GetLocation(userID)
 	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
 		c.log.Println(err)
-		if err := courierapi.Respond(rw, http.StatusBadRequest, err); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	response := courierLocationToResponse(*data)
+	response := locationToResponse(*data)
+
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
+		c.log.Println(err)
+		return
+	}
+}
+
+func (c *courierHandler) getLocationList(rw http.ResponseWriter, r *http.Request) {
+	param := domain.SearchParam{}
+	queryParams := r.URL.Query()
+
+	cityList := queryParams["city"]
+	if cityList != nil {
+		city := cityList[0]
+		if city != "" {
+			param["city"] = city
+		}
+	}
+
+	data, err := c.courierService.GetLocationList(param)
+	if err != nil {
+		if errors.Is(err, systemErr) {
+			c.log.Println(err)
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				c.log.Println(err)
+			}
+			return
+		}
+		c.log.Println(err)
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
+
+	response := locationListToResponse(data)
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
