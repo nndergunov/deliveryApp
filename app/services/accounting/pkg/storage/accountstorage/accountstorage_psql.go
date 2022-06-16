@@ -3,7 +3,7 @@ package accountstorage
 import (
 	"database/sql"
 
-	"accounting/pkg/domain"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies

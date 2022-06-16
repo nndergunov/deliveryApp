@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"accounting/api/v1/handlers/accounthandler"
-	"accounting/pkg/db"
-	"accounting/pkg/service/accountservice"
-	"accounting/pkg/storage/accountstorage"
+	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/db"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountservice"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountstorage"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"

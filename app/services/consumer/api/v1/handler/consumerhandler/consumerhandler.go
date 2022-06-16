@@ -2,15 +2,16 @@ package consumerhandler
 
 import (
 	"errors"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"io"
 	"net/http"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"consumer/pkg/service/consumerservice"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
 )
 
 type Params struct {

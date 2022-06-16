@@ -1,7 +1,7 @@
 package service
 
 import (
-	"courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 // CourierStorage is the interface for the courier storage.

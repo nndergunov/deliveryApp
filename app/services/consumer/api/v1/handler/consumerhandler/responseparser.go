@@ -3,7 +3,7 @@ package consumerhandler
 import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 func consumerToResponse(consumer domain.Consumer) consumerapi.ConsumerResponse {

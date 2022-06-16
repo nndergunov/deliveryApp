@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"consumer/pkg/domain"
-	"consumer/pkg/service"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )

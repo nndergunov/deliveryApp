@@ -1,11 +1,11 @@
-module consumer
+module github.com/nndergunov/deliveryApp/app/services/consumer
 
 go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.5
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220516080600-4954ce51ac52
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220616102258-b756e3b373eb
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220503132556-de9b4711faca
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506135343-b98520baf981
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52

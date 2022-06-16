@@ -2,18 +2,19 @@ package accounthandler_test
 
 import (
 	"bytes"
-	accountingapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"accounting/api/v1/handlers/accounthandler"
-	"accounting/pkg/domain"
+	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 )
 
 var (
@@ -63,11 +64,11 @@ func TestInsertNewAccountEndpoint(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		accountData accountingapi2.NewAccountRequest
+		accountData accountingapi.NewAccountRequest
 	}{
 		{
 			"Insert account simple test",
-			accountingapi2.NewAccountRequest{
+			accountingapi.NewAccountRequest{
 				UserID:   1,
 				UserType: "courier",
 			},
@@ -102,8 +103,8 @@ func TestInsertNewAccountEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := accountingapi2.AccountResponse{}
-			if err = accountingapi2.DecodeJSON(resp.Body, &respData); err != nil {
+			respData := accountingapi.AccountResponse{}
+			if err = accountingapi.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 

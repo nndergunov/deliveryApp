@@ -2,15 +2,16 @@ package deliveryhandler
 
 import (
 	"errors"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 	"io"
 	"net/http"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"delivery/pkg/service/deliveryservice"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
 )
 
 type Params struct {

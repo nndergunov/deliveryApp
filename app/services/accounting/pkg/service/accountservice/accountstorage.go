@@ -1,6 +1,6 @@
 package accountservice
 
-import "accounting/pkg/domain"
+import "github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 
 // AccountStorage is the interface for the accounting storage.
 type AccountStorage interface {
