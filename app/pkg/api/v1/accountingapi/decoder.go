@@ -3,26 +3,22 @@ package accountingapi
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 )
 
-func DecodeReturnPaymentSum(data []byte) (*ReturnPaymentSum, error) {
-	var req *ReturnPaymentSum
-
-	err := json.Unmarshal(data, req)
-	if err != nil {
-		return nil, fmt.Errorf("DecodeReturnPaymentSum: %w", err)
+func BindJson(req *http.Request, obj interface{}) error {
+	if req == nil || req.Body == nil {
+		return fmt.Errorf("invalid request")
 	}
-
-	return req, nil
+	return DecodeJSON(req.Body, obj)
 }
 
-func DecodePaymentSum(data []byte) (*PaymentSum, error) {
-	var req *PaymentSum
+func DecodeJSON(r io.Reader, obj interface{}) error {
+	decoder := json.NewDecoder(r)
 
-	err := json.Unmarshal(data, req)
-	if err != nil {
-		return nil, fmt.Errorf("DecodePaymentSum: %w", err)
+	if err := decoder.Decode(obj); err != nil {
+		return err
 	}
-
-	return req, nil
+	return nil
 }

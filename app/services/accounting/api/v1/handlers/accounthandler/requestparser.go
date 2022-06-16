@@ -1,7 +1,8 @@
 package accounthandler
 
 import (
-	"accounting/api/v1/accountingapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
+
 	"accounting/pkg/domain"
 )
 

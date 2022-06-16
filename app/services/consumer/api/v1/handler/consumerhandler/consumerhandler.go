@@ -2,6 +2,7 @@ package consumerhandler
 
 import (
 	"errors"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"io"
 	"net/http"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"consumer/api/v1/consumerapi"
 	"consumer/pkg/service/consumerservice"
 )
 

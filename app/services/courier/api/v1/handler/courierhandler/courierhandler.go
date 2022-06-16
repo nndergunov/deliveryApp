@@ -2,6 +2,7 @@ package courierhandler
 
 import (
 	"errors"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
 	"io"
 	"net/http"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"courier/api/v1/courierapi"
 	"courier/pkg/domain"
 	"courier/pkg/service/courierservice"
 )
