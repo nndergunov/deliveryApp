@@ -142,7 +142,7 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 
 	order := requestToOrder(*orderData)
 
-	createdOrder, err := e.serviceInstance.CreateOrder(order, order.UserAccount)
+	createdOrder, err := e.serviceInstance.CreateOrder(order, order.FromUserID)
 	if err != nil {
 		if errors.Is(err, service.ErrRestaurantOffline) {
 			err := v1.RespondWithError("restaurant is not accepting orders", http.StatusBadRequest, responseWriter)

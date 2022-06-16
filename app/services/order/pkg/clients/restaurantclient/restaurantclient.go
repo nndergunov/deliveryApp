@@ -70,8 +70,14 @@ func (r RestaurantClient) CalculateOrderPrice(order domain.Order) (float64, erro
 
 	var price float64
 
-	for itemID, quantity := range order.OrderItems {
-		price += menu.MenuItems[itemID].Price * float64(quantity)
+	for _, itemID := range order.OrderItems {
+		for _, menuItem := range menu.MenuItems {
+			if menuItem.ID != itemID {
+				continue
+			}
+
+			price += menuItem.Price
+		}
 	}
 
 	return price, nil
