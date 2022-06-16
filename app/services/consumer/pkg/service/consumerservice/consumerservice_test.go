@@ -2,10 +2,11 @@ package consumerservice_test
 
 import (
 	"bytes"
-	consumerapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"net/http"
 	"strconv"
 	"testing"
+
+	consumerapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )

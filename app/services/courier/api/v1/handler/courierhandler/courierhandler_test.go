@@ -2,17 +2,18 @@ package courierhandler_test
 
 import (
 	"bytes"
-	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
+	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"courier/api/v1/handler/courierhandler"
-	"courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 var (

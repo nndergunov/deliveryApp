@@ -8,9 +8,9 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 
-	"consumer/pkg/db"
-	"consumer/pkg/domain"
-	"consumer/pkg/storage/consumerstorage"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/storage/consumerstorage"
 )
 
 const configFile = "/config.yaml"

@@ -1,6 +1,6 @@
 package service
 
-import "delivery/pkg/domain"
+import "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 
 // DeliveryStorage is the interface for the delivery storage.
 type DeliveryStorage interface {

@@ -2,10 +2,11 @@ package accountservice_test
 
 import (
 	"bytes"
-	accountingapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"net/http"
 	"strconv"
 	"testing"
+
+	accountingapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )
