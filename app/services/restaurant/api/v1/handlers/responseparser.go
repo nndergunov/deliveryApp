@@ -13,7 +13,7 @@ func restaurantToResponse(restaurant domain.Restaurant) restaurantapi.ReturnRest
 		City:            restaurant.City,
 		Address:         restaurant.Address,
 		Longitude:       restaurant.Longitude,
-		Altitude:        restaurant.Altitude,
+		Latitude:        restaurant.Latitude,
 	}
 }
 
