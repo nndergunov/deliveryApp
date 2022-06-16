@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
 type ConsumerClient struct {

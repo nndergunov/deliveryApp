@@ -9,9 +9,9 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 
-	"courier/pkg/db"
-	"courier/pkg/domain"
-	"courier/pkg/storage/courierstorage"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/storage/courierstorage"
 )
 
 const configFile = "/config.yaml"

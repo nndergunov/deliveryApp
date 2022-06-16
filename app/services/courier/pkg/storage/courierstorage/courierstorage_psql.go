@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies

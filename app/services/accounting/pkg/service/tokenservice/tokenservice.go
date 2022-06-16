@@ -6,7 +6,7 @@ import (
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 
-	"accounting/pkg/domain"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies

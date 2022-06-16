@@ -7,7 +7,7 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"accounting/pkg/domain"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 )
 
 // AccountService is the interface for the accounting service.

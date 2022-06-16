@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"courier/pkg/domain"
-	"courier/pkg/service"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/service"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )

@@ -1,6 +1,6 @@
 package service
 
-import "delivery/pkg/domain"
+import "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 
 type RestaurantClient interface {
 	GetRestaurant(restaurantID int) (*domain.Restaurant, error)

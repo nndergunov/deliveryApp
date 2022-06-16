@@ -2,10 +2,11 @@ package courierservice_test
 
 import (
 	"bytes"
-	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
 	"net/http"
 	"strconv"
 	"testing"
+
+	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )

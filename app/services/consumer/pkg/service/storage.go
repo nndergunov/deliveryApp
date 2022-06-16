@@ -1,7 +1,7 @@
 package service
 
 import (
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 // ConsumerStorage is the interface for the consumer storage.

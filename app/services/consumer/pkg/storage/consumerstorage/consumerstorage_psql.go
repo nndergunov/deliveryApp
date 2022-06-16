@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"strconv"
 
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
