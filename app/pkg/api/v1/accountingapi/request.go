@@ -10,7 +10,3 @@ type TransactionRequest struct {
 	ToAccountID   int `json:"to_account_id"`
 	Amount        int `json:"amount"`
 }
-
-type SubBalanceConsumerAccountRequest struct {
-	Amount int `json:"amount"`
-}

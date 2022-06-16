@@ -2,13 +2,12 @@ package consumerservice_test
 
 import (
 	"bytes"
+	consumerapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"net/http"
 	"strconv"
 	"testing"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-
-	"consumer/api/v1/consumerapi"
 )
 
 const baseAddr = "http://localhost:8080"
@@ -16,11 +15,11 @@ const baseAddr = "http://localhost:8080"
 func TestInsertNewConsumerEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
-		consumerData consumerapi.NewConsumerRequest
+		consumerData consumerapi2.NewConsumerRequest
 	}{
 		{
 			"Insert consumer simple test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "vasya",
 				Lastname:  "testLastname",
 				Email:     "vasya@gmail.com",
@@ -51,8 +50,8 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.StatusCode)
 			}
 
-			respData := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp.Body, &respData); err != nil {
+			respData := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -100,12 +99,12 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 func TestDeleteConsumerEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
-		consumerData consumerapi.NewConsumerRequest
+		consumerData consumerapi2.NewConsumerRequest
 		delRespData  string
 	}{
 		{
 			"Insert consumer simple test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "vasya",
 				Lastname:  "testLastname",
 				Email:     "vasya@gmail.com",
@@ -137,8 +136,8 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.StatusCode)
 			}
 
-			respData := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp.Body, &respData); err != nil {
+			respData := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -165,7 +164,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 			}
 
 			delRespData := ""
-			if err = consumerapi.DecodeJSON(delResp.Body, &delRespData); err != nil {
+			if err = consumerapi2.DecodeJSON(delResp.Body, &delRespData); err != nil {
 				t.Fatal(err)
 			}
 			if delRespData != test.delRespData {
@@ -178,19 +177,19 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 func TestUpdateConsumerEndpoint(t *testing.T) {
 	tests := []struct {
 		name                string
-		initialConsumerData consumerapi.NewConsumerRequest
-		UpdatedConsumerData consumerapi.UpdateConsumerRequest
+		initialConsumerData consumerapi2.NewConsumerRequest
+		UpdatedConsumerData consumerapi2.UpdateConsumerRequest
 	}{
 		{
 			"Update consumer simple test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "vasya",
 				Lastname:  "",
 				Email:     "vasya@gmail.com",
 				Phone:     "123456789",
 			},
 
-			consumerapi.UpdateConsumerRequest{
+			consumerapi2.UpdateConsumerRequest{
 				Firstname: "updatedFName",
 				Lastname:  "updatedLName",
 				Email:     "updatedVasya@gmail.com",
@@ -217,8 +216,8 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp1.StatusCode)
 			}
 
-			respData := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp1.Body, &respData); err != nil {
+			respData := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp1.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -248,8 +247,8 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 				t.Errorf("Could not update consumer: %v", err)
 			}
 
-			updatedConsumerResponse := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp2.Body, &updatedConsumerResponse); err != nil {
+			updatedConsumerResponse := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp2.Body, &updatedConsumerResponse); err != nil {
 				t.Fatal(err)
 			}
 
@@ -297,11 +296,11 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 func TestGetAllConsumerEndpoint(t *testing.T) {
 	tests := []struct {
 		name             string
-		consumerDataList []consumerapi.NewConsumerRequest
+		consumerDataList []consumerapi2.NewConsumerRequest
 	}{
 		{
 			"TestGetAllConsumerEndpoint test",
-			[]consumerapi.NewConsumerRequest{
+			[]consumerapi2.NewConsumerRequest{
 				{
 					Firstname: "consumer1FName",
 					Lastname:  "consumer1LName",
@@ -323,7 +322,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			var createdConsumerList []consumerapi.ConsumerResponse
+			var createdConsumerList []consumerapi2.ConsumerResponse
 
 			for _, consumer := range test.consumerDataList {
 
@@ -341,8 +340,8 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 					t.Fatalf("Response status: %d", resp1.StatusCode)
 				}
 
-				createdConsumer := consumerapi.ConsumerResponse{}
-				if err = consumerapi.DecodeJSON(resp1.Body, &createdConsumer); err != nil {
+				createdConsumer := consumerapi2.ConsumerResponse{}
+				if err = consumerapi2.DecodeJSON(resp1.Body, &createdConsumer); err != nil {
 					t.Fatal(err)
 				}
 
@@ -362,8 +361,8 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			respDataList2 := consumerapi.ReturnConsumerResponseList{}
-			if err = consumerapi.DecodeJSON(resp2.Body, &respDataList2); err != nil {
+			respDataList2 := consumerapi2.ReturnConsumerResponseList{}
+			if err = consumerapi2.DecodeJSON(resp2.Body, &respDataList2); err != nil {
 				t.Fatal(err)
 			}
 
@@ -400,11 +399,11 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 func TestGetConsumerEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
-		consumerData consumerapi.NewConsumerRequest
+		consumerData consumerapi2.NewConsumerRequest
 	}{
 		{
 			"TestGetAllConsumerEndpoint test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "consumer1FName",
 				Lastname:  "consumer1LName",
 				Email:     "consumer1@gmail.com",
@@ -431,8 +430,8 @@ func TestGetConsumerEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", respPostConsumer.StatusCode)
 			}
 
-			createdConsumerResponse := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(respPostConsumer.Body, &createdConsumerResponse); err != nil {
+			createdConsumerResponse := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(respPostConsumer.Body, &createdConsumerResponse); err != nil {
 				t.Fatal(err)
 			}
 
@@ -449,8 +448,8 @@ func TestGetConsumerEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", respGetConsumer.StatusCode)
 			}
 
-			gotConsumerResponse := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(respGetConsumer.Body, &gotConsumerResponse); err != nil {
+			gotConsumerResponse := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(respGetConsumer.Body, &gotConsumerResponse); err != nil {
 				t.Fatal(err)
 			}
 
@@ -494,18 +493,18 @@ func TestGetConsumerEndpoint(t *testing.T) {
 func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                 string
-		consumerData         consumerapi.NewConsumerRequest
-		consumerLocationData consumerapi.NewLocationRequest
+		consumerData         consumerapi2.NewConsumerRequest
+		consumerLocationData consumerapi2.NewLocationRequest
 	}{
 		{
 			"InsertNewConsumerLocationEndpoint simple test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "TestFName",
 				Lastname:  "TestLName",
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			consumerapi.NewLocationRequest{
+			consumerapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -537,8 +536,8 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp1.StatusCode)
 			}
 
-			consumerCreatedRespData := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
+			consumerCreatedRespData := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -557,8 +556,8 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			consumerLocationRespData := consumerapi.LocationResponse{}
-			if err = consumerapi.DecodeJSON(resp2.Body, &consumerLocationRespData); err != nil {
+			consumerLocationRespData := consumerapi2.LocationResponse{}
+			if err = consumerapi2.DecodeJSON(resp2.Body, &consumerLocationRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -622,19 +621,19 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                        string
-		consumerData                consumerapi.NewConsumerRequest
-		consumerLocationInitialData consumerapi.NewLocationRequest
-		consumerLocationUpdatedData consumerapi.UpdateLocationRequest
+		consumerData                consumerapi2.NewConsumerRequest
+		consumerLocationInitialData consumerapi2.NewLocationRequest
+		consumerLocationUpdatedData consumerapi2.UpdateLocationRequest
 	}{
 		{
 			"UpdateConsumerLocationEndpoint simple test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "TestFName",
 				Lastname:  "TestLName",
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			consumerapi.NewLocationRequest{
+			consumerapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -645,7 +644,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				Floor:      "TestFloor",
 				Door:       "TestDoor",
 			},
-			consumerapi.UpdateLocationRequest{
+			consumerapi2.UpdateLocationRequest{
 				Latitude:   "123456789",
 				Longitude:  "987654321",
 				Country:    "UpdatedTestCountry",
@@ -677,8 +676,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp1.StatusCode)
 			}
 
-			consumerCreatedRespData := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
+			consumerCreatedRespData := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -721,8 +720,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp3.StatusCode)
 			}
 
-			consumerLocationUpdatedRespData := consumerapi.LocationResponse{}
-			if err = consumerapi.DecodeJSON(resp3.Body, &consumerLocationUpdatedRespData); err != nil {
+			consumerLocationUpdatedRespData := consumerapi2.LocationResponse{}
+			if err = consumerapi2.DecodeJSON(resp3.Body, &consumerLocationUpdatedRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -786,18 +785,18 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 func TestGetConsumerLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                 string
-		consumerData         consumerapi.NewConsumerRequest
-		consumerLocationData consumerapi.NewLocationRequest
+		consumerData         consumerapi2.NewConsumerRequest
+		consumerLocationData consumerapi2.NewLocationRequest
 	}{
 		{
 			"GetConsumerLocationEndpoint simple test",
-			consumerapi.NewConsumerRequest{
+			consumerapi2.NewConsumerRequest{
 				Firstname: "TestFName",
 				Lastname:  "TestLName",
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			consumerapi.NewLocationRequest{
+			consumerapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -829,8 +828,8 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp1.StatusCode)
 			}
 
-			consumerCreatedRespData := consumerapi.ConsumerResponse{}
-			if err = consumerapi.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
+			consumerCreatedRespData := consumerapi2.ConsumerResponse{}
+			if err = consumerapi2.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -858,8 +857,8 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp2.StatusCode)
 			}
 
-			consumerLocationRespData := consumerapi.LocationResponse{}
-			if err = consumerapi.DecodeJSON(resp3.Body, &consumerLocationRespData); err != nil {
+			consumerLocationRespData := consumerapi2.LocationResponse{}
+			if err = consumerapi2.DecodeJSON(resp3.Body, &consumerLocationRespData); err != nil {
 				t.Fatal(err)
 			}
 

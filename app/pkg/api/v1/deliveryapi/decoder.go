@@ -3,15 +3,22 @@ package deliveryapi
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 )
 
-func DecodeFindCourier(data []byte) (*FindCourier, error) {
-	var req *FindCourier
-
-	err := json.Unmarshal(data, req)
-	if err != nil {
-		return nil, fmt.Errorf("DecodeFindCourier: %w", err)
+func BindJson(req *http.Request, obj interface{}) error {
+	if req == nil || req.Body == nil {
+		return fmt.Errorf("invalid request")
 	}
+	return DecodeJSON(req.Body, obj)
+}
 
-	return req, nil
+func DecodeJSON(r io.Reader, obj interface{}) error {
+	decoder := json.NewDecoder(r)
+
+	if err := decoder.Decode(obj); err != nil {
+		return err
+	}
+	return nil
 }

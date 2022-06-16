@@ -2,6 +2,7 @@ package consumerhandler_test
 
 import (
 	"bytes"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,7 +11,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"consumer/api/v1/consumerapi"
 	"consumer/api/v1/handler/consumerhandler"
 	"consumer/pkg/domain"
 )
