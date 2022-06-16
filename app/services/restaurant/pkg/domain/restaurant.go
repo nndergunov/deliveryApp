@@ -7,5 +7,5 @@ type Restaurant struct {
 	City            string
 	Address         string
 	Longitude       float64
-	Altitude        float64
+	Latitude        float64
 }

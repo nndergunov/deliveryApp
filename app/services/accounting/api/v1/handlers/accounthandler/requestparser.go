@@ -1,8 +1,9 @@
 package accounthandler
 
 import (
-	"accounting/api/v1/accountingapi"
-	"accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
+
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 )
 
 func requestToNewAccount(req *accountingapi.NewAccountRequest) domain.Account {

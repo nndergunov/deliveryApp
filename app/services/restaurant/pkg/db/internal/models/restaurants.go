@@ -28,7 +28,7 @@ type Restaurant struct {
 	City            string  `boil:"city" json:"city" toml:"city" yaml:"city"`
 	Address         string  `boil:"address" json:"address" toml:"address" yaml:"address"`
 	Longitude       float64 `boil:"longitude" json:"longitude" toml:"longitude" yaml:"longitude"`
-	Altitude        float64 `boil:"altitude" json:"altitude" toml:"altitude" yaml:"altitude"`
+	Latitude        float64 `boil:"latitude" json:"latitude" toml:"latitude" yaml:"latitude"`
 
 	R *restaurantR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L restaurantL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -41,7 +41,7 @@ var RestaurantColumns = struct {
 	City            string
 	Address         string
 	Longitude       string
-	Altitude        string
+	Latitude        string
 }{
 	ID:              "id",
 	Name:            "name",
@@ -49,7 +49,7 @@ var RestaurantColumns = struct {
 	City:            "city",
 	Address:         "address",
 	Longitude:       "longitude",
-	Altitude:        "altitude",
+	Latitude:        "latitude",
 }
 
 var RestaurantTableColumns = struct {
@@ -59,7 +59,7 @@ var RestaurantTableColumns = struct {
 	City            string
 	Address         string
 	Longitude       string
-	Altitude        string
+	Latitude        string
 }{
 	ID:              "restaurants.id",
 	Name:            "restaurants.name",
@@ -67,7 +67,7 @@ var RestaurantTableColumns = struct {
 	City:            "restaurants.city",
 	Address:         "restaurants.address",
 	Longitude:       "restaurants.longitude",
-	Altitude:        "restaurants.altitude",
+	Latitude:        "restaurants.latitude",
 }
 
 // Generated where
@@ -88,7 +88,7 @@ var RestaurantWhere = struct {
 	City            whereHelperstring
 	Address         whereHelperstring
 	Longitude       whereHelperfloat64
-	Altitude        whereHelperfloat64
+	Latitude        whereHelperfloat64
 }{
 	ID:              whereHelperint{field: "\"restaurants\".\"id\""},
 	Name:            whereHelperstring{field: "\"restaurants\".\"name\""},
@@ -96,7 +96,7 @@ var RestaurantWhere = struct {
 	City:            whereHelperstring{field: "\"restaurants\".\"city\""},
 	Address:         whereHelperstring{field: "\"restaurants\".\"address\""},
 	Longitude:       whereHelperfloat64{field: "\"restaurants\".\"longitude\""},
-	Altitude:        whereHelperfloat64{field: "\"restaurants\".\"altitude\""},
+	Latitude:        whereHelperfloat64{field: "\"restaurants\".\"latitude\""},
 }
 
 // RestaurantRels is where relationship names are stored.
@@ -120,8 +120,8 @@ func (*restaurantR) NewStruct() *restaurantR {
 type restaurantL struct{}
 
 var (
-	restaurantAllColumns            = []string{"id", "name", "accepting_orders", "city", "address", "longitude", "altitude"}
-	restaurantColumnsWithoutDefault = []string{"name", "accepting_orders", "city", "address", "longitude", "altitude"}
+	restaurantAllColumns            = []string{"id", "name", "accepting_orders", "city", "address", "longitude", "latitude"}
+	restaurantColumnsWithoutDefault = []string{"name", "accepting_orders", "city", "address", "longitude", "latitude"}
 	restaurantColumnsWithDefault    = []string{"id"}
 	restaurantPrimaryKeyColumns     = []string{"id"}
 	restaurantGeneratedColumns      = []string{}

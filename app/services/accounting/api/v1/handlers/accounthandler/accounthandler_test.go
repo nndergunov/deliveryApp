@@ -8,12 +8,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"accounting/api/v1/accountingapi"
-	"accounting/api/v1/handlers/accounthandler"
-	"accounting/pkg/domain"
+	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 )
 
 var (

@@ -11,10 +11,10 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"courier/api/v1/handler/courierhandler"
-	"courier/pkg/db"
-	"courier/pkg/service/courierservice"
-	"courier/pkg/storage/courierstorage"
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/service/courierservice"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/storage/courierstorage"
 )
 
 const configFile = "/config.yaml"

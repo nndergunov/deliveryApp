@@ -4,7 +4,7 @@ import (
 	"errors"
 	"math"
 
-	"delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
 // these constants are used for vincentyDistance()

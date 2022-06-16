@@ -6,15 +6,16 @@ import (
 	"os"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"consumer/api/v1/handler/consumerhandler"
-	"consumer/pkg/db"
-	"consumer/pkg/service/consumerservice"
-	"consumer/pkg/storage/consumerstorage"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/handler/consumerhandler"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/storage/consumerstorage"
 )
 
 const configFile = "/config.yaml"

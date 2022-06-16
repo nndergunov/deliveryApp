@@ -43,7 +43,7 @@ func (e *endpointHandler) handlerInit() {
 	e.serveMux.HandleFunc("/status", e.statusHandler)
 
 	e.serveMux.HandleFunc("/v1/restaurants", e.returnRestaurantList).Methods(http.MethodGet)
-
+	e.serveMux.HandleFunc("/v1/restaurants/{"+restaurantIDKey+"}", e.returnRestaurant).Methods(http.MethodGet)
 	e.serveMux.HandleFunc("/v1/restaurants/{"+restaurantIDKey+"}/menu", e.returnMenu).Methods(http.MethodGet)
 
 	e.serveMux.HandleFunc("/v1/admin/restaurants", e.createRestaurant).Methods(http.MethodPost)

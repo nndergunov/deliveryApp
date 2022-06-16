@@ -7,12 +7,13 @@ import (
 	"os"
 	"testing"
 
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"consumer/api/v1/consumerapi"
-	"consumer/api/v1/handler/consumerhandler"
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/handler/consumerhandler"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 var (

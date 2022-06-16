@@ -6,12 +6,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"accounting/api/v1/accountingapi"
-	"accounting/pkg/domain"
-	"accounting/pkg/service/accountservice"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountservice"
 )
 
 type Params struct {

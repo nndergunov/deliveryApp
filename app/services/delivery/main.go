@@ -5,17 +5,18 @@ import (
 	"net/http"
 	"os"
 
-	"delivery/api/v1/handler/deliveryhandler"
-	"delivery/pkg/clients/courierclient"
-	"delivery/pkg/clients/restaurantclient"
-	"delivery/pkg/db"
-	"delivery/pkg/service/deliveryservice"
-	"delivery/pkg/storage/deliverystorage"
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/handler/deliveryhandler"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/courierclient"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/storage/deliverystorage"
 )
 
 const configFile = "/config.yaml"

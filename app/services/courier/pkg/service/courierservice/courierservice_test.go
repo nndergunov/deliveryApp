@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
 
-	"courier/api/v1/courierapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )
 
 const baseAddr = "http://localhost:8081"
@@ -16,11 +16,11 @@ const baseAddr = "http://localhost:8081"
 func TestInsertCourierEndpoint(t *testing.T) {
 	tests := []struct {
 		name        string
-		courierData courierapi.NewCourierRequest
+		courierData courierapi2.NewCourierRequest
 	}{
 		{
 			"Insert courier simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -53,8 +53,8 @@ func TestInsertCourierEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", insertCourierResp.StatusCode)
 			}
 
-			insertCourierRespData := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(insertCourierResp.Body, &insertCourierRespData); err != nil {
+			insertCourierRespData := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(insertCourierResp.Body, &insertCourierRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -102,12 +102,12 @@ func TestInsertCourierEndpoint(t *testing.T) {
 func TestDeleteCourierEndpoint(t *testing.T) {
 	tests := []struct {
 		name        string
-		courierData courierapi.NewCourierRequest
+		courierData courierapi2.NewCourierRequest
 		delRespData string
 	}{
 		{
 			"delete courier simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -137,8 +137,8 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp.StatusCode)
 			}
 
-			respData := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(resp.Body, &respData); err != nil {
+			respData := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -164,7 +164,7 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 			}
 
 			delRespData := ""
-			if err = courierapi.DecodeJSON(delResp.Body, &delRespData); err != nil {
+			if err = courierapi2.DecodeJSON(delResp.Body, &delRespData); err != nil {
 				t.Fatal(err)
 			}
 			if delRespData != test.delRespData {
@@ -177,12 +177,12 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 func TestUpdateCourierEndpoint(t *testing.T) {
 	tests := []struct {
 		name               string
-		initialCourierData courierapi.NewCourierRequest
-		UpdatedCourierData courierapi.UpdateCourierRequest
+		initialCourierData courierapi2.NewCourierRequest
+		UpdatedCourierData courierapi2.UpdateCourierRequest
 	}{
 		{
 			"Update courier simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -191,7 +191,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 				Phone:     "123456789",
 			},
 
-			courierapi.UpdateCourierRequest{
+			courierapi2.UpdateCourierRequest{
 				Firstname: "updatedFName",
 				Lastname:  "updatedLName",
 				Email:     "updatedVasya@gmail.com",
@@ -218,8 +218,8 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			InsertCourierData := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourierData); err != nil {
+			InsertCourierData := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourierData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -249,8 +249,8 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 				t.Errorf("Could not update courier: %v", err)
 			}
 
-			updatedCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
+			updatedCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -298,11 +298,11 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 	tests := []struct {
 		name               string
-		initialCourierData courierapi.NewCourierRequest
+		initialCourierData courierapi2.NewCourierRequest
 	}{
 		{
 			"Update courier available simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -331,8 +331,8 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			InsertCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
+			InsertCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -357,8 +357,8 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 				t.Errorf("Could not update courier: %v", err)
 			}
 
-			updatedCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
+			updatedCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -394,11 +394,11 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 func TestGetCourierListEndpoint(t *testing.T) {
 	tests := []struct {
 		name            string
-		courierDataList []courierapi.NewCourierRequest
+		courierDataList []courierapi2.NewCourierRequest
 	}{
 		{
 			"TestGetCourierListEndpoint test",
-			[]courierapi.NewCourierRequest{
+			[]courierapi2.NewCourierRequest{
 				{
 					Username:  "TestUsername",
 					Password:  "TestPassword",
@@ -424,7 +424,7 @@ func TestGetCourierListEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			var InsertCourierList []courierapi.CourierResponse
+			var InsertCourierList []courierapi2.CourierResponse
 
 			for _, courier := range test.courierDataList {
 
@@ -442,8 +442,8 @@ func TestGetCourierListEndpoint(t *testing.T) {
 					t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 				}
 
-				InsertCourier := courierapi.CourierResponse{}
-				if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
+				InsertCourier := courierapi2.CourierResponse{}
+				if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
 					t.Fatal(err)
 				}
 
@@ -463,8 +463,8 @@ func TestGetCourierListEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getAllCourierResp.StatusCode)
 			}
 
-			getAllCourier := courierapi.CourierResponseList{}
-			if err = courierapi.DecodeJSON(getAllCourierResp.Body, &getAllCourier); err != nil {
+			getAllCourier := courierapi2.CourierResponseList{}
+			if err = courierapi2.DecodeJSON(getAllCourierResp.Body, &getAllCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -501,11 +501,11 @@ func TestGetCourierListEndpoint(t *testing.T) {
 func TestGetCourierEndpoint(t *testing.T) {
 	tests := []struct {
 		name        string
-		courierData courierapi.NewCourierRequest
+		courierData courierapi2.NewCourierRequest
 	}{
 		{
 			"TestGetCourierListEndpoint test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "courier1FName",
@@ -534,8 +534,8 @@ func TestGetCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			InsertCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
+			InsertCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -552,8 +552,8 @@ func TestGetCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getCourierResp.StatusCode)
 			}
 
-			getCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(getCourierResp.Body, &getCourier); err != nil {
+			getCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(getCourierResp.Body, &getCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -597,12 +597,12 @@ func TestGetCourierEndpoint(t *testing.T) {
 func TestInsertLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
-		courierData  courierapi.NewCourierRequest
-		locationData courierapi.NewLocationRequest
+		courierData  courierapi2.NewCourierRequest
+		locationData courierapi2.NewLocationRequest
 	}{
 		{
 			"InsertLocationEndpoint simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -610,7 +610,7 @@ func TestInsertLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewLocationRequest{
+			courierapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -642,8 +642,8 @@ func TestInsertLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
 			}
 
@@ -662,8 +662,8 @@ func TestInsertLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", locationResp.StatusCode)
 			}
 
-			location := courierapi.LocationResponse{}
-			if err = courierapi.DecodeJSON(locationResp.Body, &location); err != nil {
+			location := courierapi2.LocationResponse{}
+			if err = courierapi2.DecodeJSON(locationResp.Body, &location); err != nil {
 				t.Fatal(err)
 			}
 
@@ -727,13 +727,13 @@ func TestInsertLocationEndpoint(t *testing.T) {
 func TestUpdateLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name                string
-		courierData         courierapi.NewCourierRequest
-		locationInitialData courierapi.NewLocationRequest
-		locationUpdatedData courierapi.UpdateLocationRequest
+		courierData         courierapi2.NewCourierRequest
+		locationInitialData courierapi2.NewLocationRequest
+		locationUpdatedData courierapi2.UpdateLocationRequest
 	}{
 		{
 			"UpdateLocationEndpoint simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -741,7 +741,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewLocationRequest{
+			courierapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -752,7 +752,7 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 				Floor:      "TestFloor",
 				Door:       "TestDoor",
 			},
-			courierapi.UpdateLocationRequest{
+			courierapi2.UpdateLocationRequest{
 				Latitude:   "123456789",
 				Longitude:  "987654321",
 				Country:    "UpdatedTestCountry",
@@ -784,8 +784,8 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
 			}
 
@@ -828,8 +828,8 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", locationUpdateResp.StatusCode)
 			}
 
-			locationUpdated := courierapi.LocationResponse{}
-			if err = courierapi.DecodeJSON(locationUpdateResp.Body, &locationUpdated); err != nil {
+			locationUpdated := courierapi2.LocationResponse{}
+			if err = courierapi2.DecodeJSON(locationUpdateResp.Body, &locationUpdated); err != nil {
 				t.Fatal(err)
 			}
 
@@ -893,12 +893,12 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 func TestGetLocationEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
-		courierData  courierapi.NewCourierRequest
-		locationData courierapi.NewLocationRequest
+		courierData  courierapi2.NewCourierRequest
+		locationData courierapi2.NewLocationRequest
 	}{
 		{
 			"GetLocationEndpoint simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -906,7 +906,7 @@ func TestGetLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewLocationRequest{
+			courierapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -938,8 +938,8 @@ func TestGetLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
 			}
 
@@ -967,8 +967,8 @@ func TestGetLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getCourierLocationResp.StatusCode)
 			}
 
-			getLocation := courierapi.LocationResponse{}
-			if err = courierapi.DecodeJSON(getCourierLocationResp.Body, &getLocation); err != nil {
+			getLocation := courierapi2.LocationResponse{}
+			if err = courierapi2.DecodeJSON(getCourierLocationResp.Body, &getLocation); err != nil {
 				t.Fatal(err)
 			}
 
@@ -1032,12 +1032,12 @@ func TestGetLocationEndpoint(t *testing.T) {
 func TestGetLocationListEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
-		courierData  courierapi.NewCourierRequest
-		locationData courierapi.NewLocationRequest
+		courierData  courierapi2.NewCourierRequest
+		locationData courierapi2.NewLocationRequest
 	}{
 		{
 			"GetLocationListEndpoint simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -1045,7 +1045,7 @@ func TestGetLocationListEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewLocationRequest{
+			courierapi2.NewLocationRequest{
 				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
@@ -1077,8 +1077,8 @@ func TestGetLocationListEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
 			}
 
@@ -1106,8 +1106,8 @@ func TestGetLocationListEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getLocationListResp.StatusCode)
 			}
 
-			getLocationList := courierapi.LocationResponseList{}
-			if err = courierapi.DecodeJSON(getLocationListResp.Body, &getLocationList); err != nil {
+			getLocationList := courierapi2.LocationResponseList{}
+			if err = courierapi2.DecodeJSON(getLocationListResp.Body, &getLocationList); err != nil {
 				t.Fatal(err)
 			}
 

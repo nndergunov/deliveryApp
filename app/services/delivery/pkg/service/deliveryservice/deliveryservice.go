@@ -7,9 +7,9 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"delivery/pkg/domain"
-	"delivery/pkg/service"
-	"delivery/pkg/service/deliveryservice/tools"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice/tools"
 )
 
 // DeliveryService is the interface for the user service.

@@ -1,8 +1,9 @@
 package consumerhandler
 
 import (
-	"consumer/api/v1/consumerapi"
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 func requestToNewConsumer(req *consumerapi.NewConsumerRequest) domain.Consumer {
