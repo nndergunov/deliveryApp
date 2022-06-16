@@ -6,11 +6,11 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220608092305-41a44b721688
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220608092305-41a44b721688
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220608092305-41a44b721688
-	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220608092305-41a44b721688
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220608092305-41a44b721688
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220615163655-2b60c9fc5a3d
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220615163655-2b60c9fc5a3d
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220615163655-2b60c9fc5a3d
+	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220615163655-2b60c9fc5a3d
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220615163655-2b60c9fc5a3d
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
 )
@@ -34,7 +34,7 @@ require (
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/null/v8 v8.1.2 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
-	golang.org/x/sys v0.0.0-20220608164250-635b8c9b7f68 // indirect
+	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect

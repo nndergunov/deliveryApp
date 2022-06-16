@@ -28,7 +28,7 @@ var defaultOrder = domain.Order{
 
 type mockService struct{}
 
-func (m mockService) CreateOrder(order domain.Order) (*domain.Order, error) {
+func (m mockService) CreateOrder(order domain.Order, _ int) (*domain.Order, error) {
 	return &order, nil
 }
 
