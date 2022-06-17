@@ -23,7 +23,7 @@ func (a RestaurantClient) GetRestaurant(restaurantID int) (*restaurantapi.Return
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("not ok status: %w", resp.StatusCode)
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
 	}
 
 	restaurantData := restaurantapi.ReturnRestaurant{}

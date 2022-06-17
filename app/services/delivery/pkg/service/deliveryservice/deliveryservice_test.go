@@ -2,12 +2,13 @@ package deliveryservice_test
 
 import (
 	"bytes"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 	"net/http"
 	"strconv"
 	"testing"
+
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
 const baseAddr = "http://localhost:8081"
@@ -29,7 +30,6 @@ func TestGetEstimateDeliveryEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			estimateDeliveryResp, err := http.Get(baseAddr + "/v1/estimate" + "?" + test.consumerID + "?" + test.restaurantID)
 			if err != nil {
 				t.Fatal(err)
@@ -53,9 +53,8 @@ func TestGetEstimateDeliveryEndpoint(t *testing.T) {
 			}
 
 			if respData.Cost == 0 {
-				t.Errorf("Cost: Expected: >0, Got: %s", respData.Cost)
+				t.Errorf("Cost: Expected: >0, Got: %v", respData.Cost)
 			}
-
 		})
 	}
 }
@@ -80,7 +79,6 @@ func TestAssignOrderEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.assignOrderData)
 			if err != nil {
 				t.Fatal(err)
@@ -112,7 +110,6 @@ func TestAssignOrderEndpoint(t *testing.T) {
 			if respData.CourierID < 0 {
 				t.Errorf("CourierID: Expected: >0, Got: %v", respData.CourierID)
 			}
-
 		})
 	}
 }

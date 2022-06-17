@@ -2,11 +2,12 @@ package deliveryhandler_test
 
 import (
 	"bytes"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
@@ -87,7 +88,6 @@ func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 			if respData.Cost != MockEstimateDeliveryData.Cost {
 				t.Errorf("Cost: Expected: %s, Got: %s", MockEstimateDeliveryData.Cost, respData.Cost)
 			}
-
 		})
 	}
 }
@@ -148,9 +148,8 @@ func TestAssignOrderEndpoint(t *testing.T) {
 			}
 
 			if respData.CourierID != MockAssignOrderData.CourierID {
-				t.Errorf("CourierID: Expected: %v, Got: %s", MockAssignOrderData.CourierID, respData.CourierID)
+				t.Errorf("CourierID: Expected: %v, Got: %v", MockAssignOrderData.CourierID, respData.CourierID)
 			}
-
 		})
 	}
 }

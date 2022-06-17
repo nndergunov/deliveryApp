@@ -1,10 +1,11 @@
 package deliverystorage_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"

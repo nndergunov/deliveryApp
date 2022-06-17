@@ -2,10 +2,11 @@ package consumerclient
 
 import (
 	"fmt"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 	"net/http"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
 type ConsumerClient struct {
@@ -22,7 +23,7 @@ func (a ConsumerClient) GetLocation(consumerID int) (*consumerapi.LocationRespon
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("not ok status: %w", resp.StatusCode)
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
 	}
 
 	locationData := consumerapi.LocationResponse{}

@@ -2,10 +2,11 @@ package courierclient
 
 import (
 	"fmt"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 	"net/http"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
 type CourierClient struct {
@@ -23,7 +24,7 @@ func (a CourierClient) GetCourier(courierID int) (*courierapi.CourierResponse, e
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("not ok status: %w", resp.StatusCode)
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
 	}
 
 	courierData := courierapi.CourierResponse{}
@@ -45,7 +46,7 @@ func (a CourierClient) GetLocation(city string) (*courierapi.LocationResponseLis
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("not ok status: %w", resp.StatusCode)
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
 	}
 
 	locationDataList := courierapi.LocationResponseList{}
@@ -67,7 +68,7 @@ func (a CourierClient) UpdateCourierAvailable(courierID int, available string) (
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("not ok status: %w", resp.StatusCode)
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
 	}
 
 	courierData := courierapi.CourierResponse{}

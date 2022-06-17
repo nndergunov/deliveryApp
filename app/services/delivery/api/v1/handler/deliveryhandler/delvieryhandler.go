@@ -82,7 +82,6 @@ func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 }
 
 func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *http.Request) {
-
 	queryParams := r.URL.Query()
 
 	consumerIDList := queryParams["consumer_id"]
