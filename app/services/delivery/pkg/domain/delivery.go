@@ -18,3 +18,8 @@ type AssignOrder struct {
 	OrderID   int
 	CourierID int
 }
+
+type Coordinate struct {
+	Lat float64
+	Lon float64
+}

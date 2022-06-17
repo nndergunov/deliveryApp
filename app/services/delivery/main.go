@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/consumerclient"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
@@ -13,7 +17,6 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/courierclient"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/storage/deliverystorage"
@@ -51,14 +54,16 @@ func run(log *logger.Logger) error {
 	}
 	DeliveryStorage := deliverystorage.NewDeliveryStorage(deliverystorage.Params{DB: database})
 
-	courierClient := courierclient.NewCourierClient("")
-	restaurantClient := restaurantclient.NewRestaurantClient("")
+	courierClient := courierclient.NewCourierClient(configreader.GetString("courierServiceURl"))
+	restaurantClient := restaurantclient.NewRestaurantClient(configreader.GetString("restaurantServiceURl"))
+	consumerClient := consumerclient.NewConsumerClient(configreader.GetString("consumerServiceURl"))
 
 	deliveryService := deliveryservice.NewDeliveryService(deliveryservice.Params{
 		DeliveryStorage:  DeliveryStorage,
 		Logger:           logger.NewLogger(os.Stdout, "service: "),
 		CourierClient:    courierClient,
 		RestaurantClient: restaurantClient,
+		ConsumerClient:   consumerClient,
 	})
 
 	deliveryHandler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{

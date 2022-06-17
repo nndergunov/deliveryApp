@@ -82,19 +82,36 @@ func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 }
 
 func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *http.Request) {
-	var estimateDeliveryRequest deliveryapi.EstimateDeliveryRequest
 
-	if err := deliveryapi.BindJson(r, &estimateDeliveryRequest); err != nil {
-		c.log.Println(err)
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
+	queryParams := r.URL.Query()
+
+	consumerIDList := queryParams["consumer_id"]
+	restaurantIDList := queryParams["restaurant_id"]
+
+	if consumerIDList == nil || restaurantIDList == nil {
+		if err := deliveryapi.Respond(rw, http.StatusBadRequest, "consumer_id or restaurant_id param not found"); err != nil {
+			c.log.Println(err)
+			return
+		}
+	}
+
+	consumerID := consumerIDList[0]
+	if consumerID == "" {
+		if err := deliveryapi.Respond(rw, http.StatusBadRequest, "wrong consumer_id"); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	estimateDelivery := requestToEstimateDelivery(&estimateDeliveryRequest)
+	restaurantID := consumerIDList[0]
+	if restaurantID == "" {
+		if err := deliveryapi.Respond(rw, http.StatusBadRequest, "wrong restaurant_id"); err != nil {
+			c.log.Println(err)
+		}
+		return
+	}
 
-	data, err := c.deliveryService.GetEstimateDelivery(estimateDelivery)
+	data, err := c.deliveryService.GetEstimateDelivery(consumerID, restaurantID)
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
