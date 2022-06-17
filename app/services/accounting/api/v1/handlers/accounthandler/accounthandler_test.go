@@ -19,21 +19,43 @@ import (
 )
 
 var (
+	createdTime     = time.Time{}
+	updatedTime     = time.Time{}
 	MockAccountData = &domain.Account{
 		UserID:    1,
 		UserType:  "courier",
 		Balance:   50,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: createdTime,
+		UpdatedAt: updatedTime,
 	}
 
-	MockTransactionData = &domain.Transaction{
+	MockTransactionFromAccountToAccountData = &domain.Transaction{
 		ID:            1,
 		FromAccountID: 1,
 		ToAccountID:   2,
 		Amount:        50,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
+		CreatedAt:     createdTime,
+		UpdatedAt:     updatedTime,
+		Valid:         true,
+	}
+
+	MockTransactionFromAccountData = &domain.Transaction{
+		ID:            1,
+		FromAccountID: 1,
+		ToAccountID:   0,
+		Amount:        50,
+		CreatedAt:     createdTime,
+		UpdatedAt:     updatedTime,
+		Valid:         true,
+	}
+
+	MockTransactionToAccountData = &domain.Transaction{
+		ID:            1,
+		FromAccountID: 0,
+		ToAccountID:   2,
+		Amount:        50,
+		CreatedAt:     createdTime,
+		UpdatedAt:     updatedTime,
 		Valid:         true,
 	}
 )
@@ -57,21 +79,35 @@ func (m MockService) DeleteAccount(_ string) (string, error) {
 }
 
 func (m MockService) Transact(transaction domain.Transaction) (*domain.Transaction, error) {
-	return MockTransactionData, nil
+	if transaction.FromAccountID == 0 {
+		return MockTransactionToAccountData, nil
+	}
+	if transaction.ToAccountID == 0 {
+		return MockTransactionFromAccountData, nil
+	}
+	return MockTransactionFromAccountToAccountData, nil
 }
 
-func TestInsertNewAccountEndpoint(t *testing.T) {
+func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		accountData accountingapi.NewAccountRequest
+		name              string
+		newAccountRequest accountingapi.NewAccountRequest
+		accountResponse   accountingapi.AccountResponse
 	}{
 		{
 			"Insert account simple test",
 			accountingapi.NewAccountRequest{
 				UserID:   1,
 				UserType: "courier",
+			},
+			accountingapi.AccountResponse{
+				UserID:    1,
+				UserType:  "courier",
+				Balance:   50,
+				CreatedAt: createdTime,
+				UpdatedAt: updatedTime,
 			},
 		},
 	}
@@ -90,7 +126,7 @@ func TestInsertNewAccountEndpoint(t *testing.T) {
 				AccountService: mockService,
 			})
 
-			reqBody, err := v1.Encode(test.accountData)
+			reqBody, err := v1.Encode(test.newAccountRequest)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -109,33 +145,41 @@ func TestInsertNewAccountEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if respData.ID != MockAccountData.ID {
+			if respData.ID != test.accountResponse.ID {
 				t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, respData.ID)
 			}
 
-			if respData.UserID != MockAccountData.UserID {
+			if respData.UserID != test.accountResponse.UserID {
 				t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, respData.UserID)
 			}
 
-			if respData.UserType != MockAccountData.UserType {
+			if respData.UserType != test.accountResponse.UserType {
 				t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, respData.UserType)
 			}
 
-			if respData.Balance != MockAccountData.Balance {
+			if respData.Balance != test.accountResponse.Balance {
 				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, respData.Balance)
 			}
 		})
 	}
 }
 
-func TestGetAccountEndpoint(t *testing.T) {
+func TestGetAccountEndpointSuccess(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name string
+		name            string
+		accountResponse accountingapi.AccountResponse
 	}{
 		{
 			"get account simple test",
+			accountingapi.AccountResponse{
+				UserID:    1,
+				UserType:  "courier",
+				Balance:   50,
+				CreatedAt: createdTime,
+				UpdatedAt: updatedTime,
+			},
 		},
 	}
 
@@ -164,38 +208,50 @@ func TestGetAccountEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			gotAccount := accountingapi.AccountResponse{}
-			if err := accountingapi.DecodeJSON(resp.Body, &gotAccount); err != nil {
+			respData := accountingapi.AccountResponse{}
+			if err := accountingapi.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
-			if gotAccount.ID != MockAccountData.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, gotAccount.ID)
+			if respData.ID != test.accountResponse.ID {
+				t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, respData.ID)
 			}
 
-			if gotAccount.UserID != MockAccountData.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, gotAccount.UserID)
+			if respData.UserID != test.accountResponse.UserID {
+				t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, respData.UserID)
 			}
 
-			if gotAccount.UserType != MockAccountData.UserType {
-				t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, gotAccount.UserType)
+			if respData.UserType != test.accountResponse.UserType {
+				t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, respData.UserType)
 			}
 
-			if gotAccount.Balance != MockAccountData.Balance {
-				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, gotAccount.Balance)
+			if respData.Balance != test.accountResponse.Balance {
+				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, respData.Balance)
 			}
 		})
 	}
 }
 
-func TestGetAccountListEndpoint(t *testing.T) {
+func TestGetAccountListEndpointSuccess(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name string
+		name                string
+		accountResponseList accountingapi.AccountListResponse
 	}{
 		{
-			"get account list simple test",
+			"TestGetAccountListEndpointSuccess",
+			accountingapi.AccountListResponse{
+				AccountList: []accountingapi.AccountResponse{
+					{
+						UserID:    1,
+						UserType:  "courier",
+						Balance:   50,
+						CreatedAt: createdTime,
+						UpdatedAt: updatedTime,
+					},
+				},
+			},
 		},
 	}
 	for _, currentTest := range tests {
@@ -221,32 +277,204 @@ func TestGetAccountListEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			gotAccountList := accountingapi.AccountListResponse{}
-			if err := accountingapi.DecodeJSON(resp.Body, &gotAccountList); err != nil {
+			respDataList := accountingapi.AccountListResponse{}
+			if err := accountingapi.DecodeJSON(resp.Body, &respDataList); err != nil {
 				t.Fatal(err)
 			}
 
-			if len(gotAccountList.AccountList) < 1 {
-				t.Errorf("len: Expected: >1, Got: %v", len(gotAccountList.AccountList))
+			if len(respDataList.AccountList) < len(test.accountResponseList.AccountList) {
+				t.Errorf("len: Expected: >1, Got: %v", len(respDataList.AccountList))
 			}
 
-			for _, gotAccount := range gotAccountList.AccountList {
+			for _, respData := range respDataList.AccountList {
 
-				if gotAccount.ID != MockAccountData.ID {
-					t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, gotAccount.ID)
-				}
+				for _, testAccountResponse := range test.accountResponseList.AccountList {
 
-				if gotAccount.UserID != MockAccountData.UserID {
-					t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, gotAccount.UserID)
-				}
+					if respData.ID != testAccountResponse.ID {
+						t.Errorf("ID: Expected: %v, Got: %v", testAccountResponse.ID, respData.ID)
+					}
 
-				if gotAccount.UserType != MockAccountData.UserType {
-					t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, gotAccount.UserType)
-				}
+					if respData.UserID != testAccountResponse.UserID {
+						t.Errorf("UserID: Expected: %v, Got: %v", testAccountResponse.UserID, respData.UserID)
+					}
 
-				if gotAccount.Balance != MockAccountData.Balance {
-					t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, gotAccount.Balance)
+					if respData.UserType != testAccountResponse.UserType {
+						t.Errorf("UserType: Expected: %s, Got: %s", testAccountResponse.UserType, respData.UserType)
+					}
+
+					if respData.Balance != testAccountResponse.Balance {
+						t.Errorf("Balance: Expected: %v, Got: %v", testAccountResponse.Balance, respData.Balance)
+					}
 				}
+			}
+		})
+	}
+}
+
+func TestDeleteEndpointSuccess(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name                   string
+		accountDeletedResponse string
+	}{
+		{
+			"delete account simple test",
+			"account deleted",
+		},
+	}
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			mockService := new(MockService)
+
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+				Logger:         log,
+				AccountService: mockService,
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodDelete, "/v1/accounts/1", nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			accountDeletedResponse := ""
+			if err := accountingapi.DecodeJSON(resp.Body, &accountDeletedResponse); err != nil {
+				t.Fatal(err)
+			}
+
+			if accountDeletedResponse != test.accountDeletedResponse {
+				t.Errorf("accountDeletedResponse: Expected: %v, Got: %v", test.accountDeletedResponse, accountDeletedResponse)
+			}
+		})
+	}
+}
+
+func TestInsertTransactionsEndpointSuccess(t *testing.T) {
+	t.Parallel()
+	type test struct {
+		name                string
+		transactionRequest  accountingapi.TransactionRequest
+		transactionResponse accountingapi.TransactionResponse
+	}
+	tests := []test{
+		{
+			name: "from account to account",
+			transactionRequest: accountingapi.TransactionRequest{
+				FromAccountID: 1,
+				ToAccountID:   2,
+				Amount:        50,
+			},
+			transactionResponse: accountingapi.TransactionResponse{
+				ID:            1,
+				FromAccountID: 1,
+				ToAccountID:   2,
+				Amount:        50,
+				CreatedAt:     createdTime,
+				UpdatedAt:     updatedTime,
+				Valid:         true,
+			},
+		},
+		{
+			name: "from account",
+			transactionRequest: accountingapi.TransactionRequest{
+				FromAccountID: 1,
+				Amount:        50,
+			},
+			transactionResponse: accountingapi.TransactionResponse{
+				ID:            1,
+				FromAccountID: 1,
+				ToAccountID:   0,
+				Amount:        50,
+				CreatedAt:     createdTime,
+				UpdatedAt:     updatedTime,
+				Valid:         true,
+			},
+		},
+		{
+			name: "to account",
+			transactionRequest: accountingapi.TransactionRequest{
+				ToAccountID: 2,
+				Amount:      50,
+			},
+			transactionResponse: accountingapi.TransactionResponse{
+				ID:            1,
+				FromAccountID: 0,
+				ToAccountID:   2,
+				Amount:        50,
+				CreatedAt:     createdTime,
+				UpdatedAt:     updatedTime,
+				Valid:         true,
+			},
+		},
+	}
+
+	for _, test := range tests {
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			mockService := new(MockService)
+
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+				Logger:         log,
+				AccountService: mockService,
+			})
+
+			reqBody, err := v1.Encode(test)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/v1/transactions", bytes.NewBuffer(reqBody))
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			respData := accountingapi.TransactionResponse{}
+			if err := accountingapi.DecodeJSON(resp.Body, &respData); err != nil {
+				t.Fatal(err)
+			}
+
+			if respData.ID != test.transactionResponse.ID {
+				t.Errorf("ID: Expected: %v, Got: %v", MockTransactionFromAccountToAccountData.ID, respData.ID)
+			}
+
+			if respData.FromAccountID != test.transactionResponse.FromAccountID {
+				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transactionResponse.FromAccountID, respData.FromAccountID)
+			}
+
+			if respData.ToAccountID != test.transactionResponse.ToAccountID {
+				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transactionResponse.ToAccountID, respData.ToAccountID)
+			}
+
+			if respData.Amount != test.transactionResponse.Amount {
+				t.Errorf("Amount: Expected: %v, Got: %v", test.transactionResponse.Amount, respData.Amount)
+			}
+
+			if respData.Valid != test.transactionResponse.Valid {
+				t.Errorf("Valid: Expected: %v, Got: %v", test.transactionResponse.Valid, respData.Valid)
+			}
+
+			if respData.CreatedAt != test.transactionResponse.CreatedAt {
+				t.Errorf("CreatedAt: Expected: %v, Got: %v", test.transactionResponse.CreatedAt, respData.CreatedAt)
+			}
+
+			if respData.UpdatedAt != test.transactionResponse.UpdatedAt {
+				t.Errorf("UpdatedAt: Expected: %v, Got: %v", test.transactionResponse.UpdatedAt, respData.UpdatedAt)
 			}
 		})
 	}

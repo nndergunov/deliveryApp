@@ -240,12 +240,16 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	searchParam := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
-	userID := queryParams["user_id"][0]
-	userType := queryParams["user_type"][0]
+	userIDList := queryParams["user_id"]
+	userTypeList := queryParams["user_type"]
 
-	if userID != "" && userType != "" {
-		searchParam["user_id"] = userID
-		searchParam["user_type"] = userType
+	if userIDList != nil && userTypeList != nil {
+		userID := userIDList[0]
+		userType := userTypeList[0]
+		if userID != "" && userType != "" {
+			searchParam["user_type"] = userType
+			searchParam["user_id"] = userID
+		}
 	}
 
 	data, err := a.service.GetAccountListByParam(searchParam)
