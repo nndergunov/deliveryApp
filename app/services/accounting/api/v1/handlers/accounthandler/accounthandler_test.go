@@ -132,15 +132,10 @@ func TestGetAccountEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		accountData accountingapi.NewAccountRequest
+		name string
 	}{
 		{
-			"Insert account simple test",
-			accountingapi.NewAccountRequest{
-				UserID:   1,
-				UserType: "courier",
-			},
+			"get account simple test",
 		},
 	}
 
@@ -158,13 +153,10 @@ func TestGetAccountEndpoint(t *testing.T) {
 				AccountService: mockService,
 			})
 
-			reqBody, err := v1.Encode(test.accountData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			accountIDStr := strconv.Itoa(MockAccountData.ID)
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/accounts", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodGet, "/v1/accounts/"+accountIDStr, nil)
 
 			handler.ServeHTTP(resp, req)
 
@@ -172,24 +164,8 @@ func TestGetAccountEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			insertedAccount := accountingapi.AccountResponse{}
-			if err = accountingapi.DecodeJSON(resp.Body, &insertedAccount); err != nil {
-				t.Fatal(err)
-			}
-
-			accountIDStr := strconv.Itoa(insertedAccount.ID)
-
-			resp2 := httptest.NewRecorder()
-			req2 := httptest.NewRequest(http.MethodGet, "/v1/accounts/"+accountIDStr, nil)
-
-			handler.ServeHTTP(resp2, req2)
-
-			if resp2.Code != http.StatusOK {
-				t.Fatalf("StatusCode: %d", resp2.Code)
-			}
-
 			gotAccount := accountingapi.AccountResponse{}
-			if err = accountingapi.DecodeJSON(resp.Body, &gotAccount); err != nil {
+			if err := accountingapi.DecodeJSON(resp.Body, &gotAccount); err != nil {
 				t.Fatal(err)
 			}
 
@@ -207,6 +183,70 @@ func TestGetAccountEndpoint(t *testing.T) {
 
 			if gotAccount.Balance != MockAccountData.Balance {
 				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, gotAccount.Balance)
+			}
+		})
+	}
+}
+
+func TestGetAccountListEndpoint(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+	}{
+		{
+			"get account list simple test",
+		},
+	}
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			mockService := new(MockService)
+
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+				Logger:         log,
+				AccountService: mockService,
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/accounts", nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			gotAccountList := accountingapi.AccountListResponse{}
+			if err := accountingapi.DecodeJSON(resp.Body, &gotAccountList); err != nil {
+				t.Fatal(err)
+			}
+
+			if len(gotAccountList.AccountList) < 1 {
+				t.Errorf("len: Expected: >1, Got: %v", len(gotAccountList.AccountList))
+			}
+
+			for _, gotAccount := range gotAccountList.AccountList {
+
+				if gotAccount.ID != MockAccountData.ID {
+					t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, gotAccount.ID)
+				}
+
+				if gotAccount.UserID != MockAccountData.UserID {
+					t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, gotAccount.UserID)
+				}
+
+				if gotAccount.UserType != MockAccountData.UserType {
+					t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, gotAccount.UserType)
+				}
+
+				if gotAccount.Balance != MockAccountData.Balance {
+					t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, gotAccount.Balance)
+				}
 			}
 		})
 	}
