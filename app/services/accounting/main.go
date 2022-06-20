@@ -1,30 +1,25 @@
 package main
 
 import (
-	"accounting/api/v1/handlers"
-	"accounting/pkg/db"
-	"accounting/pkg/service/consumerservice"
-	"accounting/pkg/service/courierservice"
-	"accounting/pkg/service/restaurantrservice"
-	"accounting/pkg/storage/consumerstorage"
-	"accounting/pkg/storage/courierrstorage"
-	"accounting/pkg/storage/restaurantstorage"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/db"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountservice"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountstorage"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-
-	"log"
-	"net/http"
-	"os"
 )
 
 const configFile = "/config.yaml"
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "main: ")
 
@@ -53,34 +48,20 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	consumerAccountingStorage := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
+	accountStorage := accountstorage.NewStorage(accountstorage.Params{DB: database})
 
-	serviceLogger := logger.NewLogger(os.Stdout, "service: ")
-	consumerAccountingService := consumerservice.NewService(consumerservice.Params{
-		Storage: consumerAccountingStorage,
-		Logger:  serviceLogger})
+	accountAccountingService := accountservice.NewService(accountservice.Params{
+		Storage: accountStorage,
+		Logger:  logger.NewLogger(os.Stdout, "service: "),
+	})
 
-	courierAccountingStorage := courierstorage.NewStorage(courierstorage.Params{DB: database})
-
-	courierAccountingService := courierservice.NewService(courierservice.Params{
-		Storage: courierAccountingStorage,
-		Logger:  serviceLogger})
-
-	restaurantAccountingStorage := restaurantstorage.NewStorage(restaurantstorage.Params{DB: database})
-
-	restaurantAccountingService := restaurantservice.NewService(restaurantservice.Params{
-		Storage: restaurantAccountingStorage,
-		Logger:  serviceLogger})
-
-	ConsumerHandler := handlers.NewAPIMux(handlers.Params{
-		Logger:            logger.NewLogger(os.Stdout, "endpoint: "),
-		ConsumerService:   consumerAccountingService,
-		CourierService:    courierAccountingService,
-		RestaurantService: restaurantAccountingService,
+	handler := accounthandler.NewAccountHandler(accounthandler.Params{
+		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),
+		AccountService: accountAccountingService,
 	})
 
 	apiLogger := logger.NewLogger(os.Stdout, "api: ")
-	serverAPI := api.NewAPI(ConsumerHandler, apiLogger)
+	serverAPI := api.NewAPI(handler, apiLogger)
 
 	serverLogger := logger.NewLogger(os.Stdout, "server: ")
 	serverConfig := getServerConfig(serverAPI, nil, serverLogger)

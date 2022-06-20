@@ -2,15 +2,18 @@ package consumerhandler_test
 
 import (
 	"bytes"
-	"consumer/api/v1/consumerapi"
-	"consumer/api/v1/handler/consumerhandler"
-	"consumer/pkg/domain"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/handler/consumerhandler"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 var (
@@ -22,9 +25,9 @@ var (
 		Phone:     "123456789",
 	}
 
-	MockConsumerLocationData = &domain.ConsumerLocation{
-		ConsumerID: 1,
-		Altitude:   "0123456789",
+	MockLocationData = &domain.Location{
+		UserID:     1,
+		Latitude:   "0123456789",
 		Longitude:  "0123456789",
 		Country:    "TestCountry",
 		City:       "Test City",
@@ -42,11 +45,11 @@ func (m MockService) InsertConsumer(_ domain.Consumer) (*domain.Consumer, error)
 	return MockConsumerData, nil
 }
 
-func (m MockService) DeleteConsumer(_ string) (data any, err error) {
+func (m MockService) DeleteConsumer(_ string) (data string, err error) {
 	return "consumer deleted", nil
 }
 
-func (m MockService) UpdateConsumer(consumer domain.Consumer, id string) (*domain.Consumer, error) {
+func (m MockService) UpdateConsumer(_ domain.Consumer, _ string) (*domain.Consumer, error) {
 	return MockConsumerData, nil
 }
 
@@ -58,16 +61,16 @@ func (m MockService) GetConsumer(_ string) (*domain.Consumer, error) {
 	return MockConsumerData, nil
 }
 
-func (m MockService) InsertConsumerLocation(_ domain.ConsumerLocation, id string) (*domain.ConsumerLocation, error) {
-	return MockConsumerLocationData, nil
+func (m MockService) InsertLocation(_ domain.Location, id string) (*domain.Location, error) {
+	return MockLocationData, nil
 }
 
-func (m MockService) GetConsumerLocation(_ string) (*domain.ConsumerLocation, error) {
-	return MockConsumerLocationData, nil
+func (m MockService) GetLocation(_ string) (*domain.Location, error) {
+	return MockLocationData, nil
 }
 
-func (m MockService) UpdateConsumerLocation(_ domain.ConsumerLocation, id string) (*domain.ConsumerLocation, error) {
-	return MockConsumerLocationData, nil
+func (m MockService) UpdateLocation(_ domain.Location, id string) (*domain.Location, error) {
+	return MockLocationData, nil
 }
 
 func TestInsertNewConsumerEndpoint(t *testing.T) {
@@ -108,7 +111,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/consumer", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/consumers", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -122,7 +125,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 			}
 
 			if respData.ID != MockConsumerData.ID {
-				t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
+				t.Errorf("UserID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
 			}
 
 			if respData.Firstname != MockConsumerData.Firstname {
@@ -158,7 +161,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/v1/consumer/1", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/v1/consumers/1", nil)
 
 		handler.ServeHTTP(resp, req)
 		var respData string
@@ -215,7 +218,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/consumers/1", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -229,7 +232,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			}
 
 			if respData.ID != MockConsumerData.ID {
-				t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
+				t.Errorf("UserID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
 			}
 
 			if respData.Firstname != MockConsumerData.Firstname {
@@ -265,7 +268,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/all", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/consumers", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -283,7 +286,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		for _, respData := range respDataList.ConsumerResponseList {
 
 			if respData.ID != MockConsumerData.ID {
-				t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
+				t.Errorf("UserID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
 			}
 
 			if respData.Firstname != MockConsumerData.Firstname {
@@ -319,7 +322,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 		})
 
 		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/consumer/1", nil)
+		req := httptest.NewRequest(http.MethodGet, "/v1/consumers/1", nil)
 
 		handler.ServeHTTP(resp, req)
 
@@ -332,7 +335,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 			t.Fatalf("StatusCode: %d", resp.Code)
 		}
 		if respData.ID != MockConsumerData.ID {
-			t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
+			t.Errorf("UserID: Expected: %v, Got: %v", MockConsumerData.ID, respData.ID)
 		}
 
 		if respData.Firstname != MockConsumerData.Firstname {
@@ -350,7 +353,6 @@ func TestGetConsumerEndpoint(t *testing.T) {
 		if respData.Phone != MockConsumerData.Phone {
 			t.Errorf("Phone: Expected: %s, Got: %s", MockConsumerData.Phone, respData.Phone)
 		}
-
 	})
 }
 
@@ -359,12 +361,12 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		consumerLocationData consumerapi.NewConsumerLocationRequest
+		consumerLocationData consumerapi.NewLocationRequest
 	}{
 		{
 			"NewConsumerLocation simple test",
-			consumerapi.NewConsumerLocationRequest{
-				Altitude:   "0123456789",
+			consumerapi.NewLocationRequest{
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "Test City",
@@ -397,7 +399,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/consumer/location/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/locations/1", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -405,32 +407,32 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := consumerapi.ConsumerLocationResponse{}
+			respData := consumerapi.LocationResponse{}
 			if err = consumerapi.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
-			if respData.ConsumerID != MockConsumerLocationData.ConsumerID {
-				t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerLocationData.ConsumerID, respData.ConsumerID)
+			if respData.UserID != MockLocationData.UserID {
+				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
 			}
 
-			if respData.Altitude != MockConsumerLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.consumerLocationData.Altitude, respData.Altitude)
+			if respData.Altitude != MockLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, respData.Altitude)
 			}
 
-			if respData.Longitude != MockConsumerLocationData.Longitude {
+			if respData.Longitude != MockLocationData.Longitude {
 				t.Errorf("Longitude: Expected: %s, Got: %s", test.consumerLocationData.Longitude, respData.Longitude)
 			}
 
-			if respData.Country != MockConsumerLocationData.Country {
+			if respData.Country != MockLocationData.Country {
 				t.Errorf("Country: Expected: %s, Got: %s", test.consumerLocationData.Country, respData.Country)
 			}
 
-			if respData.City != MockConsumerLocationData.City {
+			if respData.City != MockLocationData.City {
 				t.Errorf("City: Expected: %s, Got: %s", test.consumerLocationData.City, respData.City)
 			}
 
-			if respData.Region != MockConsumerLocationData.Region {
+			if respData.Region != MockLocationData.Region {
 				t.Errorf("Region: Expected: %s, Got: %s", test.consumerLocationData.Region, respData.Region)
 			}
 		})
@@ -442,12 +444,12 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		consumerLocationData consumerapi.NewConsumerLocationRequest
+		consumerLocationData consumerapi.NewLocationRequest
 	}{
 		{
-			"UpdateConsumerLocation simple test",
-			consumerapi.NewConsumerLocationRequest{
-				Altitude:   "0123456789",
+			"UpdateLocation simple test",
+			consumerapi.NewLocationRequest{
+				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "Test City",
@@ -480,7 +482,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 			}
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/consumer/location/1", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPut, "/v1/locations/1", bytes.NewBuffer(reqBody))
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -488,32 +490,32 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := consumerapi.ConsumerLocationResponse{}
+			respData := consumerapi.LocationResponse{}
 			if err = consumerapi.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
-			if respData.ConsumerID != MockConsumerLocationData.ConsumerID {
-				t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerLocationData.ConsumerID, respData.ConsumerID)
+			if respData.UserID != MockLocationData.UserID {
+				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
 			}
 
-			if respData.Altitude != MockConsumerLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.consumerLocationData.Altitude, respData.Altitude)
+			if respData.Altitude != MockLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, respData.Altitude)
 			}
 
-			if respData.Longitude != MockConsumerLocationData.Longitude {
+			if respData.Longitude != MockLocationData.Longitude {
 				t.Errorf("Longitude: Expected: %s, Got: %s", test.consumerLocationData.Longitude, respData.Longitude)
 			}
 
-			if respData.Country != MockConsumerLocationData.Country {
+			if respData.Country != MockLocationData.Country {
 				t.Errorf("Country: Expected: %s, Got: %s", test.consumerLocationData.Country, respData.Country)
 			}
 
-			if respData.City != MockConsumerLocationData.City {
+			if respData.City != MockLocationData.City {
 				t.Errorf("City: Expected: %s, Got: %s", test.consumerLocationData.City, respData.City)
 			}
 
-			if respData.Region != MockConsumerLocationData.Region {
+			if respData.Region != MockLocationData.Region {
 				t.Errorf("Region: Expected: %s, Got: %s", test.consumerLocationData.Region, respData.Region)
 			}
 		})
@@ -527,7 +529,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 		name string
 	}{
 		{
-			"GetConsumerLocation simple test",
+			"GetLocation simple test",
 		},
 	}
 
@@ -546,7 +548,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 			})
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/consumer/location/1", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/locations/1", nil)
 
 			consumerHandler.ServeHTTP(resp, req)
 
@@ -554,33 +556,33 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := consumerapi.ConsumerLocationResponse{}
+			respData := consumerapi.LocationResponse{}
 			if err := consumerapi.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
-			if respData.ConsumerID != MockConsumerLocationData.ConsumerID {
-				t.Errorf("ConsumerID: Expected: %v, Got: %v", MockConsumerLocationData.ConsumerID, respData.ConsumerID)
+			if respData.UserID != MockLocationData.UserID {
+				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
 			}
 
-			if respData.Altitude != MockConsumerLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", MockConsumerLocationData.Altitude, respData.Altitude)
+			if respData.Altitude != MockLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", MockLocationData.Latitude, respData.Altitude)
 			}
 
-			if respData.Longitude != MockConsumerLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", MockConsumerLocationData.Longitude, respData.Longitude)
+			if respData.Longitude != MockLocationData.Longitude {
+				t.Errorf("Longitude: Expected: %s, Got: %s", MockLocationData.Longitude, respData.Longitude)
 			}
 
-			if respData.Country != MockConsumerLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", MockConsumerLocationData.Country, respData.Country)
+			if respData.Country != MockLocationData.Country {
+				t.Errorf("Country: Expected: %s, Got: %s", MockLocationData.Country, respData.Country)
 			}
 
-			if respData.City != MockConsumerLocationData.City {
-				t.Errorf("City: Expected: %s, Got: %s", MockConsumerLocationData.City, respData.City)
+			if respData.City != MockLocationData.City {
+				t.Errorf("City: Expected: %s, Got: %s", MockLocationData.City, respData.City)
 			}
 
-			if respData.Region != MockConsumerLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", MockConsumerLocationData.Region, respData.Region)
+			if respData.Region != MockLocationData.Region {
+				t.Errorf("Region: Expected: %s, Got: %s", MockLocationData.Region, respData.Region)
 			}
 		})
 	}

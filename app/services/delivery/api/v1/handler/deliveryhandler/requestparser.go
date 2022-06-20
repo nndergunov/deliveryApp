@@ -1,8 +1,9 @@
 package deliveryhandler
 
 import (
-	"delivery/api/v1/deliveryapi"
-	"delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
 func requestToEstimateDelivery(req *deliveryapi.EstimateDeliveryRequest) *domain.EstimateDeliveryRequest {

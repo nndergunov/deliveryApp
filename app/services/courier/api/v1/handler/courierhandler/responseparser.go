@@ -1,8 +1,9 @@
 package courierhandler
 
 import (
-	"courier/api/v1/courierapi"
-	"courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 func courierToResponse(courier domain.Courier) courierapi.CourierResponse {
@@ -17,7 +18,7 @@ func courierToResponse(courier domain.Courier) courierapi.CourierResponse {
 	}
 }
 
-func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourierResponseList {
+func courierListToResponse(courierList []domain.Courier) courierapi.CourierResponseList {
 	courierResponseList := make([]courierapi.CourierResponse, 0, len(courierList))
 
 	for _, courier := range courierList {
@@ -33,22 +34,46 @@ func courierListToResponse(courierList []domain.Courier) courierapi.ReturnCourie
 
 		courierResponseList = append(courierResponseList, courierResponse)
 	}
-	return courierapi.ReturnCourierResponseList{
+	return courierapi.CourierResponseList{
 		CourierResponseList: courierResponseList,
 	}
 }
 
-func courierLocationToResponse(courierLocation domain.CourierLocation) courierapi.CourierLocationResponse {
-	return courierapi.CourierLocationResponse{
-		CourierID:  courierLocation.CourierID,
-		Altitude:   courierLocation.Altitude,
-		Longitude:  courierLocation.Longitude,
-		Country:    courierLocation.Country,
-		City:       courierLocation.City,
-		Region:     courierLocation.Region,
-		Street:     courierLocation.Street,
-		HomeNumber: courierLocation.HomeNumber,
-		Floor:      courierLocation.Floor,
-		Door:       courierLocation.Door,
+func locationToResponse(location domain.Location) courierapi.LocationResponse {
+	return courierapi.LocationResponse{
+		UserID:     location.UserID,
+		Latitude:   location.Latitude,
+		Longitude:  location.Longitude,
+		Country:    location.Country,
+		City:       location.City,
+		Region:     location.Region,
+		Street:     location.Street,
+		HomeNumber: location.HomeNumber,
+		Floor:      location.Floor,
+		Door:       location.Door,
+	}
+}
+
+func locationListToResponse(locationList []domain.Location) courierapi.LocationResponseList {
+	locationResponseList := make([]courierapi.LocationResponse, 0, len(locationList))
+
+	for _, location := range locationList {
+		locationResponse := courierapi.LocationResponse{
+			UserID:     location.UserID,
+			Latitude:   location.Latitude,
+			Longitude:  location.Longitude,
+			Country:    location.Country,
+			City:       location.City,
+			Region:     location.Region,
+			Street:     location.Street,
+			HomeNumber: location.HomeNumber,
+			Floor:      location.Floor,
+			Door:       location.Door,
+		}
+
+		locationResponseList = append(locationResponseList, locationResponse)
+	}
+	return courierapi.LocationResponseList{
+		LocationResponseList: locationResponseList,
 	}
 }

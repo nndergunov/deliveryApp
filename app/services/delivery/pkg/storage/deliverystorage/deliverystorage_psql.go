@@ -3,7 +3,7 @@ package deliverystorage
 import (
 	"database/sql"
 
-	"delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies

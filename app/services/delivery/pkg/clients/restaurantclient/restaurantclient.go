@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
 type RestaurantClient struct {
@@ -21,7 +21,7 @@ func (a RestaurantClient) GetRestaurant(restaurantID int) (*domain.Restaurant, e
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
-	//todo when restaurant add this rout
+	// todo when restaurant add this rout
 
 	return &domain.Restaurant{}, nil
 }

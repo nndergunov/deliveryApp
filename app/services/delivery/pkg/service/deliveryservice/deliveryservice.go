@@ -2,13 +2,14 @@ package deliveryservice
 
 import (
 	"errors"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"strconv"
 	"time"
 
-	"delivery/pkg/domain"
-	"delivery/pkg/service"
-	"delivery/pkg/service/deliveryservice/tools"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice/tools"
 )
 
 // DeliveryService is the interface for the user service.
@@ -47,9 +48,8 @@ func NewDeliveryService(p Params) DeliveryService {
 	return deliveryServiceItem
 }
 
-//GetEstimateDelivery get delivery time and cost based on location from and to. Calculating based on average delivery time in the city by car
+// GetEstimateDelivery get delivery time and cost based on location from and to. Calculating based on average delivery time in the city by car
 func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryRequest) (*domain.EstimateDeliveryResponse, error) {
-
 	consumerLocation, err := c.consumerClient.GetConsumerLocation(estimate.ConsumerID)
 	if err != nil {
 		return nil, systemErr
@@ -61,7 +61,7 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 	}
 
 	var estimateDelivery domain.EstimateDeliveryResponse
-	//check latitude and longitude
+	// check latitude and longitude
 	if consumerLocation == nil || restaurant == nil {
 		return nil, errWrongLocData
 	}
@@ -104,19 +104,19 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 			return nil, systemErr
 		}
 
-		//should be considered
-		//1.available couriers in this city
-		//2.number of orders which is in pending status
-		//3. Road and weather condition
+		// should be considered
+		// 1.available couriers in this city
+		// 2.number of orders which is in pending status
+		// 3. Road and weather condition
 
-		//but for now considered average delivery time/km and cost/km in the city multiplied by distance
+		// but for now considered average delivery time/km and cost/km in the city multiplied by distance
 		estimateDelivery.Time = getTimeByDistance(distanceKm).String()
 		estimateDelivery.Cost = getCostByDistance(distanceKm)
 
 		return &estimateDelivery, nil
 	}
 
-	//getting time by address
+	// getting time by address
 	if consumerLocation.City != "" || restaurant.Location.City != "" {
 
 		fromAddress := consumerLocation.City + consumerLocation.Region + consumerLocation.Street + consumerLocation.HomeNumber
@@ -162,14 +162,14 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 
 	order.OrderID = orderIDInt
 
-	//go to restaurant service get restaurant location
+	// go to restaurant service get restaurant location
 	restaurant, err := c.restaurantClient.GetRestaurant(order.FromRestaurantID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
 
-	//find available courier near restaurant
+	// find available courier near restaurant
 	nearestCourier, err := c.courierClient.GetNearestCourier(restaurant.Location, 5)
 	if err != nil {
 		c.logger.Println(err)
@@ -180,13 +180,13 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 		return nil, errors.New("no courier available")
 	}
 
-	//assign order to available courier
+	// assign order to available courier
 	assignedOrder, err := c.deliveryStorage.AssignOrder(nearestCourier.ID, orderIDInt)
 	if err != nil {
 		return nil, systemErr
 	}
 
-	//update available courier to false
+	// update available courier to false
 	_, err = c.courierClient.UpdateCourierAvailable(assignedOrder.CourierID, false)
 	if err != nil {
 		return nil, systemErr
@@ -196,7 +196,7 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 }
 
 func getTimeByDistance(distance float64) (duration time.Duration) {
-	//average delivery time in hour per 1 km in city by car
+	// average delivery time in hour per 1 km in city by car
 	averageDeliveryTimeHourPerKM := 0.025
 
 	deliveryTime := distance * averageDeliveryTimeHourPerKM
@@ -204,7 +204,7 @@ func getTimeByDistance(distance float64) (duration time.Duration) {
 }
 
 func getCostByDistance(distance float64) float64 {
-	//average delivery cost in $ per 1 km in city by car
+	// average delivery cost in $ per 1 km in city by car
 	averageDeliveryCostPerKM := 0.11
 
 	deliveryCost := distance * averageDeliveryCostPerKM

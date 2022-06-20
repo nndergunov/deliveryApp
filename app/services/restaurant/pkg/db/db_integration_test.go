@@ -25,7 +25,7 @@ func TestGetAllRestaurants(t *testing.T) {
 				City:            "GetAllCity",
 				Address:         "GetAllAddress",
 				Longitude:       10,
-				Altitude:        20,
+				Latitude:        20,
 			},
 		},
 	}
@@ -99,8 +99,8 @@ func TestGetAllRestaurants(t *testing.T) {
 				t.Errorf("Longitude: Expected: %f, Got: %f", test.restaurantData.Longitude, restaurant.Longitude)
 			}
 
-			if test.restaurantData.Altitude != restaurant.Altitude {
-				t.Errorf("Altitude: Expected: %f, Got: %f", test.restaurantData.Altitude, restaurant.Altitude)
+			if test.restaurantData.Latitude != restaurant.Latitude {
+				t.Errorf("Latitude: Expected: %f, Got: %f", test.restaurantData.Latitude, restaurant.Latitude)
 			}
 
 			_ = database.DeleteRestaurant(id)
@@ -124,7 +124,7 @@ func TestInsertRestaurant(t *testing.T) {
 				City:            "InsertCity",
 				Address:         "InsertAddress",
 				Longitude:       1.2,
-				Altitude:        3.4,
+				Latitude:        3.4,
 			},
 		},
 	}
@@ -181,7 +181,7 @@ func TestGetRestaurant(t *testing.T) {
 				City:            "GetCity",
 				Address:         "GetAddress",
 				Longitude:       1.2,
-				Altitude:        3.4,
+				Latitude:        3.4,
 			},
 		},
 	}
@@ -237,8 +237,8 @@ func TestGetRestaurant(t *testing.T) {
 				t.Errorf("Longitude: Expected: %f, Got: %f", test.restaurantData.Longitude, restaurant.Longitude)
 			}
 
-			if test.restaurantData.Altitude != restaurant.Altitude {
-				t.Errorf("Altitude: Expected: %f, Got: %f", test.restaurantData.Altitude, restaurant.Altitude)
+			if test.restaurantData.Latitude != restaurant.Latitude {
+				t.Errorf("Latitude: Expected: %f, Got: %f", test.restaurantData.Latitude, restaurant.Latitude)
 			}
 
 			_ = database.DeleteRestaurant(id)
@@ -263,7 +263,7 @@ func TestUpdateRestaurant(t *testing.T) {
 				City:            "InitialCity",
 				Address:         "InitialAddress",
 				Longitude:       1.0,
-				Altitude:        2.0,
+				Latitude:        2.0,
 			},
 			updatedRestaurantData: domain.Restaurant{
 				ID:              0,
@@ -272,7 +272,7 @@ func TestUpdateRestaurant(t *testing.T) {
 				City:            "UpdatedCity",
 				Address:         "UpdatedAddress",
 				Longitude:       1.1,
-				Altitude:        2.2,
+				Latitude:        2.2,
 			},
 		},
 	}
@@ -330,7 +330,7 @@ func TestDeleteRestaurant(t *testing.T) {
 				City:            "DeleteCity",
 				Address:         "DeleteAddress",
 				Longitude:       1.2,
-				Altitude:        3.4,
+				Latitude:        3.4,
 			},
 		},
 	}

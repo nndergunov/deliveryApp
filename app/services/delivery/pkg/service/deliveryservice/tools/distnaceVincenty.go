@@ -4,14 +4,17 @@ import (
 	"errors"
 	"math"
 
-	"delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
 // these constants are used for vincentyDistance()
 // reference: https://en.wikipedia.org/wiki/World_Geodetic_System#1984_version
 const a = 6378137
-const b = 6356752.3142
-const f = 1 / 298.257223563 // WGS-84 ellipsiod
+
+const (
+	b = 6356752.3142
+	f = 1 / 298.257223563 // WGS-84 ellipsiod
+)
 
 func VincentyDistance(p1, p2 domain.Coord) (float64, error) {
 	// convert from degrees to radians

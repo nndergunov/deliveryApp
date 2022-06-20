@@ -1,8 +1,9 @@
 package consumerhandler
 
 import (
-	"consumer/api/v1/consumerapi"
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 func requestToNewConsumer(req *consumerapi.NewConsumerRequest) domain.Consumer {
@@ -23,9 +24,9 @@ func requestToUpdateConsumer(req *consumerapi.UpdateConsumerRequest) domain.Cons
 	}
 }
 
-func requestToNewConsumerLocation(req *consumerapi.NewConsumerLocationRequest) domain.ConsumerLocation {
-	return domain.ConsumerLocation{
-		Altitude:   req.Altitude,
+func requestToNewLocation(req *consumerapi.NewLocationRequest) domain.Location {
+	return domain.Location{
+		Latitude:   req.Latitude,
 		Longitude:  req.Longitude,
 		Country:    req.Country,
 		City:       req.City,
@@ -37,9 +38,9 @@ func requestToNewConsumerLocation(req *consumerapi.NewConsumerLocationRequest) d
 	}
 }
 
-func requestToUpdateConsumerLocation(req *consumerapi.UpdateConsumerLocationRequest) domain.ConsumerLocation {
-	return domain.ConsumerLocation{
-		Altitude:   req.Altitude,
+func requestToUpdateLocation(req *consumerapi.UpdateLocationRequest) domain.Location {
+	return domain.Location{
+		Latitude:   req.Latitude,
 		Longitude:  req.Longitude,
 		Country:    req.Country,
 		City:       req.City,

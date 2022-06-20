@@ -1,21 +1,21 @@
 package service
 
 import (
-	"consumer/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 // ConsumerStorage is the interface for the consumer storage.
 type ConsumerStorage interface {
 	InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error)
-	DeleteConsumer(id uint64) error
+	DeleteConsumer(id int) error
 	UpdateConsumer(consumer domain.Consumer) (*domain.Consumer, error)
 	GetAllConsumer() ([]domain.Consumer, error)
-	GetConsumerByID(id uint64) (*domain.Consumer, error)
+	GetConsumerByID(id int) (*domain.Consumer, error)
 	GetConsumerDuplicateByParam(param domain.SearchParam) (*domain.Consumer, error)
 	CleanConsumerTable() error
 
-	InsertConsumerLocation(consumer domain.ConsumerLocation) (*domain.ConsumerLocation, error)
-	DeleteConsumerLocation(consumerID uint64) error
-	UpdateConsumerLocation(consumer domain.ConsumerLocation) (*domain.ConsumerLocation, error)
-	GetConsumerLocation(id uint64) (*domain.ConsumerLocation, error)
+	InsertLocation(location domain.Location) (*domain.Location, error)
+	DeleteLocation(userID int) error
+	UpdateLocation(location domain.Location) (*domain.Location, error)
+	GetLocation(userID int) (*domain.Location, error)
 }

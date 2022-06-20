@@ -1,11 +1,13 @@
 package courierstorage
 
 import (
-	"courier/pkg/domain"
 	"database/sql"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
 	"strconv"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -47,7 +49,7 @@ func (c CourierStorage) InsertCourier(courier domain.Courier) (*domain.Courier, 
 	return &newCourier, nil
 }
 
-func (c CourierStorage) DeleteCourier(id uint64) error {
+func (c CourierStorage) DeleteCourier(id int) error {
 	sql := `DELETE FROM 
 				courier
 			WHERE id = $1
@@ -86,7 +88,7 @@ func (c CourierStorage) UpdateCourier(courier domain.Courier) (*domain.Courier, 
 	return &updatedCourier, nil
 }
 
-func (c CourierStorage) UpdateCourierAvailable(id uint64, available bool) (*domain.Courier, error) {
+func (c CourierStorage) UpdateCourierAvailable(id int, available bool) (*domain.Courier, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -106,20 +108,20 @@ func (c CourierStorage) UpdateCourierAvailable(id uint64, available bool) (*doma
 	return &updatedCourier, nil
 }
 
-func (c CourierStorage) GetAllCourier(param domain.SearchParam) ([]domain.Courier, error) {
+func (c CourierStorage) GetCourierList(param domain.SearchParam) ([]domain.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 `
-	where := "WHERE 1=1"
+	where := " WHERE 1=1"
 
-	available := param["available"]
-	if available != "" {
+	available, ok := param["available"]
+	if ok && available != "" {
 		where = where + " AND available = " + available + ""
 	}
 
 	sql = sql + where
 
-	var allCourier []domain.Courier
+	var courierList []domain.Courier
 
 	rows, err := c.db.Query(sql)
 	if err != nil {
@@ -132,13 +134,13 @@ func (c CourierStorage) GetAllCourier(param domain.SearchParam) ([]domain.Courie
 			&courier.Phone, &courier.Available); err != nil {
 			break
 		}
-		allCourier = append(allCourier, courier)
+		courierList = append(courierList, courier)
 	}
 
-	return allCourier, nil
+	return courierList, nil
 }
 
-func (c CourierStorage) GetCourierByID(id uint64) (*domain.Courier, error) {
+func (c CourierStorage) GetCourierByID(id int) (*domain.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE
@@ -207,75 +209,72 @@ func (c CourierStorage) CleanCourierTable() error {
 	return nil
 }
 
-// InsertCourierLocation inserts a new courier into the database.
-func (c CourierStorage) InsertCourierLocation(courierLocation domain.CourierLocation) (*domain.CourierLocation, error) {
-
-	sql := `
-   INSERT INTO
-    courier_location (courier_id, altitude, longitude, country, city, region, street, home_number, floor, door)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-returning *
+// InsertLocation inserts a new courier into the database.
+func (c CourierStorage) InsertLocation(location domain.Location) (*domain.Location, error) {
+	sql := `INSERT 
+			INTO
+			    location (user_id, latitude, longitude, country, city, region, street, home_number, floor, door)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+			returning *
 `
-	var newCourierLocation domain.CourierLocation
-	err := c.db.QueryRow(sql, &courierLocation.CourierID, &courierLocation.Altitude,
-		&courierLocation.Longitude, &courierLocation.Country, &courierLocation.City,
-		&courierLocation.Region, &courierLocation.Street, &courierLocation.HomeNumber,
-		&courierLocation.Floor, &courierLocation.Door).
-		Scan(&newCourierLocation.CourierID, &newCourierLocation.Altitude,
-			&newCourierLocation.Longitude, &newCourierLocation.Country, &newCourierLocation.City,
-			&newCourierLocation.Region, &newCourierLocation.Street, &newCourierLocation.HomeNumber,
-			&newCourierLocation.Floor, &newCourierLocation.Door)
+	var newLocation domain.Location
+	err := c.db.QueryRow(sql, &location.UserID, &location.Latitude,
+		&location.Longitude, &location.Country, &location.City,
+		&location.Region, &location.Street, &location.HomeNumber,
+		&location.Floor, &location.Door).
+		Scan(&newLocation.UserID, &newLocation.Latitude,
+			&newLocation.Longitude, &newLocation.Country, &newLocation.City,
+			&newLocation.Region, &newLocation.Street, &newLocation.HomeNumber,
+			&newLocation.Floor, &newLocation.Door)
 	if err != nil {
 		return nil, err
 	}
 
-	return &newCourierLocation, nil
+	return &newLocation, nil
 }
 
-func (c CourierStorage) DeleteCourierLocation(courierID uint64) error {
-	sql := `
-    DELETE
-FROM courier_location
-WHERE courier_id = $1
-;`
+func (c CourierStorage) DeleteLocation(courierID int) error {
+	sql := `DELETE
+			FROM location
+			WHERE user_id = $1;`
+
 	if _, err := c.db.Exec(sql, courierID); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c CourierStorage) GetCourierLocation(id uint64) (*domain.CourierLocation, error) {
+func (c CourierStorage) GetLocation(userID int) (*domain.Location, error) {
 	sql := `SELECT
-				courier_id, altitude, longitude, country, city, region, street, home_number, floor, door
+				user_id, latitude, longitude, country, city, region, street, home_number, floor, door
 			FROM 
-				courier_location 
+				location 
 	`
-	where := `WHERE 1=1`
+	where := ` WHERE 1=1`
 
-	if id != 0 {
-		where = where + "AND courier_id =" + strconv.FormatInt(int64(id), 10)
+	if userID != 0 {
+		where = where + "AND user_id =" + strconv.FormatInt(int64(userID), 10)
 	}
 
 	sql = sql + where
 
-	var courierLocation domain.CourierLocation
+	var location domain.Location
 
-	if err := c.db.QueryRow(sql).Scan(&courierLocation.CourierID, &courierLocation.Altitude,
-		&courierLocation.Longitude, &courierLocation.Country, &courierLocation.City,
-		&courierLocation.Region, &courierLocation.Street, &courierLocation.HomeNumber,
-		&courierLocation.Floor, &courierLocation.Door); err != nil {
+	if err := c.db.QueryRow(sql).Scan(&location.UserID, &location.Latitude,
+		&location.Longitude, &location.Country, &location.City,
+		&location.Region, &location.Street, &location.HomeNumber,
+		&location.Floor, &location.Door); err != nil {
 		return nil, err
 	}
 
-	return &courierLocation, nil
+	return &location, nil
 }
 
-func (c CourierStorage) UpdateCourierLocation(courierLocation domain.CourierLocation) (*domain.CourierLocation, error) {
-
+func (c CourierStorage) UpdateLocation(location domain.Location) (*domain.Location, error) {
 	sql := `UPDATE 
-				courier_location
+				location
 			SET 
-			    altitude = $1,
+			    latitude = $1,
 			    longitude = $2,
 			    country = $3,
 			    city = $4,
@@ -285,21 +284,67 @@ func (c CourierStorage) UpdateCourierLocation(courierLocation domain.CourierLoca
 			    floor = $8,
 			    door = $9 
 			WHERE 
-			    courier_id = $10
+			    user_id = $10
 			returning *
 	`
-	var updatedCurierLocation domain.CourierLocation
+	var updatedLocation domain.Location
 
 	if err := c.db.QueryRow(sql,
-		courierLocation.Altitude, courierLocation.Longitude,
-		courierLocation.Country, courierLocation.City, courierLocation.Region, courierLocation.Street,
-		courierLocation.HomeNumber, courierLocation.Floor, courierLocation.Door, courierLocation.CourierID).
-		Scan(&updatedCurierLocation.CourierID, &updatedCurierLocation.Altitude, &updatedCurierLocation.Longitude,
-			&updatedCurierLocation.Country, &updatedCurierLocation.City, &updatedCurierLocation.Region,
-			&updatedCurierLocation.Street, &updatedCurierLocation.HomeNumber,
-			&updatedCurierLocation.Floor, &updatedCurierLocation.Door); err != nil {
+		location.Latitude, location.Longitude,
+		location.Country, location.City, location.Region, location.Street,
+		location.HomeNumber, location.Floor, location.Door, location.UserID).
+		Scan(&updatedLocation.UserID, &updatedLocation.Latitude, &updatedLocation.Longitude,
+			&updatedLocation.Country, &updatedLocation.City, &updatedLocation.Region,
+			&updatedLocation.Street, &updatedLocation.HomeNumber,
+			&updatedLocation.Floor, &updatedLocation.Door); err != nil {
 		return nil, err
 	}
 
-	return &updatedCurierLocation, nil
+	return &updatedLocation, nil
+}
+
+func (c CourierStorage) GetLocationList(param domain.SearchParam) ([]domain.Location, error) {
+	sql := `SELECT * FROM 
+				location
+`
+	where := " WHERE 1=1"
+
+	city, ok := param["city"]
+	if ok && city != "" {
+		where = where + " AND city = '" + city + "'"
+	}
+
+	sql = sql + where
+
+	var locationList []domain.Location
+
+	rows, err := c.db.Query(sql)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var location domain.Location
+		if err := rows.Scan(&location.UserID, &location.Latitude,
+			&location.Longitude, &location.Country, &location.City,
+			&location.Region, &location.Street, &location.HomeNumber,
+			&location.Floor, &location.Door); err != nil {
+			break
+		}
+		locationList = append(locationList, location)
+	}
+
+	return locationList, nil
+}
+
+func (c CourierStorage) CleanLocationTable() error {
+	sql := `DELETE FROM
+				location
+			WHERE 
+				 1=1
+	`
+	if _, err := c.db.Exec(sql); err != nil {
+		return err
+	}
+
+	return nil
 }

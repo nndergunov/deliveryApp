@@ -1,26 +1,27 @@
 package main
 
 import (
-	"delivery/api/v1/handler/deliveryhandler"
-	"delivery/pkg/clients/courierclient"
-	"delivery/pkg/clients/restaurantclient"
-	"delivery/pkg/db"
-	"delivery/pkg/service/deliveryservice"
-	"delivery/pkg/storage/deliverystorage"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
-	"log"
-	"net/http"
-	"os"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/handler/deliveryhandler"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/courierclient"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/storage/deliverystorage"
 )
 
 const configFile = "/config.yaml"
 
 func main() {
-
 	// Construct the application logger.
 	log := logger.NewLogger(os.Stdout, "main: ")
 
@@ -57,7 +58,8 @@ func run(log *logger.Logger) error {
 		DeliveryStorage:  DeliveryStorage,
 		Logger:           logger.NewLogger(os.Stdout, "service: "),
 		CourierClient:    courierClient,
-		RestaurantClient: restaurantClient})
+		RestaurantClient: restaurantClient,
+	})
 
 	deliveryHandler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
 		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),

@@ -2,24 +2,25 @@ package courierservice_test
 
 import (
 	"bytes"
-	"courier/api/v1/courierapi"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"net/http"
 	"strconv"
 	"testing"
+
+	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 )
 
 const baseAddr = "http://localhost:8081"
 
 func TestInsertCourierEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name        string
-		courierData courierapi.NewCourierRequest
+		courierData courierapi2.NewCourierRequest
 	}{
 		{
 			"Insert courier simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -34,13 +35,12 @@ func TestInsertCourierEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.courierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			insertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(reqBody))
+			insertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -53,8 +53,8 @@ func TestInsertCourierEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", insertCourierResp.StatusCode)
 			}
 
-			insertCourierRespData := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(insertCourierResp.Body, &insertCourierRespData); err != nil {
+			insertCourierRespData := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(insertCourierResp.Body, &insertCourierRespData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -63,7 +63,7 @@ func TestInsertCourierEndpoint(t *testing.T) {
 			}
 
 			if insertCourierRespData.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", insertCourierRespData.ID)
+				t.Errorf("UserID: Expected : > 1, Got: %v", insertCourierRespData.ID)
 			}
 
 			if insertCourierRespData.Firstname != test.courierData.Firstname {
@@ -86,7 +86,7 @@ func TestInsertCourierEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(insertCourierRespData.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(int(insertCourierRespData.ID)), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -95,21 +95,19 @@ func TestInsertCourierEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete Insert courier: %v", err)
 			}
-
 		})
 	}
 }
 
 func TestDeleteCourierEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name        string
-		courierData courierapi.NewCourierRequest
+		courierData courierapi2.NewCourierRequest
 		delRespData string
 	}{
 		{
 			"delete courier simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -125,13 +123,12 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.courierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			resp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(reqBody))
+			resp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -140,8 +137,8 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp.StatusCode)
 			}
 
-			respData := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(resp.Body, &respData); err != nil {
+			respData := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -150,13 +147,13 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 			}
 
 			if respData.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", respData.ID)
+				t.Errorf("UserID: Expected : > 1, Got: %v", respData.ID)
 			}
 			// Deleting courier instance.
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(respData.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(respData.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -167,7 +164,7 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 			}
 
 			delRespData := ""
-			if err = courierapi.DecodeJSON(delResp.Body, &delRespData); err != nil {
+			if err = courierapi2.DecodeJSON(delResp.Body, &delRespData); err != nil {
 				t.Fatal(err)
 			}
 			if delRespData != test.delRespData {
@@ -178,15 +175,14 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 }
 
 func TestUpdateCourierEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name               string
-		initialCourierData courierapi.NewCourierRequest
-		UpdatedCourierData courierapi.UpdateCourierRequest
+		initialCourierData courierapi2.NewCourierRequest
+		UpdatedCourierData courierapi2.UpdateCourierRequest
 	}{
 		{
 			"Update courier simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -195,7 +191,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 				Phone:     "123456789",
 			},
 
-			courierapi.UpdateCourierRequest{
+			courierapi2.UpdateCourierRequest{
 				Firstname: "updatedFName",
 				Lastname:  "updatedLName",
 				Email:     "updatedVasya@gmail.com",
@@ -208,13 +204,12 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test.initialCourierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(reqBody))
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -223,8 +218,8 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			InsertCourierData := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourierData); err != nil {
+			InsertCourierData := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourierData); err != nil {
 				t.Fatal(err)
 			}
 
@@ -233,7 +228,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 			}
 
 			if InsertCourierData.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", InsertCourierData.ID)
+				t.Errorf("UserID: Expected : > 1, Got: %v", InsertCourierData.ID)
 			}
 
 			updateCourierReqBody, err := v1.Encode(test.UpdatedCourierData)
@@ -244,7 +239,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 			client2 := http.DefaultClient
 
 			req, err := http.NewRequest(http.MethodPut,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(InsertCourierData.ID)), bytes.NewBuffer(updateCourierReqBody))
+				baseAddr+"/v1/couriers/"+strconv.Itoa(InsertCourierData.ID), bytes.NewBuffer(updateCourierReqBody))
 			if err != nil {
 				t.Error(err)
 			}
@@ -254,8 +249,8 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 				t.Errorf("Could not update courier: %v", err)
 			}
 
-			updatedCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
+			updatedCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -264,7 +259,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 			}
 
 			if updatedCourier.ID != InsertCourierData.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", InsertCourierData.ID, updatedCourier.Firstname)
+				t.Errorf("UserID: Expected: %v, Got: %v", InsertCourierData.ID, updatedCourier.Firstname)
 			}
 
 			if updatedCourier.Firstname != test.UpdatedCourierData.Firstname {
@@ -287,7 +282,7 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(InsertCourierData.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(InsertCourierData.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -301,14 +296,13 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 }
 
 func TestUpdateCourierAvailableEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name               string
-		initialCourierData courierapi.NewCourierRequest
+		initialCourierData courierapi2.NewCourierRequest
 	}{
 		{
 			"Update courier available simple test",
-			courierapi.NewCourierRequest{
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "vasya",
@@ -323,13 +317,12 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			InsertCourierReqBody, err := v1.Encode(test.initialCourierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -338,8 +331,8 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			InsertCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
+			InsertCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -348,13 +341,13 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 			}
 
 			if InsertCourier.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", InsertCourier.ID)
+				t.Errorf("UserID: Expected : > 1, Got: %v", InsertCourier.ID)
 			}
 
 			client2 := http.DefaultClient
 
 			req, err := http.NewRequest(http.MethodPut,
-				baseAddr+"/v1/courier/available/"+strconv.Itoa(int(InsertCourier.ID))+"?available="+strconv.FormatBool(!InsertCourier.Available), nil)
+				baseAddr+"/v1/couriers-available/"+strconv.Itoa(InsertCourier.ID)+"?available="+strconv.FormatBool(!InsertCourier.Available), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -364,8 +357,8 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 				t.Errorf("Could not update courier: %v", err)
 			}
 
-			updatedCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
+			updatedCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(updateCourierResp.Body, &updatedCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -374,7 +367,7 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 			}
 
 			if updatedCourier.ID != InsertCourier.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", InsertCourier.ID, updatedCourier.Firstname)
+				t.Errorf("UserID: Expected: %v, Got: %v", InsertCourier.ID, updatedCourier.Firstname)
 			}
 
 			if updatedCourier.Available == InsertCourier.Available {
@@ -385,7 +378,7 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(InsertCourier.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(InsertCourier.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -398,16 +391,15 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 	}
 }
 
-func TestGetAllCourierEndpoint(t *testing.T) {
-
+func TestGetCourierListEndpoint(t *testing.T) {
 	tests := []struct {
 		name            string
-		courierDataList []courierapi.NewCourierRequest
+		courierDataList []courierapi2.NewCourierRequest
 	}{
 		{
-			"TestGetAllCourierEndpoint test",
-			[]courierapi.NewCourierRequest{
-				courierapi.NewCourierRequest{
+			"TestGetCourierListEndpoint test",
+			[]courierapi2.NewCourierRequest{
+				{
 					Username:  "TestUsername",
 					Password:  "TestPassword",
 					Firstname: "courier1FName",
@@ -416,7 +408,7 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 					Phone:     "111111111",
 				},
 
-				courierapi.NewCourierRequest{
+				{
 					Username:  "TestUsername2",
 					Password:  "TestPassword",
 					Firstname: "courier2FName",
@@ -424,15 +416,15 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 					Email:     "courier2@gmail.com",
 					Phone:     "222222222",
 				},
-			}},
+			},
+		},
 	}
 
 	for _, currentTest := range tests {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
-			var InsertCourierList []courierapi.CourierResponse
+			var InsertCourierList []courierapi2.CourierResponse
 
 			for _, courier := range test.courierDataList {
 
@@ -441,7 +433,7 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+				InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -450,8 +442,8 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 					t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 				}
 
-				InsertCourier := courierapi.CourierResponse{}
-				if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
+				InsertCourier := courierapi2.CourierResponse{}
+				if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
 					t.Fatal(err)
 				}
 
@@ -462,7 +454,7 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 				InsertCourierList = append(InsertCourierList, InsertCourier)
 			}
 
-			getAllCourierResp, err := http.Get(baseAddr + "/v1/courier/all")
+			getAllCourierResp, err := http.Get(baseAddr + "/v1/couriers")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -471,8 +463,8 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getAllCourierResp.StatusCode)
 			}
 
-			getAllCourier := courierapi.ReturnCourierResponseList{}
-			if err = courierapi.DecodeJSON(getAllCourierResp.Body, &getAllCourier); err != nil {
+			getAllCourier := courierapi2.CourierResponseList{}
+			if err = courierapi2.DecodeJSON(getAllCourierResp.Body, &getAllCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -491,7 +483,7 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 				deleter := http.DefaultClient
 
 				delReq, err := http.NewRequest(http.MethodDelete,
-					baseAddr+"/v1/courier/"+strconv.Itoa(int(InsertCourier.ID)), nil)
+					baseAddr+"/v1/couriers/"+strconv.Itoa(InsertCourier.ID), nil)
 				if err != nil {
 					t.Error(err)
 				}
@@ -507,34 +499,33 @@ func TestGetAllCourierEndpoint(t *testing.T) {
 }
 
 func TestGetCourierEndpoint(t *testing.T) {
-
 	tests := []struct {
 		name        string
-		courierData courierapi.NewCourierRequest
+		courierData courierapi2.NewCourierRequest
 	}{
 		{
-			"TestGetAllCourierEndpoint test",
-			courierapi.NewCourierRequest{
+			"TestGetCourierListEndpoint test",
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "courier1FName",
 				Lastname:  "courier1LName",
 				Email:     "courier1@gmail.com",
 				Phone:     "111111111",
-			}},
+			},
+		},
 	}
 
 	for _, currentTest := range tests {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			InsertCoruierReqBody, err := v1.Encode(test.courierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(InsertCoruierReqBody))
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCoruierReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -543,8 +534,8 @@ func TestGetCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			InsertCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
+			InsertCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &InsertCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -552,7 +543,7 @@ func TestGetCourierEndpoint(t *testing.T) {
 				t.Error(err)
 			}
 
-			getCourierResp, err := http.Get(baseAddr + "/v1/courier/" + strconv.Itoa(int(InsertCourier.ID)))
+			getCourierResp, err := http.Get(baseAddr + "/v1/couriers/" + strconv.Itoa(InsertCourier.ID))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -561,8 +552,8 @@ func TestGetCourierEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", getCourierResp.StatusCode)
 			}
 
-			getCourier := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(getCourierResp.Body, &getCourier); err != nil {
+			getCourier := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(getCourierResp.Body, &getCourier); err != nil {
 				t.Fatal(err)
 			}
 
@@ -590,7 +581,7 @@ func TestGetCourierEndpoint(t *testing.T) {
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(InsertCourier.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(InsertCourier.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -599,21 +590,19 @@ func TestGetCourierEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete Insert courier: %v", err)
 			}
-
 		})
 	}
 }
 
-func TestInsertCourierLocationEndpoint(t *testing.T) {
-
+func TestInsertLocationEndpoint(t *testing.T) {
 	tests := []struct {
-		name                string
-		courierData         courierapi.NewCourierRequest
-		courierLocationData courierapi.NewCourierLocationRequest
+		name         string
+		courierData  courierapi2.NewCourierRequest
+		locationData courierapi2.NewLocationRequest
 	}{
 		{
-			"InsertCourierLocationEndpoint simple test",
-			courierapi.NewCourierRequest{
+			"InsertLocationEndpoint simple test",
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -621,8 +610,8 @@ func TestInsertCourierLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewCourierLocationRequest{
-				Altitude:   "987654321",
+			courierapi2.NewLocationRequest{
+				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -639,13 +628,12 @@ func TestInsertCourierLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			InsertCourierReqBody, err := v1.Encode(test.courierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -654,78 +642,76 @@ func TestInsertCourierLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
-
 			}
 
-			courierLocationReqBody, err := v1.Encode(test.courierLocationData)
+			locationReqBody, err := v1.Encode(test.locationData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			courierLocationResp, err := http.Post(baseAddr+"/v1/courier/location/"+strconv.Itoa(int(courierInsert.ID)),
-				"application/json", bytes.NewBuffer(courierLocationReqBody))
-
+			locationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
+				"application/json", bytes.NewBuffer(locationReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if courierLocationResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", courierLocationResp.StatusCode)
+			if locationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", locationResp.StatusCode)
 			}
 
-			courierLocation := courierapi.CourierLocationResponse{}
-			if err = courierapi.DecodeJSON(courierLocationResp.Body, &courierLocation); err != nil {
+			location := courierapi2.LocationResponse{}
+			if err = courierapi2.DecodeJSON(locationResp.Body, &location); err != nil {
 				t.Fatal(err)
 			}
 
-			if err := courierLocationResp.Body.Close(); err != nil {
+			if err := locationResp.Body.Close(); err != nil {
 				t.Error(err)
 			}
 
-			if courierLocation.CourierID < 1 {
-				t.Errorf("CourierID: Expected : > 1, Got: %v", courierLocation.CourierID)
+			if location.UserID < 1 {
+				t.Errorf("UserID: Expected : > 1, Got: %v", location.UserID)
 			}
 
-			if courierLocation.Altitude != test.courierLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.courierLocationData.Altitude, courierLocation.Altitude)
+			if location.Latitude != test.locationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.locationData.Latitude, location.Latitude)
 			}
 
-			if courierLocation.Longitude != test.courierLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.courierLocationData.Longitude, courierLocation.Longitude)
+			if location.Longitude != test.locationData.Longitude {
+				t.Errorf("Longitude: Expected: %s, Got: %s", test.locationData.Longitude, location.Longitude)
 			}
 
-			if courierLocation.Country != test.courierLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.courierLocationData.Country, courierLocation.Country)
+			if location.Country != test.locationData.Country {
+				t.Errorf("Country: Expected: %s, Got: %s", test.locationData.Country, location.Country)
 			}
 
-			if courierLocation.Region != test.courierLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.courierLocationData.Region, courierLocation.Region)
+			if location.Region != test.locationData.Region {
+				t.Errorf("Region: Expected: %s, Got: %s", test.locationData.Region, location.Region)
 			}
 
-			if courierLocation.Street != test.courierLocationData.Street {
-				t.Errorf("Street: Expected: %s, Got: %s", test.courierLocationData.Street, courierLocation.Street)
+			if location.Street != test.locationData.Street {
+				t.Errorf("Street: Expected: %s, Got: %s", test.locationData.Street, location.Street)
 			}
 
-			if courierLocation.HomeNumber != test.courierLocationData.HomeNumber {
-				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.courierLocationData.HomeNumber, courierLocation.HomeNumber)
+			if location.HomeNumber != test.locationData.HomeNumber {
+				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.locationData.HomeNumber, location.HomeNumber)
 			}
 
-			if courierLocation.Floor != test.courierLocationData.Floor {
-				t.Errorf("Floor: Expected: %s, Got: %s", test.courierLocationData.Floor, courierLocation.Floor)
+			if location.Floor != test.locationData.Floor {
+				t.Errorf("Floor: Expected: %s, Got: %s", test.locationData.Floor, location.Floor)
 			}
 
-			if courierLocation.Door != test.courierLocationData.Door {
-				t.Errorf("Door: Expected: %s, Got: %s", test.courierLocationData.Door, courierLocation.Door)
+			if location.Door != test.locationData.Door {
+				t.Errorf("Door: Expected: %s, Got: %s", test.locationData.Door, location.Door)
 			}
 
 			// Deleting courier instance.
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(courierInsert.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -734,22 +720,20 @@ func TestInsertCourierLocationEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete Insert courier: %v", err)
 			}
-
 		})
 	}
 }
 
-func TestUpdateCourierLocationEndpoint(t *testing.T) {
-
+func TestUpdateLocationEndpoint(t *testing.T) {
 	tests := []struct {
-		name                       string
-		courierData                courierapi.NewCourierRequest
-		courierLocationInitialData courierapi.NewCourierLocationRequest
-		courierLocationUpdatedData courierapi.UpdateCourierLocationRequest
+		name                string
+		courierData         courierapi2.NewCourierRequest
+		locationInitialData courierapi2.NewLocationRequest
+		locationUpdatedData courierapi2.UpdateLocationRequest
 	}{
 		{
-			"UpdateCourierLocationEndpoint simple test",
-			courierapi.NewCourierRequest{
+			"UpdateLocationEndpoint simple test",
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -757,8 +741,8 @@ func TestUpdateCourierLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewCourierLocationRequest{
-				Altitude:   "987654321",
+			courierapi2.NewLocationRequest{
+				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -768,8 +752,8 @@ func TestUpdateCourierLocationEndpoint(t *testing.T) {
 				Floor:      "TestFloor",
 				Door:       "TestDoor",
 			},
-			courierapi.UpdateCourierLocationRequest{
-				Altitude:   "123456789",
+			courierapi2.UpdateLocationRequest{
+				Latitude:   "123456789",
 				Longitude:  "987654321",
 				Country:    "UpdatedTestCountry",
 				City:       "UpdatedTestCity",
@@ -786,13 +770,12 @@ func TestUpdateCourierLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			InsertCourierReqBody, err := v1.Encode(test.courierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -801,105 +784,100 @@ func TestUpdateCourierLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
-
 			}
 
-			courierLocationReqBody, err := v1.Encode(test.courierLocationInitialData)
+			locationReqBody, err := v1.Encode(test.locationInitialData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			courierLocationResp, err := http.Post(baseAddr+"/v1/courier/location/"+strconv.Itoa(int(courierInsert.ID)),
-				"application/json", bytes.NewBuffer(courierLocationReqBody))
-
+			locationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
+				"application/json", bytes.NewBuffer(locationReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if courierLocationResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", courierLocationResp.StatusCode)
+			if locationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", locationResp.StatusCode)
 			}
 
-			if err := courierLocationResp.Body.Close(); err != nil {
+			if err := locationResp.Body.Close(); err != nil {
 				t.Error(err)
 			}
 
-			courierLocationUpdateReqBody, err := v1.Encode(test.courierLocationUpdatedData)
+			locationUpdateReqBody, err := v1.Encode(test.locationUpdatedData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			client := http.Client{}
 
-			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/courier/location/"+strconv.Itoa(int(courierInsert.ID)), bytes.NewBuffer(courierLocationUpdateReqBody))
-
+			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID), bytes.NewBuffer(locationUpdateReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
-			courierLocationUpdateResp, err := client.Do(req)
-
+			locationUpdateResp, err := client.Do(req)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if courierLocationUpdateResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", courierLocationUpdateResp.StatusCode)
+			if locationUpdateResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", locationUpdateResp.StatusCode)
 			}
 
-			courierLocationUpdated := courierapi.CourierLocationResponse{}
-			if err = courierapi.DecodeJSON(courierLocationUpdateResp.Body, &courierLocationUpdated); err != nil {
+			locationUpdated := courierapi2.LocationResponse{}
+			if err = courierapi2.DecodeJSON(locationUpdateResp.Body, &locationUpdated); err != nil {
 				t.Fatal(err)
-
 			}
 
-			if err := courierLocationUpdateResp.Body.Close(); err != nil {
+			if err := locationUpdateResp.Body.Close(); err != nil {
 				t.Error(err)
 			}
 
-			if courierLocationUpdated.CourierID != courierInsert.ID {
-				t.Errorf("CourierID: Expected :  %v , Got: %v", courierInsert.ID, courierLocationUpdated.CourierID)
+			if locationUpdated.UserID != courierInsert.ID {
+				t.Errorf("UserID: Expected :  %v , Got: %v", courierInsert.ID, locationUpdated.UserID)
 			}
 
-			if courierLocationUpdated.Altitude != test.courierLocationUpdatedData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.courierLocationUpdatedData.Altitude, courierLocationUpdated.Altitude)
+			if locationUpdated.Latitude != test.locationUpdatedData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.locationUpdatedData.Latitude, locationUpdated.Latitude)
 			}
 
-			if courierLocationUpdated.Longitude != test.courierLocationUpdatedData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.courierLocationUpdatedData.Longitude, courierLocationUpdated.Longitude)
+			if locationUpdated.Longitude != test.locationUpdatedData.Longitude {
+				t.Errorf("Longitude: Expected: %s, Got: %s", test.locationUpdatedData.Longitude, locationUpdated.Longitude)
 			}
 
-			if courierLocationUpdated.Country != test.courierLocationUpdatedData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.courierLocationUpdatedData.Country, courierLocationUpdated.Country)
+			if locationUpdated.Country != test.locationUpdatedData.Country {
+				t.Errorf("Country: Expected: %s, Got: %s", test.locationUpdatedData.Country, locationUpdated.Country)
 			}
 
-			if courierLocationUpdated.Region != test.courierLocationUpdatedData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.courierLocationUpdatedData.Region, courierLocationUpdated.Region)
+			if locationUpdated.Region != test.locationUpdatedData.Region {
+				t.Errorf("Region: Expected: %s, Got: %s", test.locationUpdatedData.Region, locationUpdated.Region)
 			}
 
-			if courierLocationUpdated.Street != test.courierLocationUpdatedData.Street {
-				t.Errorf("Street: Expected: %s, Got: %s", test.courierLocationUpdatedData.Street, courierLocationUpdated.Street)
+			if locationUpdated.Street != test.locationUpdatedData.Street {
+				t.Errorf("Street: Expected: %s, Got: %s", test.locationUpdatedData.Street, locationUpdated.Street)
 			}
 
-			if courierLocationUpdated.HomeNumber != test.courierLocationUpdatedData.HomeNumber {
-				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.courierLocationUpdatedData.HomeNumber, courierLocationUpdated.HomeNumber)
+			if locationUpdated.HomeNumber != test.locationUpdatedData.HomeNumber {
+				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.locationUpdatedData.HomeNumber, locationUpdated.HomeNumber)
 			}
 
-			if courierLocationUpdated.Floor != test.courierLocationUpdatedData.Floor {
-				t.Errorf("Floor: Expected: %s, Got: %s", test.courierLocationUpdatedData.Floor, courierLocationUpdated.Floor)
+			if locationUpdated.Floor != test.locationUpdatedData.Floor {
+				t.Errorf("Floor: Expected: %s, Got: %s", test.locationUpdatedData.Floor, locationUpdated.Floor)
 			}
 
-			if courierLocationUpdated.Door != test.courierLocationUpdatedData.Door {
-				t.Errorf("Door: Expected: %s, Got: %s", test.courierLocationUpdatedData.Door, courierLocationUpdated.Door)
+			if locationUpdated.Door != test.locationUpdatedData.Door {
+				t.Errorf("Door: Expected: %s, Got: %s", test.locationUpdatedData.Door, locationUpdated.Door)
 			}
 
 			// Deleting courier instance.
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(courierInsert.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -908,21 +886,19 @@ func TestUpdateCourierLocationEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete Insert courier: %v", err)
 			}
-
 		})
 	}
 }
 
-func TestGetCourierLocationEndpoint(t *testing.T) {
-
+func TestGetLocationEndpoint(t *testing.T) {
 	tests := []struct {
-		name                string
-		courierData         courierapi.NewCourierRequest
-		courierLocationData courierapi.NewCourierLocationRequest
+		name         string
+		courierData  courierapi2.NewCourierRequest
+		locationData courierapi2.NewLocationRequest
 	}{
 		{
-			"GetCourierLocationEndpoint simple test",
-			courierapi.NewCourierRequest{
+			"GetLocationEndpoint simple test",
+			courierapi2.NewCourierRequest{
 				Username:  "TestUsername",
 				Password:  "TestPassword",
 				Firstname: "TestFName",
@@ -930,8 +906,8 @@ func TestGetCourierLocationEndpoint(t *testing.T) {
 				Email:     "TestEmail",
 				Phone:     "TestPhone",
 			},
-			courierapi.NewCourierLocationRequest{
-				Altitude:   "987654321",
+			courierapi2.NewLocationRequest{
+				Latitude:   "987654321",
 				Longitude:  "123456789",
 				Country:    "TestCountry",
 				City:       "TestCity",
@@ -948,13 +924,12 @@ func TestGetCourierLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-
 			InsertCourierReqBody, err := v1.Encode(test.courierData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierResp, err := http.Post(baseAddr+"/v1/courier", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -963,88 +938,85 @@ func TestGetCourierLocationEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
 			}
 
-			courierInsert := courierapi.CourierResponse{}
-			if err = courierapi.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
 				t.Fatal(err)
-
 			}
 
-			InsertCourierLocationReqBody, err := v1.Encode(test.courierLocationData)
+			InsertLocationReqBody, err := v1.Encode(test.locationData)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			InsertCourierLocationResp, err := http.Post(baseAddr+"/v1/courier/location/"+strconv.Itoa(int(courierInsert.ID)),
-				"application/json", bytes.NewBuffer(InsertCourierLocationReqBody))
-
+			InsertLocationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
+				"application/json", bytes.NewBuffer(InsertLocationReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if InsertCourierLocationResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", InsertCourierLocationResp.StatusCode)
+			if InsertLocationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", InsertLocationResp.StatusCode)
 			}
 
-			getCoruierLocationResp, err := http.Get(baseAddr + "/v1/courier/location/" + strconv.Itoa(int(courierInsert.ID)))
-
+			getCourierLocationResp, err := http.Get(baseAddr + "/v1/locations/" + strconv.Itoa(courierInsert.ID))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if getCoruierLocationResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", InsertCourierLocationResp.StatusCode)
+			if getCourierLocationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", getCourierLocationResp.StatusCode)
 			}
 
-			getCourierLocation := courierapi.CourierLocationResponse{}
-			if err = courierapi.DecodeJSON(getCoruierLocationResp.Body, &getCourierLocation); err != nil {
+			getLocation := courierapi2.LocationResponse{}
+			if err = courierapi2.DecodeJSON(getCourierLocationResp.Body, &getLocation); err != nil {
 				t.Fatal(err)
 			}
 
-			if err := getCoruierLocationResp.Body.Close(); err != nil {
+			if err := getCourierLocationResp.Body.Close(); err != nil {
 				t.Error(err)
 			}
 
-			if getCourierLocation.CourierID != courierInsert.ID {
-				t.Errorf("CourierID: Expected : %v, Got: %v", courierInsert.ID, getCourierLocation.CourierID)
+			if getLocation.UserID != courierInsert.ID {
+				t.Errorf("UserID: Expected : %v, Got: %v", courierInsert.ID, getLocation.UserID)
 			}
 
-			if getCourierLocation.Altitude != test.courierLocationData.Altitude {
-				t.Errorf("Altitude: Expected: %s, Got: %s", test.courierLocationData.Altitude, getCourierLocation.Altitude)
+			if getLocation.Latitude != test.locationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.locationData.Latitude, getLocation.Latitude)
 			}
 
-			if getCourierLocation.Longitude != test.courierLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.courierLocationData.Longitude, getCourierLocation.Longitude)
+			if getLocation.Longitude != test.locationData.Longitude {
+				t.Errorf("Longitude: Expected: %s, Got: %s", test.locationData.Longitude, getLocation.Longitude)
 			}
 
-			if getCourierLocation.Country != test.courierLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.courierLocationData.Country, getCourierLocation.Country)
+			if getLocation.Country != test.locationData.Country {
+				t.Errorf("Country: Expected: %s, Got: %s", test.locationData.Country, getLocation.Country)
 			}
 
-			if getCourierLocation.Region != test.courierLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.courierLocationData.Region, getCourierLocation.Region)
+			if getLocation.Region != test.locationData.Region {
+				t.Errorf("Region: Expected: %s, Got: %s", test.locationData.Region, getLocation.Region)
 			}
 
-			if getCourierLocation.Street != test.courierLocationData.Street {
-				t.Errorf("Street: Expected: %s, Got: %s", test.courierLocationData.Street, getCourierLocation.Street)
+			if getLocation.Street != test.locationData.Street {
+				t.Errorf("Street: Expected: %s, Got: %s", test.locationData.Street, getLocation.Street)
 			}
 
-			if getCourierLocation.HomeNumber != test.courierLocationData.HomeNumber {
-				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.courierLocationData.HomeNumber, getCourierLocation.HomeNumber)
+			if getLocation.HomeNumber != test.locationData.HomeNumber {
+				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.locationData.HomeNumber, getLocation.HomeNumber)
 			}
 
-			if getCourierLocation.Floor != test.courierLocationData.Floor {
-				t.Errorf("Floor: Expected: %s, Got: %s", test.courierLocationData.Floor, getCourierLocation.Floor)
+			if getLocation.Floor != test.locationData.Floor {
+				t.Errorf("Floor: Expected: %s, Got: %s", test.locationData.Floor, getLocation.Floor)
 			}
 
-			if getCourierLocation.Door != test.courierLocationData.Door {
-				t.Errorf("Door: Expected: %s, Got: %s", test.courierLocationData.Door, getCourierLocation.Door)
+			if getLocation.Door != test.locationData.Door {
+				t.Errorf("Door: Expected: %s, Got: %s", test.locationData.Door, getLocation.Door)
 			}
 
 			// Deleting courier instance.
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/courier/"+strconv.Itoa(int(courierInsert.ID)), nil)
+				baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
@@ -1053,7 +1025,148 @@ func TestGetCourierLocationEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("Could not delete Insert courier: %v", err)
 			}
+		})
+	}
+}
 
+func TestGetLocationListEndpoint(t *testing.T) {
+	tests := []struct {
+		name         string
+		courierData  courierapi2.NewCourierRequest
+		locationData courierapi2.NewLocationRequest
+	}{
+		{
+			"GetLocationListEndpoint simple test",
+			courierapi2.NewCourierRequest{
+				Username:  "TestUsername",
+				Password:  "TestPassword",
+				Firstname: "TestFName",
+				Lastname:  "TestLName",
+				Email:     "TestEmail",
+				Phone:     "TestPhone",
+			},
+			courierapi2.NewLocationRequest{
+				Latitude:   "987654321",
+				Longitude:  "123456789",
+				Country:    "TestCountry",
+				City:       "TestCity",
+				Region:     "",
+				Street:     "",
+				HomeNumber: "",
+				Floor:      "",
+				Door:       "",
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			InsertCourierReqBody, err := v1.Encode(test.courierData)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			InsertCourierResp, err := http.Post(baseAddr+"/v1/couriers", "application/json", bytes.NewBuffer(InsertCourierReqBody))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if InsertCourierResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", InsertCourierResp.StatusCode)
+			}
+
+			courierInsert := courierapi2.CourierResponse{}
+			if err = courierapi2.DecodeJSON(InsertCourierResp.Body, &courierInsert); err != nil {
+				t.Fatal(err)
+			}
+
+			InsertLocationReqBody, err := v1.Encode(test.locationData)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			InsertLocationResp, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(courierInsert.ID),
+				"application/json", bytes.NewBuffer(InsertLocationReqBody))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if InsertLocationResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", InsertLocationResp.StatusCode)
+			}
+
+			getLocationListResp, err := http.Get(baseAddr + "/v1/locations?city=" + test.locationData.City)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if getLocationListResp.StatusCode != http.StatusOK {
+				t.Fatalf("Response status: %d", getLocationListResp.StatusCode)
+			}
+
+			getLocationList := courierapi2.LocationResponseList{}
+			if err = courierapi2.DecodeJSON(getLocationListResp.Body, &getLocationList); err != nil {
+				t.Fatal(err)
+			}
+
+			if err := getLocationListResp.Body.Close(); err != nil {
+				t.Error(err)
+			}
+
+			for _, getLocation := range getLocationList.LocationResponseList {
+
+				if getLocation.UserID != courierInsert.ID {
+					t.Errorf("UserID: Expected : %v, Got: %v", courierInsert.ID, getLocation.UserID)
+				}
+
+				if getLocation.Latitude != test.locationData.Latitude {
+					t.Errorf("Latitude: Expected: %s, Got: %s", test.locationData.Latitude, getLocation.Latitude)
+				}
+
+				if getLocation.Longitude != test.locationData.Longitude {
+					t.Errorf("Longitude: Expected: %s, Got: %s", test.locationData.Longitude, getLocation.Longitude)
+				}
+
+				if getLocation.Country != test.locationData.Country {
+					t.Errorf("Country: Expected: %s, Got: %s", test.locationData.Country, getLocation.Country)
+				}
+
+				if getLocation.Region != test.locationData.Region {
+					t.Errorf("Region: Expected: %s, Got: %s", test.locationData.Region, getLocation.Region)
+				}
+
+				if getLocation.Street != test.locationData.Street {
+					t.Errorf("Street: Expected: %s, Got: %s", test.locationData.Street, getLocation.Street)
+				}
+
+				if getLocation.HomeNumber != test.locationData.HomeNumber {
+					t.Errorf("HomeNumber: Expected: %s, Got: %s", test.locationData.HomeNumber, getLocation.HomeNumber)
+				}
+
+				if getLocation.Floor != test.locationData.Floor {
+					t.Errorf("Floor: Expected: %s, Got: %s", test.locationData.Floor, getLocation.Floor)
+				}
+
+				if getLocation.Door != test.locationData.Door {
+					t.Errorf("Door: Expected: %s, Got: %s", test.locationData.Door, getLocation.Door)
+				}
+			}
+
+			// Deleting courier instance.
+			deleter := http.DefaultClient
+
+			delReq, err := http.NewRequest(http.MethodDelete,
+				baseAddr+"/v1/couriers/"+strconv.Itoa(courierInsert.ID), nil)
+			if err != nil {
+				t.Error(err)
+			}
+
+			_, err = deleter.Do(delReq)
+			if err != nil {
+				t.Errorf("Could not delete Insert courier: %v", err)
+			}
 		})
 	}
 }

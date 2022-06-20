@@ -1,8 +1,9 @@
 package courierhandler
 
 import (
-	"courier/api/v1/courierapi"
-	"courier/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 func requestToNewCourier(req *courierapi.NewCourierRequest) domain.Courier {
@@ -26,9 +27,9 @@ func requestToUpdateCourier(req *courierapi.UpdateCourierRequest) domain.Courier
 	}
 }
 
-func requestToNewCourierLocation(req *courierapi.NewCourierLocationRequest) domain.CourierLocation {
-	return domain.CourierLocation{
-		Altitude:   req.Altitude,
+func requestToNewLocation(req *courierapi.NewLocationRequest) domain.Location {
+	return domain.Location{
+		Latitude:   req.Latitude,
 		Longitude:  req.Longitude,
 		Country:    req.Country,
 		City:       req.City,
@@ -40,9 +41,9 @@ func requestToNewCourierLocation(req *courierapi.NewCourierLocationRequest) doma
 	}
 }
 
-func requestToUpdateConsumerLocation(req *courierapi.UpdateCourierLocationRequest) domain.CourierLocation {
-	return domain.CourierLocation{
-		Altitude:   req.Altitude,
+func requestToUpdateLocation(req *courierapi.UpdateLocationRequest) domain.Location {
+	return domain.Location{
+		Latitude:   req.Latitude,
 		Longitude:  req.Longitude,
 		Country:    req.Country,
 		City:       req.City,

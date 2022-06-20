@@ -1,7 +1,7 @@
 package domain
 
 type ConsumerLocation struct {
-	ConsumerID uint64
+	ConsumerID int
 	Latitude   string
 	Longitude  string
 	Country    string
