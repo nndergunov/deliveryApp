@@ -2,7 +2,6 @@ package restaurantclient
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -25,19 +24,9 @@ func (r RestaurantClient) CheckIfAvailable(restaurantID int) (bool, error) {
 		return false, fmt.Errorf("getting restaurant: %w", err)
 	}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return false, fmt.Errorf("getting response body: %w", err)
-	}
-
-	err = resp.Body.Close()
-	if err != nil {
-		return false, fmt.Errorf("closing response body: %w", err)
-	}
-
 	restaurant := new(restaurantapi.ReturnRestaurant)
 
-	err = v1.Decode(respBody, restaurant)
+	err = v1.DecodeResponse(resp, restaurant)
 	if err != nil {
 		return false, fmt.Errorf("decoding response: %w", err)
 	}
@@ -51,19 +40,9 @@ func (r RestaurantClient) CalculateOrderPrice(order domain.Order) (float64, erro
 		return 0, fmt.Errorf("getting menu: %w", err)
 	}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return 0, fmt.Errorf("getting response body: %w", err)
-	}
-
-	err = resp.Body.Close()
-	if err != nil {
-		return 0, fmt.Errorf("closing response body: %w", err)
-	}
-
 	menu := new(restaurantapi.ReturnMenu)
 
-	err = v1.Decode(respBody, menu)
+	err = v1.DecodeResponse(resp, menu)
 	if err != nil {
 		return 0, fmt.Errorf("decoding response: %w", err)
 	}
