@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
 type CourierClient struct {
@@ -16,35 +17,68 @@ func NewCourierClient(url string) *CourierClient {
 	return &CourierClient{courierURL: url}
 }
 
-func (a CourierClient) GetCourier(courierID int) (*domain.Courier, error) {
-	_, err := http.Get(a.courierURL + "v1/couriers/" + strconv.Itoa(courierID))
+func (a CourierClient) GetCourier(courierID int) (*courierapi.CourierResponse, error) {
+	resp, err := http.Get(a.courierURL + "v1/couriers/" + strconv.Itoa(courierID))
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
 
-	// todo: add
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
+	}
 
-	return &domain.Courier{}, nil
+	courierData := courierapi.CourierResponse{}
+	if err = deliveryapi.DecodeJSON(resp.Body, &courierData); err != nil {
+		return nil, fmt.Errorf("decoding : %w", err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+
+	return &courierData, nil
 }
 
-func (a CourierClient) GetNearestCourier(location *domain.Location, radius int) (*domain.Courier, error) {
-	_, err := http.Get(a.courierURL + "v1/courier/nearest")
+func (a CourierClient) GetLocation(city string) (*courierapi.LocationResponseList, error) {
+	resp, err := http.Get(a.courierURL + "v1/locations?city=" + city)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
 
-	// todo: add this rout to courier service
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
+	}
 
-	return &domain.Courier{}, nil
+	locationDataList := courierapi.LocationResponseList{}
+	if err = deliveryapi.DecodeJSON(resp.Body, &locationDataList); err != nil {
+		return nil, fmt.Errorf("decoding : %w", err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+
+	return &locationDataList, nil
 }
 
-func (a CourierClient) UpdateCourierAvailable(courierID int, available bool) (*domain.Courier, error) {
-	_, err := http.Get(a.courierURL + "v1/couriers/available/" + strconv.Itoa(courierID))
+func (a CourierClient) UpdateCourierAvailable(courierID int, available string) (*courierapi.CourierResponse, error) {
+	resp, err := http.Get(a.courierURL + "v1/couriers-available/" + strconv.Itoa(courierID) + "?available=" + available)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
 
-	// todo: add
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
+	}
 
-	return &domain.Courier{}, nil
+	courierData := courierapi.CourierResponse{}
+	if err = deliveryapi.DecodeJSON(resp.Body, &courierData); err != nil {
+		return nil, fmt.Errorf("decoding : %w", err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+
+	return &courierData, nil
 }

@@ -2,6 +2,7 @@ package deliveryservice
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 
 // DeliveryService is the interface for the user service.
 type DeliveryService interface {
-	GetEstimateDelivery(estimate *domain.EstimateDeliveryRequest) (*domain.EstimateDeliveryResponse, error)
+	GetEstimateDelivery(consumerID, restaurantID string) (*domain.EstimateDeliveryResponse, error)
 	AssignOrder(orderID string, order *domain.Order) (*domain.AssignOrder, error)
 }
 
@@ -49,13 +50,23 @@ func NewDeliveryService(p Params) DeliveryService {
 }
 
 // GetEstimateDelivery get delivery time and cost based on location from and to. Calculating based on average delivery time in the city by car
-func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryRequest) (*domain.EstimateDeliveryResponse, error) {
-	consumerLocation, err := c.consumerClient.GetConsumerLocation(estimate.ConsumerID)
+func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (*domain.EstimateDeliveryResponse, error) {
+	consumerIDInt, err := strconv.Atoi(consumerID)
+	if err != nil {
+		return nil, fmt.Errorf("wrong consumer_id err: %q", err)
+	}
+
+	restaurantIDInt, err := strconv.Atoi(restaurantID)
+	if err != nil {
+		return nil, fmt.Errorf("wrong restaurant_id err: %q", err)
+	}
+
+	consumerLocation, err := c.consumerClient.GetLocation(consumerIDInt)
 	if err != nil {
 		return nil, systemErr
 	}
 
-	restaurant, err := c.restaurantClient.GetRestaurant(estimate.RestaurantID)
+	restaurant, err := c.restaurantClient.GetRestaurant(restaurantIDInt)
 	if err != nil {
 		return nil, systemErr
 	}
@@ -65,10 +76,11 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 	if consumerLocation == nil || restaurant == nil {
 		return nil, errWrongLocData
 	}
-	if consumerLocation.Latitude != "" || consumerLocation.Longitude != "" ||
-		restaurant.Location.Latitude != "" || restaurant.Location.Longitude != "" {
 
-		fromLocationLatF, err := strconv.ParseFloat(consumerLocation.Latitude, 10)
+	if consumerLocation.Altitude != "" || consumerLocation.Longitude != "" ||
+		restaurant.Latitude != 0 || restaurant.Longitude != 0 {
+
+		fromLocationLatF, err := strconv.ParseFloat(consumerLocation.Altitude, 10)
 		if err != nil {
 			c.logger.Println(err)
 			return nil, errWrongFromLocLatType
@@ -80,22 +92,14 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 			return nil, errWrongFromLonLatType
 		}
 
-		toLocationLatF, err := strconv.ParseFloat(restaurant.Location.Latitude, 64)
-		if err != nil {
-			c.logger.Println(err)
-			return nil, errWrongToLocLatType
-		}
+		toLocationLatF := restaurant.Latitude
 
-		toLocationLonF, err := strconv.ParseFloat(restaurant.Location.Longitude, 64)
-		if err != nil {
-			c.logger.Println(err)
-			return nil, errWrongToLonLatType
-		}
+		toLocationLonF := restaurant.Longitude
 
-		distanceKm, err := tools.VincentyDistance(domain.Coord{
+		distanceKm, err := tools.VincentyDistance(domain.Coordinate{
 			Lat: fromLocationLatF,
 			Lon: fromLocationLonF,
-		}, domain.Coord{
+		}, domain.Coordinate{
 			Lat: toLocationLatF,
 			Lon: toLocationLonF,
 		})
@@ -117,7 +121,7 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 	}
 
 	// getting time by address
-	if consumerLocation.City != "" || restaurant.Location.City != "" {
+	if consumerLocation.City != "" || restaurant.City != "" {
 
 		fromAddress := consumerLocation.City + consumerLocation.Region + consumerLocation.Street + consumerLocation.HomeNumber
 		fromAddressCoordinate, err := tools.GetCoordinates(fromAddress)
@@ -126,17 +130,17 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 			return nil, systemErr
 		}
 
-		toAddress := restaurant.Location.City + restaurant.Location.Region + restaurant.Location.Street + restaurant.Location.HomeNumber
+		toAddress := restaurant.City + restaurant.Address
 		toAddressCoordinate, err := tools.GetCoordinates(toAddress)
 		if err != nil {
 			c.logger.Println(err)
 			return nil, systemErr
 		}
 
-		distnaceKm, err := tools.VincentyDistance(domain.Coord{
+		distanceKm, err := tools.VincentyDistance(domain.Coordinate{
 			Lat: fromAddressCoordinate.Latitude,
 			Lon: fromAddressCoordinate.Longitude,
-		}, domain.Coord{
+		}, domain.Coordinate{
 			Lat: toAddressCoordinate.Latitude,
 			Lon: toAddressCoordinate.Longitude,
 		})
@@ -145,8 +149,8 @@ func (c *deliveryService) GetEstimateDelivery(estimate *domain.EstimateDeliveryR
 			return nil, systemErr
 		}
 
-		estimateDelivery.Time = getTimeByDistance(distnaceKm).String()
-		estimateDelivery.Cost = getCostByDistance(distnaceKm)
+		estimateDelivery.Time = getTimeByDistance(distanceKm).String()
+		estimateDelivery.Cost = getCostByDistance(distanceKm)
 
 		return &estimateDelivery, nil
 	}
@@ -170,24 +174,30 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 	}
 
 	// find available courier near restaurant
-	nearestCourier, err := c.courierClient.GetNearestCourier(restaurant.Location, 5)
+	courierLocationList, err := c.courierClient.GetLocation(restaurant.City)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
 	}
 
-	if nearestCourier == nil {
+	if courierLocationList == nil {
 		return nil, errors.New("no courier available")
 	}
-
+	courierLocation := courierLocationList.LocationResponseList[1]
 	// assign order to available courier
-	assignedOrder, err := c.deliveryStorage.AssignOrder(nearestCourier.ID, orderIDInt)
+
+	assignOrder := domain.AssignOrder{
+		OrderID:   courierLocation.UserID,
+		CourierID: orderIDInt,
+	}
+
+	assignedOrder, err := c.deliveryStorage.AssignOrder(assignOrder)
 	if err != nil {
 		return nil, systemErr
 	}
 
 	// update available courier to false
-	_, err = c.courierClient.UpdateCourierAvailable(assignedOrder.CourierID, false)
+	_, err = c.courierClient.UpdateCourierAvailable(assignedOrder.CourierID, "false")
 	if err != nil {
 		return nil, systemErr
 	}

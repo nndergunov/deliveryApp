@@ -16,7 +16,7 @@ const (
 	f = 1 / 298.257223563 // WGS-84 ellipsiod
 )
 
-func VincentyDistance(p1, p2 domain.Coord) (float64, error) {
+func VincentyDistance(p1, p2 domain.Coordinate) (float64, error) {
 	// convert from degrees to radians
 	piRad := math.Pi / 180
 	p1.Lat = p1.Lat * piRad
