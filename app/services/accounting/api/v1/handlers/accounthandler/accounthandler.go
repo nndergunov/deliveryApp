@@ -54,9 +54,12 @@ func (a *accountHandler) handlerInit() {
 	a.serveMux.HandleFunc(version+"/accounts/{"+accountIDKey+"}", a.DeleteAccount).Methods(http.MethodDelete)
 
 	a.serveMux.HandleFunc(version+"/transactions", a.InsertTransaction).Methods(http.MethodPost)
+
+	a.serveMux.HandleFunc(version+"/transactions/{"+trIDKey+"}", a.DeleteTransaction).Methods(http.MethodDelete)
 }
 
 const accountIDKey = "account_id"
+const trIDKey = "tr_id"
 
 func (a accountHandler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
@@ -129,7 +132,7 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
-		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoAccountIDParam); err != nil {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoIDParam); err != nil {
 			a.log.Println(err)
 		}
 		return
@@ -170,7 +173,7 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
-		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoAccountIDParam.Error()); err != nil {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoIDParam.Error()); err != nil {
 			a.log.Println(err)
 		}
 		return
@@ -212,7 +215,7 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 
 	transaction := requestToTransaction(&transactionRequest)
 
-	data, err := a.service.Transact(transaction)
+	data, err := a.service.InsertTransaction(transaction)
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -240,12 +243,16 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	searchParam := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
-	userID := queryParams["user_id"][0]
-	userType := queryParams["user_type"][0]
+	userIDList := queryParams["user_id"]
+	userTypeList := queryParams["user_type"]
 
-	if userID != "" && userType != "" {
-		searchParam["user_id"] = userID
-		searchParam["user_type"] = userType
+	if userIDList != nil && userTypeList != nil {
+		userID := userIDList[0]
+		userType := userTypeList[0]
+		if userID != "" && userType != "" {
+			searchParam["user_type"] = userType
+			searchParam["user_id"] = userID
+		}
 	}
 
 	data, err := a.service.GetAccountListByParam(searchParam)
@@ -274,6 +281,39 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	response := accountListToResponse(data)
 
 	if err := accountingapi.Respond(rw, http.StatusOK, response); err != nil {
+		a.log.Println(err)
+		return
+	}
+}
+
+func (a accountHandler) DeleteTransaction(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, ok := vars[trIDKey]
+	if !ok {
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, errNoIDParam.Error()); err != nil {
+			a.log.Println(err)
+		}
+		return
+	}
+
+	data, err := a.service.DeleteTransaction(id)
+	if err != nil {
+
+		if errors.Is(err, systemErr) {
+			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+				a.log.Println(err)
+			}
+			return
+		}
+
+		if err := accountingapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+			a.log.Println(err)
+		}
+		return
+
+	}
+
+	if err := accountingapi.Respond(rw, http.StatusOK, data); err != nil {
 		a.log.Println(err)
 		return
 	}

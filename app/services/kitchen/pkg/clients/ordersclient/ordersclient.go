@@ -3,7 +3,6 @@ package ordersclient
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
@@ -42,14 +41,9 @@ func (c OrdersClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, er
 		return nil, fmt.Errorf("sending HTTP request: %w", err)
 	}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reaking HTTP response: %w", err)
-	}
-
 	orders := new(orderapi.ReturnOrderList)
 
-	err = v1.Decode(respBody, orders)
+	err = v1.DecodeResponse(resp, orders)
 	if err != nil {
 		return nil, fmt.Errorf("decoding HTTP response: %w", err)
 	}

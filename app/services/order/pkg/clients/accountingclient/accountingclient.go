@@ -3,7 +3,6 @@ package accountingclient
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
@@ -33,19 +32,9 @@ func (a AccountingClient) CreateTransaction(accountID, restaurantID int, orderPr
 		return false, fmt.Errorf("sending request: %w", err)
 	}
 
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return false, fmt.Errorf("getting response body: %w", err)
-	}
-
-	err = resp.Body.Close()
-	if err != nil {
-		return false, fmt.Errorf("closing response body: %w", err)
-	}
-
 	paymentStatus := new(accountingapi.TransactionResponse)
 
-	err = v1.Decode(respBody, paymentStatus)
+	err = v1.DecodeResponse(resp, paymentStatus)
 	if err != nil {
 		return false, fmt.Errorf("decoding response: %w", err)
 	}

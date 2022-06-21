@@ -1,11 +1,12 @@
-package restaurantclient
+package consumerclient
 
 import (
 	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
 type ConsumerClient struct {
@@ -16,12 +17,23 @@ func NewConsumerClient(url string) *ConsumerClient {
 	return &ConsumerClient{consumerURL: url}
 }
 
-func (a ConsumerClient) GetRestaurant(consumerID int) (*domain.Location, error) {
-	_, err := http.Get(a.consumerURL + "v1/consumers/location/" + strconv.Itoa(consumerID))
+func (a ConsumerClient) GetLocation(consumerID int) (*consumerapi.LocationResponse, error) {
+	resp, err := http.Get(a.consumerURL + "v1/locations/" + strconv.Itoa(consumerID))
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
-	// todo when restaurant add this rout
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
+	}
 
-	return &domain.Location{}, nil
+	locationData := consumerapi.LocationResponse{}
+	if err = deliveryapi.DecodeJSON(resp.Body, &locationData); err != nil {
+		return nil, fmt.Errorf("decoding : %w", err)
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return nil, err
+	}
+
+	return &locationData, nil
 }

@@ -41,6 +41,10 @@ func (m MockService) ReturnAllRestaurants() ([]domain.Restaurant, error) {
 	return []domain.Restaurant{MockReturnRestaurantData}, nil
 }
 
+func (m MockService) ReturnRestaurant(_ int) (*domain.Restaurant, error) {
+	return &MockReturnRestaurantData, nil
+}
+
 func (m MockService) CreateNewRestaurant(restaurantData domain.Restaurant) (*domain.Restaurant, error) {
 	return &restaurantData, nil
 }

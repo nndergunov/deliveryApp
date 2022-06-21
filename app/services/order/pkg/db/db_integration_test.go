@@ -10,6 +10,10 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
+func numToPointer(num int) *int {
+	return &num
+}
+
 func TestGetAllOrders(t *testing.T) {
 	t.Parallel()
 
@@ -137,7 +141,7 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 				},
 			},
 			params: domain.SearchParameters{
-				FromRestaurantID: 673473346,
+				FromRestaurantID: numToPointer(673473346),
 				Statuses:         nil,
 				ExcludeStatuses:  []string{"complete"},
 			},

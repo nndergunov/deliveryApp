@@ -28,7 +28,7 @@ var defaultOrder = domain.Order{
 
 type mockService struct{}
 
-func (m mockService) CreateOrder(order domain.Order) (*domain.Order, error) {
+func (m mockService) CreateOrder(order domain.Order, _ int) (*domain.Order, error) {
 	return &order, nil
 }
 
@@ -46,6 +46,43 @@ func (m mockService) ReturnOrderList(_ domain.SearchParameters) ([]domain.Order,
 
 func (m mockService) UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error) {
 	return &status, nil
+}
+
+func TestReturnAllOrders(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Simple return orders endpoint test", func(t *testing.T) {
+		t.Parallel()
+
+		handler := handlers.NewEndpointHandler(mockService{}, logger.NewLogger(os.Stdout, t.Name()))
+
+		resp := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodGet, "/v1/orders", nil)
+
+		handler.ServeHTTP(resp, req)
+
+		orders := new(orderapi.ReturnOrderList)
+
+		err := v1.Decode(resp.Body.Bytes(), orders)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		order := orders.Orders[0]
+
+		sort.Ints(order.OrderItems)
+
+		if len(order.OrderItems) != len(defaultOrder.OrderItems) {
+			t.Fatal("Wrong number of order items received")
+		}
+
+		for i := 0; i < len(defaultOrder.OrderItems); i++ {
+			if defaultOrder.OrderItems[i] != order.OrderItems[i] {
+				t.Errorf("Item number %d: Expected ID: %d, Got ID: %d",
+					i, defaultOrder.OrderItems[i], order.OrderItems[i])
+			}
+		}
+	})
 }
 
 func TestCreateOrderEndpoint(t *testing.T) {
@@ -110,7 +147,7 @@ func TestCreateOrderEndpoint(t *testing.T) {
 func TestReturnOrderEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Simple return restaurant endpoint test", func(t *testing.T) {
+	t.Run("Simple return order endpoint test", func(t *testing.T) {
 		t.Parallel()
 
 		handler := handlers.NewEndpointHandler(mockService{}, logger.NewLogger(os.Stdout, t.Name()))
