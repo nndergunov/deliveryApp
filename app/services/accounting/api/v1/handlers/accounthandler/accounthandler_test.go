@@ -19,14 +19,12 @@ import (
 )
 
 var (
-	createdTime     = time.Time{}
-	updatedTime     = time.Time{}
 	MockAccountData = &domain.Account{
 		UserID:    1,
 		UserType:  "courier",
 		Balance:   50,
-		CreatedAt: createdTime,
-		UpdatedAt: updatedTime,
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
 	}
 
 	MockTransactionFromAccountToAccountData = &domain.Transaction{
@@ -34,8 +32,8 @@ var (
 		FromAccountID: 1,
 		ToAccountID:   2,
 		Amount:        50,
-		CreatedAt:     createdTime,
-		UpdatedAt:     updatedTime,
+		CreatedAt:     time.Time{},
+		UpdatedAt:     time.Time{},
 		Valid:         true,
 	}
 
@@ -44,8 +42,8 @@ var (
 		FromAccountID: 1,
 		ToAccountID:   0,
 		Amount:        50,
-		CreatedAt:     createdTime,
-		UpdatedAt:     updatedTime,
+		CreatedAt:     time.Time{},
+		UpdatedAt:     time.Time{},
 		Valid:         true,
 	}
 
@@ -54,8 +52,8 @@ var (
 		FromAccountID: 0,
 		ToAccountID:   2,
 		Amount:        50,
-		CreatedAt:     createdTime,
-		UpdatedAt:     updatedTime,
+		CreatedAt:     time.Time{},
+		UpdatedAt:     time.Time{},
 		Valid:         true,
 	}
 )
@@ -78,7 +76,7 @@ func (m MockService) DeleteAccount(_ string) (string, error) {
 	return "account deleted", nil
 }
 
-func (m MockService) Transact(transaction domain.Transaction) (*domain.Transaction, error) {
+func (m MockService) InsertTransaction(transaction domain.Transaction) (*domain.Transaction, error) {
 	if transaction.FromAccountID == 0 {
 		return MockTransactionToAccountData, nil
 	}
@@ -86,6 +84,10 @@ func (m MockService) Transact(transaction domain.Transaction) (*domain.Transacti
 		return MockTransactionFromAccountData, nil
 	}
 	return MockTransactionFromAccountToAccountData, nil
+}
+
+func (m MockService) DeleteTransaction(id string) (string, error) {
+	return "transaction deleted", nil
 }
 
 func TestInsertNewAccountEndpointSuccess(t *testing.T) {
@@ -106,8 +108,8 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 				UserID:    1,
 				UserType:  "courier",
 				Balance:   50,
-				CreatedAt: createdTime,
-				UpdatedAt: updatedTime,
+				CreatedAt: time.Time{},
+				UpdatedAt: time.Time{},
 			},
 		},
 	}
@@ -146,19 +148,19 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 			}
 
 			if respData.ID != test.accountResponse.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, respData.ID)
+				t.Errorf("ID: Expected: %v, Got: %v", test.accountResponse.ID, respData.ID)
 			}
 
 			if respData.UserID != test.accountResponse.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, respData.UserID)
+				t.Errorf("UserID: Expected: %v, Got: %v", test.accountResponse.UserID, respData.UserID)
 			}
 
 			if respData.UserType != test.accountResponse.UserType {
-				t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, respData.UserType)
+				t.Errorf("UserType: Expected: %s, Got: %s", test.accountResponse.UserType, respData.UserType)
 			}
 
 			if respData.Balance != test.accountResponse.Balance {
-				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, respData.Balance)
+				t.Errorf("Balance: Expected: %v, Got: %v", test.accountResponse.Balance, respData.Balance)
 			}
 		})
 	}
@@ -177,8 +179,8 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 				UserID:    1,
 				UserType:  "courier",
 				Balance:   50,
-				CreatedAt: createdTime,
-				UpdatedAt: updatedTime,
+				CreatedAt: time.Time{},
+				UpdatedAt: time.Time{},
 			},
 		},
 	}
@@ -214,19 +216,19 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 			}
 
 			if respData.ID != test.accountResponse.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", MockAccountData.ID, respData.ID)
+				t.Errorf("ID: Expected: %v, Got: %v", test.accountResponse.ID, respData.ID)
 			}
 
 			if respData.UserID != test.accountResponse.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockAccountData.UserID, respData.UserID)
+				t.Errorf("UserID: Expected: %v, Got: %v", test.accountResponse.UserID, respData.UserID)
 			}
 
 			if respData.UserType != test.accountResponse.UserType {
-				t.Errorf("UserType: Expected: %s, Got: %s", MockAccountData.UserType, respData.UserType)
+				t.Errorf("UserType: Expected: %s, Got: %s", test.accountResponse.UserType, respData.UserType)
 			}
 
 			if respData.Balance != test.accountResponse.Balance {
-				t.Errorf("Balance: Expected: %v, Got: %v", MockAccountData.Balance, respData.Balance)
+				t.Errorf("Balance: Expected: %v, Got: %v", test.accountResponse.Balance, respData.Balance)
 			}
 		})
 	}
@@ -247,8 +249,8 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 						UserID:    1,
 						UserType:  "courier",
 						Balance:   50,
-						CreatedAt: createdTime,
-						UpdatedAt: updatedTime,
+						CreatedAt: time.Time{},
+						UpdatedAt: time.Time{},
 					},
 				},
 			},
@@ -283,7 +285,7 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 			}
 
 			if len(respDataList.AccountList) < len(test.accountResponseList.AccountList) {
-				t.Errorf("len: Expected: >1, Got: %v", len(respDataList.AccountList))
+				t.Errorf("len: Expected: %v, Got: %v", len(test.accountResponseList.AccountList), len(respDataList.AccountList))
 			}
 
 			for _, respData := range respDataList.AccountList {
@@ -378,8 +380,8 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 				FromAccountID: 1,
 				ToAccountID:   2,
 				Amount:        50,
-				CreatedAt:     createdTime,
-				UpdatedAt:     updatedTime,
+				CreatedAt:     time.Time{},
+				UpdatedAt:     time.Time{},
 				Valid:         true,
 			},
 		},
@@ -394,8 +396,8 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 				FromAccountID: 1,
 				ToAccountID:   0,
 				Amount:        50,
-				CreatedAt:     createdTime,
-				UpdatedAt:     updatedTime,
+				CreatedAt:     time.Time{},
+				UpdatedAt:     time.Time{},
 				Valid:         true,
 			},
 		},
@@ -410,8 +412,8 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 				FromAccountID: 0,
 				ToAccountID:   2,
 				Amount:        50,
-				CreatedAt:     createdTime,
-				UpdatedAt:     updatedTime,
+				CreatedAt:     time.Time{},
+				UpdatedAt:     time.Time{},
 				Valid:         true,
 			},
 		},
@@ -450,7 +452,7 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 			}
 
 			if respData.ID != test.transactionResponse.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", MockTransactionFromAccountToAccountData.ID, respData.ID)
+				t.Errorf("ID: Expected: %v, Got: %v", test.transactionResponse.ID, respData.ID)
 			}
 
 			if respData.FromAccountID != test.transactionResponse.FromAccountID {
