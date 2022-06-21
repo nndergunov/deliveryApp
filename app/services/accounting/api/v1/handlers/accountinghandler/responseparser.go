@@ -1,4 +1,4 @@
-package accounthandler
+package accountinghandler
 
 import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"

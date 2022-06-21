@@ -1,4 +1,4 @@
-package accounthandler
+package accountinghandler
 
 import (
 	"errors"
@@ -12,19 +12,19 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountservice"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountingservice"
 )
 
 type Params struct {
 	Logger         *logger.Logger
-	AccountService accountservice.AccountService
+	AccountService accountingservice.AccountService
 }
 
 // accountHandler is the entrypoint into our application
 type accountHandler struct {
 	serveMux *mux.Router
 	log      *logger.Logger
-	service  accountservice.AccountService
+	service  accountingservice.AccountService
 }
 
 // NewAccountHandler returns new http multiplexer with configured endpoints.
@@ -58,8 +58,10 @@ func (a *accountHandler) handlerInit() {
 	a.serveMux.HandleFunc(version+"/transactions/{"+trIDKey+"}", a.DeleteTransaction).Methods(http.MethodDelete)
 }
 
-const accountIDKey = "account_id"
-const trIDKey = "tr_id"
+const (
+	accountIDKey = "account_id"
+	trIDKey      = "tr_id"
+)
 
 func (a accountHandler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
@@ -105,7 +107,7 @@ func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request
 
 	data, err := a.service.InsertNewAccount(account)
 	if err != nil {
-
+		a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -140,7 +142,7 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.GetAccountByID(id)
 	if err != nil {
-
+		a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -181,7 +183,7 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.DeleteAccount(id)
 	if err != nil {
-
+		a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -217,7 +219,7 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 
 	data, err := a.service.InsertTransaction(transaction)
 	if err != nil {
-
+		a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)

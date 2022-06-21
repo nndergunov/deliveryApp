@@ -1,4 +1,4 @@
-package accountservice
+package accountingservice
 
 import "github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
 

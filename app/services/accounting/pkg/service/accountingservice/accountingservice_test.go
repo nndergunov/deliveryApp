@@ -1,4 +1,4 @@
-package accountservice_test
+package accountingservice_test
 
 import (
 	"bytes"
@@ -31,7 +31,7 @@ func TestInsertAccountEndpoint(t *testing.T) {
 			accountingapi.AccountResponse{
 				UserID:    1,
 				UserType:  "courier",
-				Balance:   50,
+				Balance:   0,
 				CreatedAt: time.Time{},
 				UpdatedAt: time.Time{},
 			},
@@ -49,7 +49,7 @@ func TestInsertAccountEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp, err := http.Post(http.MethodPost, "/v1/accounts", bytes.NewBuffer(reqBody))
+			resp, err := http.Post(baseAddr+"/v1/accounts", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -61,10 +61,6 @@ func TestInsertAccountEndpoint(t *testing.T) {
 			respData := accountingapi.AccountResponse{}
 			if err = accountingapi.DecodeJSON(resp.Body, &respData); err != nil {
 				t.Fatal(err)
-			}
-
-			if respData.ID != test.accountResponse.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", test.accountResponse.ID, respData.ID)
 			}
 
 			if respData.UserID != test.accountResponse.UserID {
@@ -135,7 +131,7 @@ func TestGetAccountEndpoint(t *testing.T) {
 
 			accountIDStr := strconv.Itoa(gotAccount.ID)
 
-			resp2, err := http.Get("/v1/accounts/" + accountIDStr)
+			resp2, err := http.Get(baseAddr + "/v1/accounts/" + accountIDStr)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -189,16 +185,17 @@ func TestGetAccountListEndpoint(t *testing.T) {
 		accountResponseList accountingapi.AccountListResponse
 	}{
 		{
-			"TestGetAccountListEndpointSuccess", accountingapi.NewAccountRequest{
-			UserID:   1,
-			UserType: "courier",
-		},
+			"TestGetAccountListEndpointSuccess",
+			accountingapi.NewAccountRequest{
+				UserID:   1,
+				UserType: "courier",
+			},
 			accountingapi.AccountListResponse{
 				AccountList: []accountingapi.AccountResponse{
 					{
 						UserID:    1,
 						UserType:  "courier",
-						Balance:   50,
+						Balance:   0,
 						CreatedAt: time.Time{},
 						UpdatedAt: time.Time{},
 					},
@@ -225,7 +222,8 @@ func TestGetAccountListEndpoint(t *testing.T) {
 				t.Fatalf("Response status: %d", resp.StatusCode)
 			}
 
-			resp2, err := http.Get("/v1/accounts")
+			resp2, err := http.Get(baseAddr + "/v1/accounts?" + "user_id=" + strconv.Itoa(test.accountInsertData.UserID) +
+				"&user_type=" + test.accountInsertData.UserType)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -235,7 +233,7 @@ func TestGetAccountListEndpoint(t *testing.T) {
 			}
 
 			gotAccountList := accountingapi.AccountListResponse{}
-			if err = accountingapi.DecodeJSON(resp.Body, &gotAccountList); err != nil {
+			if err = accountingapi.DecodeJSON(resp2.Body, &gotAccountList); err != nil {
 				t.Fatal(err)
 			}
 
@@ -245,10 +243,6 @@ func TestGetAccountListEndpoint(t *testing.T) {
 
 			for _, gotAccount := range gotAccountList.AccountList {
 				for _, testAccountResp := range test.accountResponseList.AccountList {
-
-					if gotAccount.ID != testAccountResp.ID {
-						t.Errorf("ID: Expected: %v, Got: %v", testAccountResp.ID, gotAccount.ID)
-					}
 
 					if gotAccount.UserID != testAccountResp.UserID {
 						t.Errorf("UserID: Expected: %v, Got: %v", testAccountResp.UserID, gotAccount.UserID)
@@ -277,131 +271,205 @@ func TestGetAccountListEndpoint(t *testing.T) {
 					t.Errorf("Could not delete: %v", err)
 				}
 			}
-
 		})
 	}
 }
 
-func TestInsertTransactionsEndpointSuccess(t *testing.T) {
+func TestInsertTransactionsFromAccountToAccountEndpointSuccess(t *testing.T) {
 	t.Parallel()
 	type test struct {
 		name                string
+		fromAccount         accountingapi.NewAccountRequest
+		toAccount           accountingapi.NewAccountRequest
 		transactionRequest  accountingapi.TransactionRequest
 		transactionResponse accountingapi.TransactionResponse
 	}
 	tests := []test{
 		{
 			name: "from account to account",
+			fromAccount: accountingapi.NewAccountRequest{
+				UserID:   1,
+				UserType: "consumer",
+			},
+
+			toAccount: accountingapi.NewAccountRequest{
+				UserID:   1,
+				UserType: "courier",
+			},
+
 			transactionRequest: accountingapi.TransactionRequest{
-				FromAccountID: 1,
-				ToAccountID:   2,
-				Amount:        50,
+				Amount: 50,
 			},
+
 			transactionResponse: accountingapi.TransactionResponse{
-				ID:            1,
-				FromAccountID: 1,
-				ToAccountID:   2,
-				Amount:        50,
-				CreatedAt:     time.Now(),
-				UpdatedAt:     time.Now(),
-				Valid:         true,
-			},
-		},
-		{
-			name: "from account",
-			transactionRequest: accountingapi.TransactionRequest{
-				FromAccountID: 1,
-				Amount:        50,
-			},
-			transactionResponse: accountingapi.TransactionResponse{
-				ID:            1,
-				FromAccountID: 1,
-				ToAccountID:   0,
-				Amount:        50,
-				CreatedAt:     time.Now(),
-				UpdatedAt:     time.Now(),
-				Valid:         true,
-			},
-		},
-		{
-			name: "to account",
-			transactionRequest: accountingapi.TransactionRequest{
-				ToAccountID: 2,
-				Amount:      50,
-			},
-			transactionResponse: accountingapi.TransactionResponse{
-				ID:            1,
-				FromAccountID: 0,
-				ToAccountID:   2,
-				Amount:        50,
-				CreatedAt:     time.Now(),
-				UpdatedAt:     time.Now(),
-				Valid:         true,
+				Amount: 50,
+				Valid:  true,
 			},
 		},
 	}
 
 	for _, test := range tests {
-
 		t.Run(test.name, func(t *testing.T) {
-
-			reqBody, err := v1.Encode(test)
+			// insert from account1
+			account1ReqBody, err := v1.Encode(test.fromAccount)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			resp, err := http.Post(http.MethodPost, "/v1/transactions", bytes.NewBuffer(reqBody))
+			account1Resp, err := http.Post(baseAddr+"/v1/accounts", "application/json", bytes.NewBuffer(account1ReqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("StatusCode: %d", resp.StatusCode)
+			if account1Resp.StatusCode != http.StatusOK {
+				t.Fatalf("StatusCode: %d", account1Resp.StatusCode)
 			}
 
-			respData := accountingapi.TransactionResponse{}
-			if err := accountingapi.DecodeJSON(resp.Body, &respData); err != nil {
+			account1RespData := accountingapi.AccountResponse{}
+			if err := accountingapi.DecodeJSON(account1Resp.Body, &account1RespData); err != nil {
 				t.Fatal(err)
 			}
 
-			if respData.ID != test.transactionResponse.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", test.transactionResponse.ID, respData.ID)
+			// add balance to account1
+			test.transactionRequest.ToAccountID = account1RespData.ID
+
+			trAddBalanceAccount1ReqBody, err := v1.Encode(test.transactionRequest)
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			if respData.FromAccountID != test.transactionResponse.FromAccountID {
-				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transactionResponse.FromAccountID, respData.FromAccountID)
+			trAddBalanceAccount1Resp, err := http.Post(baseAddr+"/v1/transactions", "application/json", bytes.NewBuffer(trAddBalanceAccount1ReqBody))
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			if respData.ToAccountID != test.transactionResponse.ToAccountID {
-				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transactionResponse.ToAccountID, respData.ToAccountID)
+			if trAddBalanceAccount1Resp.StatusCode != http.StatusOK {
+				t.Fatalf("StatusCode: %d", account1Resp.StatusCode)
 			}
 
-			if respData.Amount != test.transactionResponse.Amount {
-				t.Errorf("Amount: Expected: %v, Got: %v", test.transactionResponse.Amount, respData.Amount)
+			trAddBalanceAccount1RespData := accountingapi.TransactionResponse{}
+			if err := accountingapi.DecodeJSON(trAddBalanceAccount1Resp.Body, &trAddBalanceAccount1RespData); err != nil {
+				t.Fatal(err)
 			}
 
-			if respData.Valid != test.transactionResponse.Valid {
-				t.Errorf("Valid: Expected: %v, Got: %v", test.transactionResponse.Valid, respData.Valid)
+			if trAddBalanceAccount1RespData.Amount != test.transactionResponse.Amount {
+				t.Errorf("trAddBalanceAccount1RespData: Expected: %v, Got: %v", test.transactionResponse.Amount, trAddBalanceAccount1RespData.Amount)
 			}
 
-			if respData.CreatedAt != test.transactionResponse.CreatedAt {
-				t.Errorf("CreatedAt: Expected: %v, Got: %v", test.transactionResponse.CreatedAt, respData.CreatedAt)
+			// insert account 2
+			account2ReqBody2, err := v1.Encode(test.toAccount)
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			if respData.UpdatedAt != test.transactionResponse.UpdatedAt {
-				t.Errorf("UpdatedAt: Expected: %v, Got: %v", test.transactionResponse.UpdatedAt, respData.UpdatedAt)
+			respAccount2, err := http.Post(baseAddr+"/v1/accounts", "application/json", bytes.NewBuffer(account2ReqBody2))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if respAccount2.StatusCode != http.StatusOK {
+				t.Fatalf("StatusCode: %d", respAccount2.StatusCode)
+			}
+
+			account2RespData := accountingapi.AccountResponse{}
+			if err := accountingapi.DecodeJSON(respAccount2.Body, &account2RespData); err != nil {
+				t.Fatal(err)
+			}
+
+			// transaction from account 1 to account 2
+			test.transactionRequest.FromAccountID = account1RespData.ID
+			test.transactionRequest.ToAccountID = account2RespData.ID
+
+			test.transactionResponse.FromAccountID = account1RespData.ID
+			test.transactionResponse.ToAccountID = account2RespData.ID
+
+			trReqBody, err := v1.Encode(test.transactionRequest)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			trResp, err := http.Post(baseAddr+"/v1/transactions", "application/json", bytes.NewBuffer(trReqBody))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if trResp.StatusCode != http.StatusOK {
+				t.Fatalf("StatusCode: %d", trResp.StatusCode)
+			}
+
+			trRespData := accountingapi.TransactionResponse{}
+			if err := accountingapi.DecodeJSON(trResp.Body, &trRespData); err != nil {
+				t.Fatal(err)
+			}
+
+			if trRespData.FromAccountID != test.transactionResponse.FromAccountID {
+				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transactionResponse.FromAccountID, trRespData.FromAccountID)
+			}
+
+			if trRespData.ToAccountID != test.transactionResponse.ToAccountID {
+				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transactionResponse.ToAccountID, trRespData.ToAccountID)
+			}
+
+			if trRespData.Amount != test.transactionResponse.Amount {
+				t.Errorf("Amount: Expected: %v, Got: %v", test.transactionResponse.Amount, trRespData.Amount)
+			}
+
+			if trRespData.Valid != test.transactionResponse.Valid {
+				t.Errorf("Valid: Expected: %v, Got: %v", test.transactionResponse.Valid, trRespData.Valid)
 			}
 
 			// Deleting instance.
 			deleter := http.DefaultClient
 
 			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/transactions/"+strconv.Itoa(respData.ID), nil)
+				baseAddr+"/v1/accounts/"+strconv.Itoa(account1RespData.ID), nil)
 			if err != nil {
 				t.Error(err)
 			}
 
 			_, err = deleter.Do(delReq)
+			if err != nil {
+				t.Errorf("Could not delete: %v", err)
+			}
+
+			// Deleting trAddBalance.
+			deleter2 := http.DefaultClient
+
+			delReq2, err := http.NewRequest(http.MethodDelete,
+				baseAddr+"/v1/transactions/"+strconv.Itoa(trAddBalanceAccount1RespData.ID), nil)
+			if err != nil {
+				t.Error(err)
+			}
+
+			_, err = deleter2.Do(delReq2)
+			if err != nil {
+				t.Errorf("Could not delete: %v", err)
+			}
+
+			// Deleting account 2.
+			deleter3 := http.DefaultClient
+
+			delReq3, err := http.NewRequest(http.MethodDelete,
+				baseAddr+"/v1/accounts/"+strconv.Itoa(account2RespData.ID), nil)
+			if err != nil {
+				t.Error(err)
+			}
+
+			_, err = deleter3.Do(delReq3)
+			if err != nil {
+				t.Errorf("Could not delete: %v", err)
+			}
+
+			// Deleting trFromAccount1ToAccount2.
+			deleter4 := http.DefaultClient
+
+			delReq4, err := http.NewRequest(http.MethodDelete,
+				baseAddr+"/v1/transactions/"+strconv.Itoa(trRespData.ID), nil)
+			if err != nil {
+				t.Error(err)
+			}
+
+			_, err = deleter4.Do(delReq4)
 			if err != nil {
 				t.Errorf("Could not delete: %v", err)
 			}
