@@ -17,7 +17,8 @@ type AccountService interface {
 	GetAccountListByParam(param domain.SearchParam) ([]domain.Account, error)
 	DeleteAccount(id string) (string, error)
 
-	Transact(transaction domain.Transaction) (*domain.Transaction, error)
+	InsertTransaction(transaction domain.Transaction) (*domain.Transaction, error)
+	DeleteTransaction(id string) (string, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -141,7 +142,7 @@ func (c Service) DeleteAccount(id string) (string, error) {
 	return "account deleted", nil
 }
 
-func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, error) {
+func (c Service) InsertTransaction(transaction domain.Transaction) (*domain.Transaction, error) {
 	if transaction.Amount < 1 {
 		return nil, errWrongAmount
 	}
@@ -214,7 +215,7 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 			return nil, errAccountNotFound
 		}
 
-		savedTransaction, err := c.storage.Transact(transaction)
+		savedTransaction, err := c.storage.InsertTransaction(transaction)
 		if err != nil && err != sql.ErrNoRows {
 			c.logger.Println(err)
 			return nil, systemErr
@@ -224,4 +225,29 @@ func (c Service) Transact(transaction domain.Transaction) (*domain.Transaction, 
 	}
 
 	return nil, errors.New("wrong operation")
+}
+
+func (c Service) DeleteTransaction(id string) (string, error) {
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		c.logger.Println(err)
+		return "", errWrongUserType
+	}
+
+	gotTransaction, err := c.storage.GetTransactionByID(idInt)
+	if err != nil && err != sql.ErrNoRows {
+		c.logger.Println(err)
+		return "", systemErr
+	}
+	if gotTransaction == nil {
+		return "", errAccountNotFound
+	}
+
+	err = c.storage.DeleteTransaction(idInt)
+	if err != nil && err != sql.ErrNoRows {
+		c.logger.Println(err)
+		return "", systemErr
+	}
+
+	return "transaction deleted", nil
 }

@@ -11,5 +11,7 @@ type AccountStorage interface {
 
 	AddToAccountBalance(tr domain.Transaction) (*domain.Transaction, error)
 	SubFromAccountBalance(tr domain.Transaction) (*domain.Transaction, error)
-	Transact(tr domain.Transaction) (*domain.Transaction, error)
+	InsertTransaction(tr domain.Transaction) (*domain.Transaction, error)
+	DeleteTransaction(id int) error
+	GetTransactionByID(id int) (*domain.Transaction, error)
 }
