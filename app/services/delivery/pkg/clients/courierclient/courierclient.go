@@ -18,7 +18,7 @@ func NewCourierClient(url string) *CourierClient {
 }
 
 func (a CourierClient) GetCourier(courierID int) (*courierapi.CourierResponse, error) {
-	resp, err := http.Get(a.courierURL + "v1/couriers/" + strconv.Itoa(courierID))
+	resp, err := http.Get(a.courierURL + "/v1/couriers/" + strconv.Itoa(courierID))
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
@@ -40,7 +40,7 @@ func (a CourierClient) GetCourier(courierID int) (*courierapi.CourierResponse, e
 }
 
 func (a CourierClient) GetLocation(city string) (*courierapi.LocationResponseList, error) {
-	resp, err := http.Get(a.courierURL + "v1/locations?city=" + city)
+	resp, err := http.Get(a.courierURL + "/v1/locations?city=" + city)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
@@ -62,9 +62,14 @@ func (a CourierClient) GetLocation(city string) (*courierapi.LocationResponseLis
 }
 
 func (a CourierClient) UpdateCourierAvailable(courierID int, available string) (*courierapi.CourierResponse, error) {
-	resp, err := http.Get(a.courierURL + "v1/couriers-available/" + strconv.Itoa(courierID) + "?available=" + available)
+	client := http.DefaultClient
+	req, err := http.NewRequest(http.MethodPut, a.courierURL+"/v1/couriers-available/"+strconv.Itoa(courierID)+"?available="+available, nil)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusOK {

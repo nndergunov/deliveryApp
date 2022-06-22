@@ -77,24 +77,28 @@ func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (
 		return nil, errWrongLocData
 	}
 
-	if consumerLocation.Altitude != "" || consumerLocation.Longitude != "" ||
-		restaurant.Latitude != 0 || restaurant.Longitude != 0 {
+	if consumerLocation.Latitude != "" && consumerLocation.Longitude != "" &&
+		restaurant.Latitude != 0 && restaurant.Longitude != 0 {
 
-		fromLocationLatF, err := strconv.ParseFloat(consumerLocation.Altitude, 10)
+		fromLocationLatF, err := strconv.ParseFloat(consumerLocation.Latitude, 10)
 		if err != nil {
 			c.logger.Println(err)
-			return nil, errWrongFromLocLatType
+			return nil, systemErr
 		}
+
+		fromLocationLatF = c.convertToDecimalAfterDot(fromLocationLatF)
 
 		fromLocationLonF, err := strconv.ParseFloat(consumerLocation.Longitude, 64)
 		if err != nil {
 			c.logger.Println(err)
-			return nil, errWrongFromLonLatType
+			return nil, systemErr
 		}
 
-		toLocationLatF := restaurant.Latitude
+		fromLocationLonF = c.convertToDecimalAfterDot(fromLocationLonF)
 
-		toLocationLonF := restaurant.Longitude
+		toLocationLatF := c.convertToDecimalAfterDot(restaurant.Latitude)
+
+		toLocationLonF := c.convertToDecimalAfterDot(restaurant.Longitude)
 
 		distanceKm, err := tools.VincentyDistance(domain.Coordinate{
 			Lat: fromLocationLatF,
@@ -115,7 +119,10 @@ func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (
 
 		// but for now considered average delivery time/km and cost/km in the city multiplied by distance
 		estimateDelivery.Time = getTimeByDistance(distanceKm).String()
-		estimateDelivery.Cost = getCostByDistance(distanceKm)
+		estimateDelivery.Cost, err = getCostByDistance(distanceKm)
+		if err != nil {
+			c.logger.Println(err)
+		}
 
 		return &estimateDelivery, nil
 	}
@@ -150,12 +157,24 @@ func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (
 		}
 
 		estimateDelivery.Time = getTimeByDistance(distanceKm).String()
-		estimateDelivery.Cost = getCostByDistance(distanceKm)
+		estimateDelivery.Cost, err = getCostByDistance(distanceKm)
+		if err != nil {
+			c.logger.Println(err)
+		}
 
 		return &estimateDelivery, nil
 	}
 
 	return nil, errWrongLocData
+}
+
+func (c *deliveryService) convertToDecimalAfterDot(f float64) float64 {
+	fStr := fmt.Sprintf("%.6f", f)
+	f, err := strconv.ParseFloat(fStr, 64)
+	if err != nil {
+		c.logger.Println(err)
+	}
+	return f
 }
 
 func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*domain.AssignOrder, error) {
@@ -183,7 +202,7 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 	if courierLocationList == nil {
 		return nil, errors.New("no courier available")
 	}
-	courierLocation := courierLocationList.LocationResponseList[1]
+	courierLocation := courierLocationList.LocationResponseList[0]
 	// assign order to available courier
 
 	assignOrder := domain.AssignOrder{
@@ -207,16 +226,20 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 
 func getTimeByDistance(distance float64) (duration time.Duration) {
 	// average delivery time in hour per 1 km in city by car
-	averageDeliveryTimeHourPerKM := 0.025
+	averageCarSpeedInCityM := 60.0
 
-	deliveryTime := distance * averageDeliveryTimeHourPerKM
-	return time.Duration(deliveryTime)
+	deliveryTime := distance * (1 / averageCarSpeedInCityM) * float64(time.Hour)
+	round := time.Duration(time.Second)
+
+	return time.Duration(deliveryTime).Round(round)
 }
 
-func getCostByDistance(distance float64) float64 {
+func getCostByDistance(distance float64) (float64, error) {
 	// average delivery cost in $ per 1 km in city by car
 	averageDeliveryCostPerKM := 0.11
 
 	deliveryCost := distance * averageDeliveryCostPerKM
-	return deliveryCost
+	deliveryCostStr := fmt.Sprintf("%.2f", deliveryCost)
+
+	return strconv.ParseFloat(deliveryCostStr, 64)
 }

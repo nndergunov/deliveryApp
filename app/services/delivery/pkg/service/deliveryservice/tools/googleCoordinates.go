@@ -31,12 +31,12 @@ type Coordinates struct {
 }
 
 func GetCoordinates(address string) (*Coordinates, error) {
-	googleApiUri := configreader.GetString("googleApiUri")
-	if googleApiUri == "" {
+	googleApiKey := configreader.GetString("googleApiKey")
+	if googleApiKey == "" {
 		return nil, errors.New("no google api uri in config")
 	}
 
-	resp, err := http.Get(googleApiUri + address)
+	resp, err := http.Get("https://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&key=" + googleApiKey)
 	if err != nil {
 		return nil, fmt.Errorf("fetching google api uri data error: %q", err)
 	}
