@@ -15,7 +15,7 @@ type ReturnConsumerResponseList struct {
 type LocationResponse struct {
 	UserID     int    `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Latitude   string `json:"latitude,omitempty" yaml:"latitude,omitempty"`
-	Longitude  string `json:"Longitude,omitempty" yaml:"Longitude,omitempty"`
+	Longitude  string `json:"longitude,omitempty" yaml:"longitude,omitempty"`
 	Country    string `json:"country,omitempty" yaml:"country,omitempty"`
 	City       string `json:"city,omitempty" yaml:"city,omitempty"`
 	Region     string `json:"region,omitempty" yaml:"region,omitempty"`
