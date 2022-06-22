@@ -2,9 +2,10 @@ package consumerclient
 
 import (
 	"fmt"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"net/http"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
