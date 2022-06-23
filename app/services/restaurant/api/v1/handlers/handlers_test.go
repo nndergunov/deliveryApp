@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
@@ -16,71 +17,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-/*
-var (
-	MockReturnRestaurantData = domain.Restaurant{
-		ID:      0,
-		Name:    "Name",
-		City:    "City",
-		Address: "Address",
-	}
-
-	MockReturnMenuData = domain.Menu{
-		RestaurantID: 0,
-		Items:        []domain.MenuItem{MockReturnMenuItem},
-	}
-
-	MockReturnMenuItem = domain.MenuItem{
-		ID:     0,
-		MenuID: 0,
-		Name:   "Name",
-		Course: "Course",
-	}
-)
-
-type MockService struct{}
-
-func (m MockService) ReturnAllRestaurants() ([]domain.Restaurant, error) {
-	return []domain.Restaurant{MockReturnRestaurantData}, nil
-}
-
-func (m MockService) ReturnRestaurant(_ int) (*domain.Restaurant, error) {
-	return &MockReturnRestaurantData, nil
-}
-
-func (m MockService) CreateNewRestaurant(restaurantData domain.Restaurant) (*domain.Restaurant, error) {
-	return &restaurantData, nil
-}
-
-func (m MockService) UpdateRestaurant(restaurantData domain.Restaurant) (*domain.Restaurant, error) {
-	return &restaurantData, nil
-}
-
-func (m MockService) DeleteRestaurant(_ int) error {
-	return nil
-}
-
-func (m MockService) ReturnMenu(_ int) (*domain.Menu, error) {
-	return &MockReturnMenuData, nil
-}
-
-func (m MockService) CreateMenu(menuData domain.Menu) (*domain.Menu, error) {
-	return &menuData, nil
-}
-
-func (m MockService) AddMenuItem(_ int, menuItem domain.MenuItem) (*domain.MenuItem, error) {
-	return &menuItem, nil
-}
-
-func (m MockService) UpdateMenuItem(_ int, menuItem domain.MenuItem) (*domain.MenuItem, error) {
-	return &menuItem, nil
-}
-
-func (m MockService) DeleteMenuItem(_ int, _ int) error {
-	return nil
-}
-*/
-
 func TestCreateRestaurantEndpoint(t *testing.T) {
 	t.Parallel()
 
@@ -91,10 +27,13 @@ func TestCreateRestaurantEndpoint(t *testing.T) {
 		{
 			name: "Create restaurant simple",
 			restaurantData: domain.Restaurant{
-				ID:      0,
-				Name:    "Name",
-				City:    "City",
-				Address: "Address",
+				ID:              0,
+				Name:            "Name",
+				AcceptingOrders: true,
+				City:            "City",
+				Address:         "Address",
+				Longitude:       0,
+				Latitude:        0,
 			},
 		},
 	}
@@ -157,7 +96,22 @@ func TestGetRestaurantsEndpoint(t *testing.T) {
 	tests := []struct {
 		name           string
 		restaurantData []domain.Restaurant
-	}{{name: "Get restaurants simple"}}
+	}{
+		{
+			name: "Get restaurants simple",
+			restaurantData: []domain.Restaurant{
+				{
+					ID:              0,
+					Name:            "Name",
+					AcceptingOrders: true,
+					City:            "City",
+					Address:         "Address",
+					Longitude:       0,
+					Latitude:        0,
+				},
+			},
+		},
+	}
 
 	for _, currTest := range tests {
 		test := currTest
@@ -168,12 +122,11 @@ func TestGetRestaurantsEndpoint(t *testing.T) {
 			repo := mockservice.AppService{}
 
 			repo.On("ReturnAllRestaurants").
-				Return(&test.restaurantData, nil).
+				Return(test.restaurantData, nil).
 				Once()
 
-			mockService := new(MockService)
-			log := logger.NewLogger(os.Stdout, "Get restaurants simple")
-			handler := handlers.NewEndpointHandler(mockService, log)
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodGet, "/v1/restaurants", nil)
@@ -210,12 +163,15 @@ func TestUpdateRestaurantEndpoint(t *testing.T) {
 		restaurantData domain.Restaurant
 	}{
 		{
-			"Update restaurant simple",
-			domain.Restaurant{
-				ID:      0,
-				Name:    "Name",
-				City:    "City",
-				Address: "Address",
+			name: "Update restaurant simple",
+			restaurantData: domain.Restaurant{
+				ID:              0,
+				Name:            "Name",
+				AcceptingOrders: true,
+				City:            "City",
+				Address:         "Address",
+				Longitude:       0,
+				Latitude:        0,
 			},
 		},
 	}
@@ -228,13 +184,12 @@ func TestUpdateRestaurantEndpoint(t *testing.T) {
 
 			repo := mockservice.AppService{}
 
-			repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
+			repo.On("UpdateRestaurant", mock.AnythingOfType("domain.Restaurant")).
 				Return(&test.restaurantData, nil).
 				Once()
 
-			mockService := new(MockService)
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := handlers.NewEndpointHandler(mockService, log)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
 			reqData, _ := v1.Encode(restaurantapi.RestaurantData{
 				Name:    test.restaurantData.Name,
@@ -276,44 +231,71 @@ func TestUpdateRestaurantEndpoint(t *testing.T) {
 func TestDeleteRestaurantEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Delete restaurant simple", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name           string
+		restaurantData domain.Restaurant
+	}{
+		{
+			name: "Update restaurant simple",
+			restaurantData: domain.Restaurant{
+				ID:              0,
+				Name:            "Name",
+				AcceptingOrders: true,
+				City:            "City",
+				Address:         "Address",
+				Longitude:       0,
+				Latitude:        0,
+			},
+		},
+	}
 
-		repo := mockservice.AppService{}
+	for _, currTest := range tests {
+		test := currTest
 
-		repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
-			Return(&test.restaurantData, nil).
-			Once()
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "Delete restaurant simple")
-		handler := handlers.NewEndpointHandler(mockService, log)
+			repo := mockservice.AppService{}
 
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/v1/admin/restaurants/0", nil)
+			repo.On("DeleteRestaurant", mock.AnythingOfType("int")).
+				Return(nil).
+				Once()
 
-		handler.ServeHTTP(resp, req)
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
-	})
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodDelete, "/v1/admin/restaurants/0", nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+		})
+	}
 }
 
 func TestCreateMenuEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name         string
-		menuItemData domain.MenuItem
+		name     string
+		menuData domain.Menu
 	}{
 		{
-			"Create menu simple",
-			domain.MenuItem{
-				ID:     0,
-				MenuID: 0,
-				Name:   "Name",
-				Course: "Course",
+			name: "Create menu simple",
+			menuData: domain.Menu{
+				RestaurantID: 0,
+				Items: []domain.MenuItem{
+					{
+						ID:     0,
+						MenuID: 0,
+						Name:   "Name",
+						Price:  0,
+						Course: "Course",
+					},
+				},
 			},
 		},
 	}
@@ -326,21 +308,14 @@ func TestCreateMenuEndpoint(t *testing.T) {
 
 			repo := mockservice.AppService{}
 
-			repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
-				Return(&test.restaurantData, nil).
+			repo.On("CreateMenu", mock.AnythingOfType("domain.Menu")).
+				Return(&test.menuData, nil).
 				Once()
 
-			mockService := new(MockService)
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := handlers.NewEndpointHandler(mockService, log)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
-			reqData, _ := v1.Encode(restaurantapi.MenuData{
-				MenuItems: []restaurantapi.MenuItemData{{
-					ID:     0,
-					Name:   test.menuItemData.Name,
-					Course: test.menuItemData.Course,
-				}},
-			})
+			reqData, _ := v1.Encode(test.menuData)
 
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/admin/restaurants/0/menu", bytes.NewBuffer(reqData))
@@ -358,12 +333,12 @@ func TestCreateMenuEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if respData.MenuItems[0].Name != test.menuItemData.Name {
-				t.Errorf("Name: Expected: %s, Got: %s", test.menuItemData.Name, respData.MenuItems[0].Name)
-			}
-
-			if respData.MenuItems[0].Course != test.menuItemData.Course {
-				t.Errorf("Course: Expected: %s, Got: %s", test.menuItemData.Course, respData.MenuItems[0].Course)
+			if len(respData.MenuItems) != len(test.menuData.Items) {
+				t.Errorf(
+					"Wrong number of menu items: exprcted: %d, got: %d",
+					len(test.menuData.Items),
+					len(respData.MenuItems),
+				)
 			}
 		})
 	}
@@ -372,43 +347,67 @@ func TestCreateMenuEndpoint(t *testing.T) {
 func TestGetMenuEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Get menu simple", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name     string
+		menuData domain.Menu
+	}{
+		{
+			name: "Get menu simple",
+			menuData: domain.Menu{
+				RestaurantID: 0,
+				Items: []domain.MenuItem{
+					{
+						ID:     0,
+						MenuID: 0,
+						Name:   "Name",
+						Price:  0,
+						Course: "Course",
+					},
+				},
+			},
+		},
+	}
 
-		repo := mockservice.AppService{}
+	for _, currTest := range tests {
+		test := currTest
 
-		repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
-			Return(&test.restaurantData, nil).
-			Once()
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "Get menu simple")
-		handler := handlers.NewEndpointHandler(mockService, log)
+			repo := mockservice.AppService{}
 
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/restaurants/0/menu", nil)
+			repo.On("ReturnMenu", mock.AnythingOfType("int")).
+				Return(&test.menuData, nil).
+				Once()
 
-		handler.ServeHTTP(resp, req)
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/restaurants/0/menu", nil)
 
-		respData := new(restaurantapi.ReturnMenu)
+			handler.ServeHTTP(resp, req)
 
-		err := v1.Decode(resp.Body.Bytes(), respData)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
 
-		if respData.MenuItems[0].Name != MockReturnMenuItem.Name {
-			t.Errorf("Name: Expected: %s, Got: %s", MockReturnMenuItem.Name, respData.MenuItems[0].Name)
-		}
+			respData := new(restaurantapi.ReturnMenu)
 
-		if respData.MenuItems[0].Course != MockReturnMenuItem.Course {
-			t.Errorf("Course: Expected: %s, Got: %s", MockReturnMenuItem.Course, respData.MenuItems[0].Course)
-		}
-	})
+			err := v1.Decode(resp.Body.Bytes(), respData)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if len(respData.MenuItems) != len(test.menuData.Items) {
+				t.Errorf(
+					"Wrong number of menu items: exprcted: %d, got: %d",
+					len(test.menuData.Items),
+					len(respData.MenuItems),
+				)
+			}
+		})
+	}
 }
 
 func TestAddMenuItemEndpoint(t *testing.T) {
@@ -419,11 +418,12 @@ func TestAddMenuItemEndpoint(t *testing.T) {
 		menuItemData domain.MenuItem
 	}{
 		{
-			"Add menu item simple",
-			domain.MenuItem{
+			name: "Add menu item simple",
+			menuItemData: domain.MenuItem{
 				ID:     0,
 				MenuID: 0,
 				Name:   "Name",
+				Price:  0,
 				Course: "Course",
 			},
 		},
@@ -437,13 +437,12 @@ func TestAddMenuItemEndpoint(t *testing.T) {
 
 			repo := mockservice.AppService{}
 
-			repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
-				Return(&test.restaurantData, nil).
+			repo.On("AddMenuItem", mock.AnythingOfType("int"), mock.AnythingOfType("domain.MenuItem")).
+				Return(&test.menuItemData, nil).
 				Once()
 
-			mockService := new(MockService)
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := handlers.NewEndpointHandler(mockService, log)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
 			reqData, _ := v1.Encode(restaurantapi.MenuItemData{
 				ID:     0,
@@ -486,8 +485,8 @@ func TestUpdateMenuItemEndpoint(t *testing.T) {
 		menuItemData domain.MenuItem
 	}{
 		{
-			"Update menu item simple",
-			domain.MenuItem{
+			name: "Update menu item simple",
+			menuItemData: domain.MenuItem{
 				ID:     0,
 				MenuID: 0,
 				Name:   "Name",
@@ -504,13 +503,12 @@ func TestUpdateMenuItemEndpoint(t *testing.T) {
 
 			repo := mockservice.AppService{}
 
-			repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
-				Return(&test.restaurantData, nil).
+			repo.On("UpdateMenuItem", mock.AnythingOfType("int"), mock.AnythingOfType("domain.MenuItem")).
+				Return(&test.menuItemData, nil).
 				Once()
 
-			mockService := new(MockService)
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := handlers.NewEndpointHandler(mockService, log)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
 			reqData, _ := v1.Encode(restaurantapi.MenuItemData{
 				ID:     0,
@@ -548,26 +546,45 @@ func TestUpdateMenuItemEndpoint(t *testing.T) {
 func TestDeleteMenuItemEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Delete menu item simple", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name         string
+		restaurantID int
+		menuItemID   int
+	}{
+		{
+			name:         "Update restaurant simple",
+			restaurantID: 0,
+			menuItemID:   0,
+		},
+	}
 
-		repo := mockservice.AppService{}
+	for _, currTest := range tests {
+		test := currTest
 
-		repo.On("CreateNewRestaurant", mock.AnythingOfType("domain.Restaurant")).
-			Return(&test.restaurantData, nil).
-			Once()
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "Delete menu item simple")
-		handler := handlers.NewEndpointHandler(mockService, log)
+			repo := mockservice.AppService{}
 
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/v1/admin/restaurants/0/menu/0", nil)
+			repo.On("DeleteMenuItem", mock.AnythingOfType("int"), mock.AnythingOfType("int")).
+				Return(nil).
+				Once()
 
-		handler.ServeHTTP(resp, req)
+			log := logger.NewLogger(os.Stdout, test.name)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
-	})
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(
+				http.MethodDelete,
+				"/v1/admin/restaurants/"+strconv.Itoa(test.restaurantID)+"/menu/"+strconv.Itoa(test.menuItemID),
+				nil,
+			)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+		})
+	}
 }
