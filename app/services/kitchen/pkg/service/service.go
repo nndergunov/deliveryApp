@@ -6,7 +6,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
 )
 
-type App interface {
+type AppService interface {
 	GetTasks(kitchenID int) (domain.Tasks, error)
 }
 

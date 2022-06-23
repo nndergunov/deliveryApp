@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
@@ -11,24 +12,22 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/api/v1/handlers"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/service/mockservice"
+	"github.com/stretchr/testify/mock"
 )
-
-var mockTasks = domain.Tasks{1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
-
-type mockService struct{}
-
-func (m mockService) GetTasks(_ int) (domain.Tasks, error) {
-	return mockTasks, nil
-}
 
 func TestReturnTasksEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name string
+		name         string
+		restaurantID int
+		tasks        domain.Tasks
 	}{
 		{
-			name: "Return tasks simple",
+			name:         "Return tasks simple",
+			restaurantID: 0,
+			tasks:        domain.Tasks{1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
 		},
 	}
 
@@ -38,12 +37,15 @@ func TestReturnTasksEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(mockService)
+			repo := mockservice.AppService{}
+
+			repo.On("GetTasks", mock.AnythingOfType("int")).Return(test.tasks, nil).Once()
+
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := handlers.NewEndpointHandler(mockService, log)
+			handler := handlers.NewEndpointHandler(&repo, log)
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/tasks/0", nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/tasks/"+strconv.Itoa(test.restaurantID), nil)
 
 			handler.ServeHTTP(resp, req)
 
