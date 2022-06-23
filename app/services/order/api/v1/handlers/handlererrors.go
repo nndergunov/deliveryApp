@@ -25,8 +25,6 @@ func (e endpointHandler) handleError(err error, responseWriter http.ResponseWrit
 			e.log.Println(err)
 		}
 	default:
-		e.log.Println(err)
-
 		responseWriter.WriteHeader(http.StatusInternalServerError)
 	}
 }
