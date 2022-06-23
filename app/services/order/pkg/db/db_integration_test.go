@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package db_test
 
 import (
@@ -22,7 +25,7 @@ func TestGetAllOrders(t *testing.T) {
 		order domain.Order
 	}{
 		{
-			name: "Test Insert Order",
+			name: "Insert Order",
 			order: domain.Order{
 				OrderID:      0,
 				FromUserID:   2,
@@ -118,7 +121,7 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 		params          domain.SearchParameters
 	}{
 		{
-			name:         "Test Insert Order",
+			name:         "Insert Order",
 			restaurantID: 673473346,
 			incompleteOrder: domain.Order{
 				OrderID:      0,
@@ -234,7 +237,7 @@ func TestInsertOrder(t *testing.T) {
 		order domain.Order
 	}{
 		{
-			name: "Test Insert Order",
+			name: "Insert Order",
 			order: domain.Order{
 				OrderID:      0,
 				FromUserID:   9,
@@ -289,7 +292,7 @@ func TestGetOrder(t *testing.T) {
 		order domain.Order
 	}{
 		{
-			name: "Test Insert Order",
+			name: "Insert Order",
 			order: domain.Order{
 				OrderID:      0,
 				FromUserID:   7368911,
@@ -365,7 +368,7 @@ func TestUpdateOrder(t *testing.T) {
 		updatedOrder domain.Order
 	}{
 		{
-			name: "Test Update Order",
+			name: "Update Order",
 			initialOrder: domain.Order{
 				OrderID:      0,
 				FromUserID:   210,
@@ -434,7 +437,7 @@ func TestDeleteOrder(t *testing.T) {
 		order domain.Order
 	}{
 		{
-			name: "Test Delete Order",
+			name: "Delete Order",
 			order: domain.Order{
 				OrderID:      0,
 				FromUserID:   1635,
@@ -490,7 +493,7 @@ func TestUpdateOrderStatus(t *testing.T) {
 		newStatus string
 	}{
 		{
-			name: "Test Insert Order",
+			name: "Insert Order",
 			order: domain.Order{
 				OrderID:      0,
 				FromUserID:   36605,

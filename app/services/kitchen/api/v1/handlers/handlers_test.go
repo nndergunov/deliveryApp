@@ -28,7 +28,7 @@ func TestReturnTasksEndpoint(t *testing.T) {
 		name string
 	}{
 		{
-			name: "Return tasks simple test",
+			name: "Return tasks simple",
 		},
 	}
 

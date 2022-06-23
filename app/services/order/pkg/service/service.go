@@ -9,7 +9,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
-type App interface {
+type AppService interface {
 	ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error)
 	CreateOrder(order domain.Order, accountID int) (*domain.Order, error)
 	ReturnOrder(orderID int) (*domain.Order, error)
@@ -113,7 +113,7 @@ func (s Service) UpdateOrder(order domain.Order) (*domain.Order, error) {
 func (s Service) UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error) {
 	err := s.storage.UpdateOrderStatus(status.OrderID, status.Status)
 	if err != nil {
-		return nil, fmt.Errorf("CreateOrder: %w", err)
+		return nil, fmt.Errorf("UpdateStatus: %w", err)
 	}
 
 	err = s.notificator.Publish("order"+strconv.Itoa(status.OrderID), messages.OrderNotification{

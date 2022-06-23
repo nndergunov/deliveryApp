@@ -32,7 +32,7 @@ func TestGetTasks(t *testing.T) {
 		name string
 	}{
 		{
-			name: "Get tasks simple test",
+			name: "Get tasks simple",
 		},
 	}
 

@@ -19,7 +19,7 @@ func TestCreateTransaction(t *testing.T) {
 		accountingData accountingapi.TransactionResponse
 	}{
 		{
-			name: "creating transaction test",
+			name: "creating transaction",
 			accountingData: accountingapi.TransactionResponse{
 				ID:            0,
 				FromAccountID: 0,
