@@ -6,7 +6,7 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220615163655-2b60c9fc5a3d
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220615163655-2b60c9fc5a3d
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220615163655-2b60c9fc5a3d
 	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220615163655-2b60c9fc5a3d
