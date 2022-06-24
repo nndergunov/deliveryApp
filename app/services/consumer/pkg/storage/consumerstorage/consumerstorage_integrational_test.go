@@ -2,6 +2,7 @@ package consumerstorage_test
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -14,6 +15,13 @@ import (
 )
 
 const configFile = "/config.yaml"
+
+var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
+	" port=" + configreader.GetString("database.test.port") +
+	" user=" + configreader.GetString("database.test.user") +
+	" password=" + configreader.GetString("database.test.password") +
+	" dbname=" + configreader.GetString("database.test.dbName") +
+	" sslmode=" + configreader.GetString("database.test.sslmode"))
 
 func TestInsertConsumer(t *testing.T) {
 	tests := []struct {
@@ -46,7 +54,7 @@ func TestInsertConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -122,7 +130,7 @@ func TestDeleteConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -200,7 +208,7 @@ func TestUpdateConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -282,7 +290,7 @@ func TestGetAllConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -353,7 +361,7 @@ func TestGetConsumer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -441,7 +449,7 @@ func TestInsertConsumerLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -550,7 +558,7 @@ func TestUpdateConsumerLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -650,7 +658,7 @@ func TestGetConsumerLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}

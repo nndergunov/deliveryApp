@@ -1,4 +1,4 @@
-package accounthandler
+package accountinghandler
 
 import "errors"
 

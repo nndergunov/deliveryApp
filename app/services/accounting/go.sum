@@ -139,8 +139,8 @@ github.com/magiconair/properties v1.8.6 h1:5ibWZ6iY0NctNGWo87LalDlEZ6R41TqbbDamh
 github.com/magiconair/properties v1.8.6/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
-github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220616102258-b756e3b373eb h1:PJ1QXAPis0N2C0eajr3arc8em0dYQzLfcIlrI7fajic=
-github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220616102258-b756e3b373eb/go.mod h1:Ctf+Q3dmfpQ5LOblpMlyVSAo1Cd/QVs06XPaB4AcRhQ=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b h1:5kXU89/6XEfsELxVNTp+W/SfDC+SR7KTY5SNpz1P7To=
+github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b/go.mod h1:Ctf+Q3dmfpQ5LOblpMlyVSAo1Cd/QVs06XPaB4AcRhQ=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220516080600-4954ce51ac52 h1:nujCo7ARYKehJ4nAoTl478acDx/lRfcj69wCiR/WKjY=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220516080600-4954ce51ac52/go.mod h1:ZUwhDklV6a8zUSmHhlHE9I7viwpewNgQOFY93kjJtRc=
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220516080600-4954ce51ac52 h1:X3n8Iw7ZSkkJIwFhz2AlP68c3xfYSHV16F91hZ1XXiM=

@@ -20,6 +20,6 @@ WORKDIR /root/
 COPY --from=builder /app/consumer-service .
 COPY --from=builder /app/config.yaml .
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["./consumer-service"]

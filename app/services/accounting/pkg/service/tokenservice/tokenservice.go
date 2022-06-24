@@ -6,7 +6,7 @@ import (
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -56,9 +56,9 @@ func (t *tokenService) getTokens(privateCl interface{}) (string, error) {
 	}
 
 	cl := jwt.Claims{
-		Issuer:   "accountingservice",
+		Issuer:   "accountingstorage",
 		IssuedAt: jwt.NewNumericDate(time.Now()),
-		Subject:  "transaction token",
+		Subject:  "transaction tokenservice",
 	}
 
 	token, err := jwt.Signed(sig).Claims(cl).Claims(privateCl).CompactSerialize()

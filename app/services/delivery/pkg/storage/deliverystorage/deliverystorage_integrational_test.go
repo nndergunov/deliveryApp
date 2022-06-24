@@ -1,6 +1,7 @@
 package deliverystorage_test
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -13,6 +14,13 @@ import (
 )
 
 const configFile = "/config.yaml"
+
+var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
+	" port=" + configreader.GetString("database.test.port") +
+	" user=" + configreader.GetString("database.test.user") +
+	" password=" + configreader.GetString("database.test.password") +
+	" dbname=" + configreader.GetString("database.test.dbName") +
+	" sslmode=" + configreader.GetString("database.test.sslmode"))
 
 func TestAssignOrder(t *testing.T) {
 	tests := []struct {
@@ -51,7 +59,7 @@ func TestAssignOrder(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}

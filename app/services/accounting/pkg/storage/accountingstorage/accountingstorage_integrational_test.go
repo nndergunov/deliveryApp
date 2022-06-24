@@ -1,18 +1,27 @@
-package accountstorage_test
+package accountingstorage_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/db"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountstorage"
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"
 )
 
 const configFile = "/config.yaml"
+
+var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
+	" port=" + configreader.GetString("database.test.port") +
+	" user=" + configreader.GetString("database.test.user") +
+	" password=" + configreader.GetString("database.test.password") +
+	" dbname=" + configreader.GetString("database.test.dbName") +
+	" sslmode=" + configreader.GetString("database.test.sslmode"))
 
 func TestInsertAccount(t *testing.T) {
 	tests := []struct {
@@ -45,12 +54,12 @@ func TestInsertAccount(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -122,12 +131,12 @@ func TestGetAccountByID(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -203,12 +212,12 @@ func TestGetAccountListByParam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -241,7 +250,7 @@ func TestGetAccountListByParam(t *testing.T) {
 				}
 
 				if insertedAccountResp.UserType != gotByParamAccount.UserType {
-					t.Errorf("UserType: Expected: %s, Got: %s", insertedAccountResp.UserType, gotByParamAccount.UserID)
+					t.Errorf("UserType: Expected: %s, Got: %v", insertedAccountResp.UserType, gotByParamAccount.UserID)
 				}
 
 				if insertedAccountResp.Balance != gotByParamAccount.Balance {
@@ -292,12 +301,12 @@ func TestAddToAccountBalance(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -366,12 +375,12 @@ func TestSubFromAccountBalance(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -440,12 +449,12 @@ func TestInsertTransaction(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}

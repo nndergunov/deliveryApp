@@ -4,5 +4,5 @@ services:
     container_name: accounting-service
     build: .
     ports:
-      - "8081:8083"
+      - "8080:8080"
     restart: on-failure

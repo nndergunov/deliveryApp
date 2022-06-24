@@ -1,4 +1,4 @@
-package accounthandler_test
+package accountinghandler_test
 
 import (
 	"bytes"
@@ -14,8 +14,8 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handlers/accountinghandler"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 )
 
 var (
@@ -123,7 +123,7 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -194,7 +194,7 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -265,7 +265,7 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -289,7 +289,6 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 			}
 
 			for _, respData := range respDataList.AccountList {
-
 				for _, testAccountResponse := range test.accountResponseList.AccountList {
 
 					if respData.ID != testAccountResponse.ID {
@@ -334,7 +333,7 @@ func TestDeleteEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -420,14 +419,13 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accounthandler.NewAccountHandler(accounthandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
 				Logger:         log,
 				AccountService: mockService,
 			})

@@ -1,4 +1,4 @@
-package accountservice_test
+package accountingservice_test
 
 import (
 	"bytes"
@@ -189,10 +189,11 @@ func TestGetAccountListEndpoint(t *testing.T) {
 		accountResponseList accountingapi.AccountListResponse
 	}{
 		{
-			"TestGetAccountListEndpointSuccess", accountingapi.NewAccountRequest{
-			UserID:   1,
-			UserType: "courier",
-		},
+			"TestGetAccountListEndpointSuccess",
+			accountingapi.NewAccountRequest{
+				UserID:   1,
+				UserType: "courier",
+			},
 			accountingapi.AccountListResponse{
 				AccountList: []accountingapi.AccountResponse{
 					{
@@ -277,7 +278,6 @@ func TestGetAccountListEndpoint(t *testing.T) {
 					t.Errorf("Could not delete: %v", err)
 				}
 			}
-
 		})
 	}
 }
@@ -342,9 +342,7 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
 		t.Run(test.name, func(t *testing.T) {
-
 			reqBody, err := v1.Encode(test)
 			if err != nil {
 				t.Fatal(err)

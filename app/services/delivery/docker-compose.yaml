@@ -4,5 +4,5 @@ services:
     container_name: delivery-service
     build: .
     ports:
-      - "8081:8081"
+      - "8083:8083"
     restart: on-failure

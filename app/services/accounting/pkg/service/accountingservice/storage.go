@@ -1,8 +1,8 @@
-package accountservice
+package accountingservice
 
-import "github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+import "github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 
-// AccountStorage is the interface for the accounting storage.
+// AccountStorage is the interface for the accountingstorage storage.
 type AccountStorage interface {
 	InsertNewAccount(account domain.Account) (*domain.Account, error)
 	GetAccountByID(id int) (*domain.Account, error)
