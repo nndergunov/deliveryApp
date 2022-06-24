@@ -16,6 +16,7 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handlers/accountinghandler"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+
 )
 
 var (
@@ -124,6 +125,7 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -195,6 +197,7 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -266,6 +269,7 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -334,6 +338,7 @@ func TestDeleteEndpointSuccess(t *testing.T) {
 
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -426,6 +431,7 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
