@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  postgres:
+  consumer_service_db:
     image: postgres:latest
     container_name: consumer_service_db
     environment:
@@ -8,14 +8,14 @@ services:
       - POSTGRES_PASSWORD=${PASS}
       - POSTGRES_DB=${DB_NAME}
     ports:
-      - '5430:5430'
+      - '5431:5432'
     volumes:
       - ./consumer.sql:/docker-entrypoint-initdb.d/consumer.sql
     networks:
       - dbnet
 
 volumes:
-  database_postgres:
+  database_postgres2:
 
 networks:
   dbnet:

@@ -20,6 +20,6 @@ WORKDIR /root/
 COPY --from=builder /app/accounting-service .
 COPY --from=builder /app/config.yaml .
 
-EXPOSE 8081
+EXPOSE 8080
 
 CMD ["./accounting-service"]

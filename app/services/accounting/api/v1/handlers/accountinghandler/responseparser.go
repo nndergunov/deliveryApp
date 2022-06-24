@@ -3,7 +3,8 @@ package accountinghandler
 import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+
 )
 
 func accountToResponse(account domain.Account) accountingapi.AccountResponse {

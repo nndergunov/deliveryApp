@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
@@ -18,7 +19,7 @@ func NewConsumerClient(url string) *ConsumerClient {
 }
 
 func (a ConsumerClient) GetLocation(consumerID int) (*consumerapi.LocationResponse, error) {
-	resp, err := http.Get(a.consumerURL + "v1/locations/" + strconv.Itoa(consumerID))
+	resp, err := http.Get(a.consumerURL + "/v1/locations/" + strconv.Itoa(consumerID))
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}

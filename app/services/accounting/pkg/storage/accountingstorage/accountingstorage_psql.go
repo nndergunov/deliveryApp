@@ -3,7 +3,8 @@ package accountingstorage
 import (
 	"database/sql"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -236,7 +237,8 @@ func (c Storage) DeleteTransaction(id int) error {
 
 func (c Storage) GetTransactionByID(id int) (*domain.Transaction, error) {
 	sql := `SELECT * 
-			FROM transactions 
+			FROM transactions
+
 			WHERE id = $1;`
 
 	tr := domain.Transaction{}

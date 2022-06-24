@@ -68,7 +68,7 @@ func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 			})
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/estimate"+"?"+test.consumerID+"?"+test.restaurantID, nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/estimate"+"?consumer_id="+test.consumerID+"&restaurant_id="+test.restaurantID, nil)
 
 			handler.ServeHTTP(resp, req)
 
@@ -86,7 +86,7 @@ func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 			}
 
 			if respData.Cost != MockEstimateDeliveryData.Cost {
-				t.Errorf("Cost: Expected: %s, Got: %s", MockEstimateDeliveryData.Cost, respData.Cost)
+				t.Errorf("Cost: Expected: %v, Got: %v", MockEstimateDeliveryData.Cost, respData.Cost)
 			}
 		})
 	}

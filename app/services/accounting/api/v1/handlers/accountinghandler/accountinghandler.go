@@ -11,8 +11,9 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountingservice"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/service/accountingservice"
+
 )
 
 type Params struct {
@@ -20,18 +21,20 @@ type Params struct {
 	AccountService accountingservice.AccountService
 }
 
-// accountHandler is the entrypoint into our application
-type accountHandler struct {
+// handler is the entrypoint into our application
+type handler struct {
+
 	serveMux *mux.Router
 	log      *logger.Logger
 	service  accountingservice.AccountService
 }
 
-// NewAccountHandler returns new http multiplexer with configured endpoints.
-func NewAccountHandler(p Params) *mux.Router {
+// NewHandler returns new http multiplexer with configured endpoints.
+func NewHandler(p Params) *mux.Router {
 	serveMux := mux.NewRouter()
 
-	handler := accountHandler{
+	handler := handler{
+
 		serveMux: serveMux,
 		log:      p.Logger,
 		service:  p.AccountService,
@@ -42,8 +45,9 @@ func NewAccountHandler(p Params) *mux.Router {
 	return handler.serveMux
 }
 
-// NewAccountHandler creates an accountHandler value that handle a set of routes for the application.
-func (a *accountHandler) handlerInit() {
+// NewHandler creates a handler value that handle a set of routes for the application.
+func (a *handler) handlerInit() {
+
 	version := "/v1"
 
 	a.serveMux.HandleFunc(version+"/status", a.StatusHandler).Methods(http.MethodPost)
@@ -63,9 +67,10 @@ const (
 	trIDKey      = "tr_id"
 )
 
-func (a accountHandler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+func (a handler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
-		ServiceName: "accounting",
+		ServiceName: "accountingstorage",
+
 		IsUp:        "up",
 	}
 
@@ -92,7 +97,8 @@ func (a accountHandler) StatusHandler(responseWriter http.ResponseWriter, _ *htt
 	a.log.Printf("gave status %s", data.IsUp)
 }
 
-func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
+func (a handler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
+
 	var newAccountRequest accountingapi.NewAccountRequest
 
 	if err := accountingapi.BindJson(r, &newAccountRequest); err != nil {
@@ -107,7 +113,6 @@ func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request
 
 	data, err := a.service.InsertNewAccount(account)
 	if err != nil {
-		a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -130,7 +135,8 @@ func (a accountHandler) InsertNewAccount(rw http.ResponseWriter, r *http.Request
 	}
 }
 
-func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
+func (a handler) GetAccount(rw http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
@@ -142,7 +148,7 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.GetAccountByID(id)
 	if err != nil {
-		a.log.Println(err)
+  	a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -171,7 +177,8 @@ func (a accountHandler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
+func (a handler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
@@ -204,7 +211,8 @@ func (a accountHandler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
+func (a handler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
+
 	var transactionRequest accountingapi.TransactionRequest
 
 	if err := accountingapi.BindJson(r, &transactionRequest); err != nil {
@@ -220,6 +228,7 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 	data, err := a.service.InsertTransaction(transaction)
 	if err != nil {
 		a.log.Println(err)
+
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -241,7 +250,8 @@ func (a accountHandler) InsertTransaction(rw http.ResponseWriter, r *http.Reques
 	}
 }
 
-func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
+func (a handler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
+
 	searchParam := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
@@ -288,7 +298,8 @@ func (a accountHandler) GetAccountList(rw http.ResponseWriter, r *http.Request) 
 	}
 }
 
-func (a accountHandler) DeleteTransaction(rw http.ResponseWriter, r *http.Request) {
+func (a handler) DeleteTransaction(rw http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, ok := vars[trIDKey]
 	if !ok {

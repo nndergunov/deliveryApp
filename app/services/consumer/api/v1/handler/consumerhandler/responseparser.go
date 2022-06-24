@@ -38,7 +38,7 @@ func consumerListToResponse(consumerList []domain.Consumer) consumerapi.ReturnCo
 func locationToResponse(location domain.Location) consumerapi.LocationResponse {
 	return consumerapi.LocationResponse{
 		UserID:     location.UserID,
-		Altitude:   location.Latitude,
+		Latitude:   location.Latitude,
 		Longitude:  location.Longitude,
 		Country:    location.Country,
 		City:       location.City,

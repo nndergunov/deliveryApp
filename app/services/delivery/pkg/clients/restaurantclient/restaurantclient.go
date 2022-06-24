@@ -2,10 +2,11 @@ package restaurantclient
 
 import (
 	"fmt"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"net/http"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 )
 
 type RestaurantClient struct {

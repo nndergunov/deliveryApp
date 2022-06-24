@@ -14,8 +14,9 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accountinghandler"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handlers/accountinghandler"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+
 )
 
 var (
@@ -123,7 +124,8 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accountinghandler.NewAccountHandler(accountinghandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -194,7 +196,8 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accountinghandler.NewAccountHandler(accountinghandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -265,7 +268,8 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accountinghandler.NewAccountHandler(accountinghandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -333,7 +337,8 @@ func TestDeleteEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accountinghandler.NewAccountHandler(accountinghandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})
@@ -425,7 +430,8 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 			mockService := new(MockService)
 
 			log := logger.NewLogger(os.Stdout, test.name)
-			handler := accountinghandler.NewAccountHandler(accountinghandler.Params{
+			handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 				Logger:         log,
 				AccountService: mockService,
 			})

@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  postgres:
+  accounting_service_db:
     image: postgres:latest
     container_name: accounting_service_db
     environment:
@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=${PASS}
       - POSTGRES_DB=${DB_NAME}
     ports:
-      - '5433:5432'
+      - '5430:5432'
     volumes:
       - ./accounting.sql:/docker-entrypoint-initdb.d/accounting.sql
     networks:

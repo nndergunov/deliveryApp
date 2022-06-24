@@ -20,6 +20,6 @@ WORKDIR /root/
 COPY --from=builder /app/courier-service .
 COPY --from=builder /app/config.yaml .
 
-EXPOSE 8081
+EXPOSE 8082
 
 CMD ["./courier-service"]
