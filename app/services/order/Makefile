@@ -2,7 +2,7 @@ lint:
 	golangci-lint run
 
 status-check:
-	-curl http://localhost:8083/status
+	-curl http://localhost:8085/status
 
 cl-start:
 	make -C database docker-build

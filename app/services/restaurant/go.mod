@@ -6,7 +6,6 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220615163655-2b60c9fc5a3d
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220615163655-2b60c9fc5a3d
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220615163655-2b60c9fc5a3d
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220615163655-2b60c9fc5a3d
@@ -19,6 +18,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/spf13/afero v1.8.2 // indirect

@@ -17,9 +17,9 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-COPY --from=builder /app/kitchen-service .
+COPY --from=builder /app/restaurant-service .
 COPY --from=builder /app/config.yaml .
 
 EXPOSE 8086
 
-CMD ["./kitchen-service"]
+CMD ["./restaurant-service"]
