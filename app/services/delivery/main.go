@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -48,7 +49,14 @@ func run(log *logger.Logger) error {
 	log.Println("starting service", "version", configreader.GetString("buildmode"))
 	defer log.Println("shutdown complete")
 
-	database, err := db.OpenDB("postgres", configreader.GetString("DB.dev"))
+	dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
+		" port=" + configreader.GetString("database.port") +
+		" user=" + configreader.GetString("database.user") +
+		" password=" + configreader.GetString("database.password") +
+		" dbname=" + configreader.GetString("database.dbName") +
+		" sslmode=" + configreader.GetString("database.sslmode"))
+
+	database, err := db.OpenDB("postgres", dbURL)
 	if err != nil {
 		return err
 	}

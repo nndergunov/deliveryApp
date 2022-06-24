@@ -1,20 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/db"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountservice"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountstorage"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handlers/accountinghandler"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/service/accountingservice"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"
 )
 
 const configFile = "/config.yaml"
@@ -40,24 +41,32 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	log.Println("starting service", "version", configreader.GetString("buildmode"))
+	log.Println("starting serviceInstance", "version", configreader.GetString("buildmode"))
 	defer log.Println("shutdown complete")
 
-	database, err := db.OpenDB("postgres", configreader.GetString("DB.dev"))
+	dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
+		" port=" + configreader.GetString("database.port") +
+		" user=" + configreader.GetString("database.user") +
+		" password=" + configreader.GetString("database.password") +
+		" dbname=" + configreader.GetString("database.dbName") +
+		" sslmode=" + configreader.GetString("database.sslmode"))
+
+	database, err := db.OpenDB("postgres", dbURL)
 	if err != nil {
 		return err
 	}
 
-	accountStorage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+	storageInstance := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 
-	accountAccountingService := accountservice.NewService(accountservice.Params{
-		Storage: accountStorage,
+	serviceInstance := accountingservice.NewService(accountingservice.Params{
+		Storage: storageInstance,
 		Logger:  logger.NewLogger(os.Stdout, "service: "),
 	})
 
-	handler := accounthandler.NewAccountHandler(accounthandler.Params{
+	handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),
-		AccountService: accountAccountingService,
+		AccountService: serviceInstance,
 	})
 
 	apiLogger := logger.NewLogger(os.Stdout, "api: ")

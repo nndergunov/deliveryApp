@@ -1,4 +1,4 @@
-package accountservice
+package accountingservice
 
 import (
 	"database/sql"
@@ -7,10 +7,11 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 )
 
-// AccountService is the interface for the accounting service.
+// AccountService is the interface for the accountingstorage service.
+
 type AccountService interface {
 	InsertNewAccount(account domain.Account) (*domain.Account, error)
 	GetAccountByID(ID string) (*domain.Account, error)

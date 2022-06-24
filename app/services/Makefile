@@ -5,22 +5,33 @@ check-all:
     cd ./order/ 	 ; make status-check
 
 docker-build-all:
-	cd ./accounting/ ; make docker-build ; cd ../ ; \
-	cd ./delivery/   ; make docker-build ; cd ../ ; \
-	cd ./restaurant/ 	 ; make docker-build ; cd ../ ; \
-	cd ./order/ 	 ; make docker-build
+	make -C accounting docker-build
+	make -C consumer docker-build
+	make -C courier docker-build
+	make -C delivery docker-build
+	make -C kitchen docker-build
+	make -C order docker-build
+	make -C restaurant docker-build
+
 
 docker-delete-all:
-	cd ./accounting/ ; make docker-delete ; cd ../ ; \
-	cd ./delivery/   ; make docker-delete ; cd ../ ; \
-    cd ./restaurant/ 	 ; make docker-delete ; cd ../ ; \
-    cd ./order/ 	 ; make docker-delete
+	make -C accounting docker-delete
+	make -C consumer docker-delete
+	make -C courier docker-delete
+	make -C delivery docker-delete
+	make -C kitchen docker-delete
+	make -C order docker-delete
+	make -C restaurant docker-delete
+
 
 docker-rebuild-all:
-	cd ./accounting/ ; make docker-rebuild ; cd ../ ; \
-    cd ./delivery/   ; make docker-rebuild ; cd ../ ; \
-    cd ./restaurant/    ; make docker-rebuild ; cd ../ ; \
-    cd ./order/ 	 ; make docker-rebuild
+	make -C accounting docker-rebuild
+	make -C consumer docker-rebuild
+	make -C courier docker-rebuild
+	make -C delivery docker-rebuild
+	make -C kitchen docker-rebuild
+	make -C order docker-rebuild
+	make -C restaurant docker-rebuild
 
 docker-start-all:
 	cd ./accounting/ ; make docker-start ; cd ../ ; \

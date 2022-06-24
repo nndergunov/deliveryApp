@@ -2,6 +2,7 @@ package courierstorage_test
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,13 @@ import (
 )
 
 const configFile = "/config.yaml"
+
+var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
+	" port=" + configreader.GetString("database.test.port") +
+	" user=" + configreader.GetString("database.test.user") +
+	" password=" + configreader.GetString("database.test.password") +
+	" dbname=" + configreader.GetString("database.test.dbName") +
+	" sslmode=" + configreader.GetString("database.test.sslmode"))
 
 func TestInsertCourier(t *testing.T) {
 	tests := []struct {
@@ -51,7 +59,7 @@ func TestInsertCourier(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -119,7 +127,7 @@ func TestDeleteCourier(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -198,7 +206,7 @@ func TestUpdateCourier(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -280,7 +288,7 @@ func TestUpdateCourierAvailable(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -353,7 +361,7 @@ func TestGetCourierList(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -427,7 +435,7 @@ func TestGetCourierByID(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -512,7 +520,7 @@ func TestGetCourierDuplicateByParam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -589,7 +597,7 @@ func TestInsertLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -698,7 +706,7 @@ func TestUpdateLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -798,7 +806,7 @@ func TestGetLocation(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -900,7 +908,7 @@ func TestGetLocationList(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}

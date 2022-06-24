@@ -295,6 +295,15 @@ func (c *courierService) UpdateLocation(location domain.Location, courierID stri
 	}
 
 	location.UserID = cidInt
+	gotLocation, err := c.courierStorage.GetLocation(location.UserID)
+	if err != nil {
+		c.logger.Println(err)
+		return nil, fmt.Errorf("couldn't find location")
+	}
+
+	if gotLocation == nil {
+		return nil, fmt.Errorf("couldn't find location")
+	}
 
 	updatedLocation, err := c.courierStorage.UpdateLocation(location)
 	if err != nil && err == sql.ErrNoRows {
