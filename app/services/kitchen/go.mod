@@ -4,10 +4,10 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220615163655-2b60c9fc5a3d
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220615163655-2b60c9fc5a3d
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220615163655-2b60c9fc5a3d
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220615163655-2b60c9fc5a3d
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220624152006-2b10cd75db6f
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220624152006-2b10cd75db6f
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220624152006-2b10cd75db6f
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220624152006-2b10cd75db6f
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
-	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
+	golang.org/x/sys v0.0.0-20220622161953-175b2fd9d664 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect

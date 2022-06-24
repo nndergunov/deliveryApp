@@ -9,7 +9,6 @@ require (
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220516080600-4954ce51ac52
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220516080600-4954ce51ac52
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52
-
 	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
@@ -18,7 +17,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621084313-0e14e2c84a48 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
