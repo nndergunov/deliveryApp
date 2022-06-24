@@ -1,4 +1,4 @@
-package accountservice
+package accountingservice
 
 import "errors"
 

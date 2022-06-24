@@ -1,15 +1,16 @@
-package accountstorage_test
+package accountingstorage_test
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+
 	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/db"
 	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountstorage"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountingstorage"
 )
 
 const configFile = "/config.yaml"
@@ -50,7 +51,7 @@ func TestInsertAccount(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -62,10 +63,6 @@ func TestInsertAccount(t *testing.T) {
 
 			if resp == nil {
 				t.Errorf("createCourier: Expected: %s, Got: %s", "not nil", "nil")
-			}
-
-			if resp.ID != test.account.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", test.account.ID, resp.ID)
 			}
 
 			if resp.UserID != test.account.UserID {
@@ -127,7 +124,7 @@ func TestGetAccountByID(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -143,10 +140,6 @@ func TestGetAccountByID(t *testing.T) {
 			resp2, err := storage.GetAccountByID(resp.ID)
 			if err != nil {
 				t.Fatal(err)
-			}
-
-			if resp2.ID != test.account.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", test.account.ID, resp2.ID)
 			}
 
 			if resp2.UserID != test.account.UserID {
@@ -208,7 +201,7 @@ func TestGetAccountListByParam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -232,16 +225,12 @@ func TestGetAccountListByParam(t *testing.T) {
 			}
 			for _, gotByParamAccount := range resp2List {
 
-				if insertedAccountResp.ID != gotByParamAccount.ID {
-					t.Errorf("ID: Expected: %v, Got: %v", insertedAccountResp.ID, gotByParamAccount.ID)
-				}
-
 				if insertedAccountResp.UserID != gotByParamAccount.UserID {
 					t.Errorf("UserID: Expected: %v, Got: %v", insertedAccountResp.UserID, gotByParamAccount.UserID)
 				}
 
 				if insertedAccountResp.UserType != gotByParamAccount.UserType {
-					t.Errorf("UserType: Expected: %s, Got: %s", insertedAccountResp.UserType, gotByParamAccount.UserID)
+					t.Errorf("UserType: Expected: %s, Got: %v", insertedAccountResp.UserType, gotByParamAccount.UserType)
 				}
 
 				if insertedAccountResp.Balance != gotByParamAccount.Balance {
@@ -263,14 +252,18 @@ func TestGetAccountListByParam(t *testing.T) {
 func TestAddToAccountBalance(t *testing.T) {
 	tests := []struct {
 		name        string
+		account     domain.Account
 		transaction domain.Transaction
 	}{
 		{
 			name: "TestAddToAccountBalance",
+			account: domain.Account{
+				UserID:   1,
+				UserType: "consumer",
+			},
+
 			transaction: domain.Transaction{
-				FromAccountID: 0,
-				ToAccountID:   2,
-				Amount:        50,
+				Amount: 50,
 			},
 		},
 	}
@@ -297,10 +290,17 @@ func TestAddToAccountBalance(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
+
+			account, err := storage.InsertNewAccount(test.account)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			test.transaction.ToAccountID = account.ID
 
 			respData, err := storage.AddToAccountBalance(test.transaction)
 			if err != nil {
@@ -323,7 +323,11 @@ func TestAddToAccountBalance(t *testing.T) {
 				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, respData.Amount)
 			}
 
-			if err = storage.DeleteAccount(respData.ID); err != nil {
+			if err = storage.DeleteAccount(account.ID); err != nil {
+				t.Error(err)
+			}
+
+			if err = storage.DeleteTransaction(respData.ID); err != nil {
 				t.Error(err)
 			}
 
@@ -337,14 +341,18 @@ func TestAddToAccountBalance(t *testing.T) {
 func TestSubFromAccountBalance(t *testing.T) {
 	tests := []struct {
 		name        string
+		account     domain.Account
 		transaction domain.Transaction
 	}{
 		{
 			name: "TestSubFromAccountBalance",
+			account: domain.Account{
+				UserID:   1,
+				UserType: "consumer",
+			},
+
 			transaction: domain.Transaction{
-				FromAccountID: 1,
-				ToAccountID:   0,
-				Amount:        50,
+				Amount: 50,
 			},
 		},
 	}
@@ -371,10 +379,17 @@ func TestSubFromAccountBalance(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
+
+			account, err := storage.InsertNewAccount(test.account)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			test.transaction.FromAccountID = account.ID
 
 			respData, err := storage.SubFromAccountBalance(test.transaction)
 			if err != nil {
@@ -397,10 +412,13 @@ func TestSubFromAccountBalance(t *testing.T) {
 				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, respData.Amount)
 			}
 
-			if err = storage.DeleteAccount(respData.ID); err != nil {
+			if err = storage.DeleteAccount(account.ID); err != nil {
 				t.Error(err)
 			}
 
+			if err = storage.DeleteTransaction(respData.ID); err != nil {
+				t.Error(err)
+			}
 			if err := database.Close(); err != nil {
 				t.Error(err)
 			}
@@ -411,14 +429,24 @@ func TestSubFromAccountBalance(t *testing.T) {
 func TestInsertTransaction(t *testing.T) {
 	tests := []struct {
 		name        string
+		fromAccount domain.Account
+		toAccount   domain.Account
 		transaction domain.Transaction
 	}{
 		{
-			name: "TestSubFromAccountBalance",
+			name: "TestInsertTransaction",
+			fromAccount: domain.Account{
+				UserID:   1,
+				UserType: "consumer",
+			},
+
+			toAccount: domain.Account{
+				UserID:   1,
+				UserType: "courier",
+			},
+
 			transaction: domain.Transaction{
-				FromAccountID: 1,
-				ToAccountID:   2,
-				Amount:        50,
+				Amount: 50,
 			},
 		},
 	}
@@ -445,33 +473,67 @@ func TestInsertTransaction(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			storage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
+			if err != nil {
+				t.Fatal(err)
+			}
+			// insert 1 account
+			account1, err := storage.InsertNewAccount(test.fromAccount)
+			if err != nil {
+				t.Fatal(err)
+			}
+			// add balance to account 1
+			test.transaction.ToAccountID = account1.ID
+			trAddBalance, err := storage.AddToAccountBalance(test.transaction)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			respData, err := storage.InsertTransaction(test.transaction)
+			// insert 2 account
+			account2, err := storage.InsertNewAccount(test.toAccount)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if respData == nil {
+			// transact from account 1 to account 2
+
+			test.transaction.FromAccountID = account1.ID
+			test.transaction.ToAccountID = account2.ID
+
+			trFromAccountToAccount, err := storage.InsertTransaction(test.transaction)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if trFromAccountToAccount == nil {
 				t.Errorf("Transaction: Expected: %s, Got: %s", "not nil", "nil")
 			}
 
-			if respData.FromAccountID != test.transaction.FromAccountID {
-				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transaction.FromAccountID, respData.FromAccountID)
+			if trFromAccountToAccount.FromAccountID != test.transaction.FromAccountID {
+				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transaction.FromAccountID, trFromAccountToAccount.FromAccountID)
 			}
 
-			if respData.ToAccountID != test.transaction.ToAccountID {
-				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transaction.ToAccountID, respData.ToAccountID)
+			if trFromAccountToAccount.ToAccountID != test.transaction.ToAccountID {
+				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transaction.ToAccountID, trFromAccountToAccount.ToAccountID)
 			}
 
-			if respData.Amount != test.transaction.Amount {
-				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, respData.Amount)
+			if trFromAccountToAccount.Amount != test.transaction.Amount {
+				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, trFromAccountToAccount.Amount)
 			}
 
-			if err = storage.DeleteAccount(respData.ID); err != nil {
+			if err = storage.DeleteAccount(account1.ID); err != nil {
+				t.Error(err)
+			}
+
+			if err = storage.DeleteAccount(account2.ID); err != nil {
+				t.Error(err)
+			}
+
+			if err = storage.DeleteTransaction(trAddBalance.ID); err != nil {
+				t.Error(err)
+			}
+
+			if err = storage.DeleteTransaction(trFromAccountToAccount.ID); err != nil {
 				t.Error(err)
 			}
 

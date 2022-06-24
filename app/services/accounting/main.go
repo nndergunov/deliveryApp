@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accounthandler"
+	"github.com/nndergunov/delivryApp/app/services/accounting/api/v1/handlers/accountinghandler"
 	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/db"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountservice"
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountstorage"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/service/accountingservice"
+	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/storage/accountingstorage"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
@@ -48,14 +48,14 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	accountStorage := accountstorage.NewStorage(accountstorage.Params{DB: database})
+	accountStorage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 
-	accountAccountingService := accountservice.NewService(accountservice.Params{
+	accountAccountingService := accountingservice.NewService(accountingservice.Params{
 		Storage: accountStorage,
 		Logger:  logger.NewLogger(os.Stdout, "service: "),
 	})
 
-	handler := accounthandler.NewAccountHandler(accounthandler.Params{
+	handler := accountinghandler.NewAccountHandler(accountinghandler.Params{
 		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),
 		AccountService: accountAccountingService,
 	})
