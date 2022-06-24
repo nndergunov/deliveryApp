@@ -64,6 +64,7 @@ func run(log *logger.Logger) error {
 	})
 
 	handler := accountinghandler.NewHandler(accountinghandler.Params{
+
 		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),
 		AccountService: serviceInstance,
 	})

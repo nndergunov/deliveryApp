@@ -13,6 +13,7 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/service/accountingservice"
+
 )
 
 type Params struct {
@@ -22,6 +23,7 @@ type Params struct {
 
 // handler is the entrypoint into our application
 type handler struct {
+
 	serveMux *mux.Router
 	log      *logger.Logger
 	service  accountingservice.AccountService
@@ -32,6 +34,7 @@ func NewHandler(p Params) *mux.Router {
 	serveMux := mux.NewRouter()
 
 	handler := handler{
+
 		serveMux: serveMux,
 		log:      p.Logger,
 		service:  p.AccountService,
@@ -44,6 +47,7 @@ func NewHandler(p Params) *mux.Router {
 
 // NewHandler creates a handler value that handle a set of routes for the application.
 func (a *handler) handlerInit() {
+
 	version := "/v1"
 
 	a.serveMux.HandleFunc(version+"/status", a.StatusHandler).Methods(http.MethodPost)
@@ -66,6 +70,7 @@ const (
 func (a handler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
 		ServiceName: "accountingstorage",
+
 		IsUp:        "up",
 	}
 
@@ -93,6 +98,7 @@ func (a handler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Reque
 }
 
 func (a handler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
+
 	var newAccountRequest accountingapi.NewAccountRequest
 
 	if err := accountingapi.BindJson(r, &newAccountRequest); err != nil {
@@ -107,7 +113,6 @@ func (a handler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.InsertNewAccount(account)
 	if err != nil {
-
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -131,6 +136,7 @@ func (a handler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a handler) GetAccount(rw http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
@@ -142,7 +148,7 @@ func (a handler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.GetAccountByID(id)
 	if err != nil {
-
+  	a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -172,6 +178,7 @@ func (a handler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a handler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
 	if !ok {
@@ -183,7 +190,7 @@ func (a handler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.DeleteAccount(id)
 	if err != nil {
-
+		a.log.Println(err)
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				a.log.Println(err)
@@ -205,6 +212,7 @@ func (a handler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a handler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
+
 	var transactionRequest accountingapi.TransactionRequest
 
 	if err := accountingapi.BindJson(r, &transactionRequest); err != nil {
@@ -219,6 +227,7 @@ func (a handler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
 
 	data, err := a.service.InsertTransaction(transaction)
 	if err != nil {
+		a.log.Println(err)
 
 		if errors.Is(err, systemErr) {
 			if err := accountingapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
@@ -242,6 +251,7 @@ func (a handler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a handler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
+
 	searchParam := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
@@ -289,6 +299,7 @@ func (a handler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (a handler) DeleteTransaction(rw http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, ok := vars[trIDKey]
 	if !ok {

@@ -11,6 +11,7 @@ import (
 )
 
 // AccountService is the interface for the accountingstorage service.
+
 type AccountService interface {
 	InsertNewAccount(account domain.Account) (*domain.Account, error)
 	GetAccountByID(ID string) (*domain.Account, error)

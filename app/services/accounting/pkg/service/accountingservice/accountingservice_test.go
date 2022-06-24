@@ -32,6 +32,7 @@ func TestInsertAccountEndpoint(t *testing.T) {
 				UserID:    1,
 				UserType:  "courier",
 				Balance:   50,
+
 				CreatedAt: time.Time{},
 				UpdatedAt: time.Time{},
 			},
@@ -50,6 +51,7 @@ func TestInsertAccountEndpoint(t *testing.T) {
 			}
 
 			resp, err := http.Post(http.MethodPost, "/v1/accounts", bytes.NewBuffer(reqBody))
+
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -66,7 +68,6 @@ func TestInsertAccountEndpoint(t *testing.T) {
 			if respData.ID != test.accountResponse.ID {
 				t.Errorf("ID: Expected: %v, Got: %v", test.accountResponse.ID, respData.ID)
 			}
-
 			if respData.UserID != test.accountResponse.UserID {
 				t.Errorf("UserID: Expected: %v, Got: %v", test.accountResponse.UserID, respData.UserID)
 			}
@@ -136,6 +137,7 @@ func TestGetAccountEndpoint(t *testing.T) {
 			accountIDStr := strconv.Itoa(gotAccount.ID)
 
 			resp2, err := http.Get("/v1/accounts/" + accountIDStr)
+
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -200,6 +202,7 @@ func TestGetAccountListEndpoint(t *testing.T) {
 						UserID:    1,
 						UserType:  "courier",
 						Balance:   50,
+
 						CreatedAt: time.Time{},
 						UpdatedAt: time.Time{},
 					},
@@ -227,6 +230,7 @@ func TestGetAccountListEndpoint(t *testing.T) {
 			}
 
 			resp2, err := http.Get("/v1/accounts")
+
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -237,6 +241,7 @@ func TestGetAccountListEndpoint(t *testing.T) {
 
 			gotAccountList := accountingapi.AccountListResponse{}
 			if err = accountingapi.DecodeJSON(resp.Body, &gotAccountList); err != nil {
+
 				t.Fatal(err)
 			}
 
@@ -250,8 +255,8 @@ func TestGetAccountListEndpoint(t *testing.T) {
 					if gotAccount.ID != testAccountResp.ID {
 						t.Errorf("ID: Expected: %v, Got: %v", testAccountResp.ID, gotAccount.ID)
 					}
-
-					if gotAccount.UserID != testAccountResp.UserID {
+				
+          if gotAccount.UserID != testAccountResp.UserID {
 						t.Errorf("UserID: Expected: %v, Got: %v", testAccountResp.UserID, gotAccount.UserID)
 					}
 
@@ -344,11 +349,13 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			reqBody, err := v1.Encode(test)
+
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			resp, err := http.Post(http.MethodPost, "/v1/transactions", bytes.NewBuffer(reqBody))
+
 			if err != nil {
 				t.Fatal(err)
 			}
