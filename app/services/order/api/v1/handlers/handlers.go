@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -78,21 +77,18 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
 
 	searchParams := new(orderapi.OrderFilters)
 
+	// if request body is empty we do not need to parse searchParams as it would result in err
 	if len(req) != 0 {
 		err = v1.Decode(req, searchParams)
 		if err != nil {
-			e.log.Println(err)
-
-			responseWriter.WriteHeader(http.StatusBadRequest)
+			e.handleError(err, responseWriter)
 
 			return
 		}
@@ -102,9 +98,7 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 
 	orders, err := e.serviceInstance.ReturnOrderList(parameters)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -122,9 +116,7 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request *http.Request) {
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -133,9 +125,7 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -144,31 +134,7 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 
 	createdOrder, err := e.serviceInstance.CreateOrder(order, order.FromUserID)
 	if err != nil {
-		if errors.Is(err, service.ErrRestaurantOffline) {
-			err := v1.RespondWithError("restaurant is not accepting orders", http.StatusBadRequest, responseWriter)
-			if err != nil {
-				e.log.Println(err)
-
-				responseWriter.WriteHeader(http.StatusInternalServerError)
-			}
-
-			return
-		}
-
-		if errors.Is(err, service.ErrLowBalance) {
-			err := v1.RespondWithError("user has not enough balance to create this order", http.StatusBadRequest, responseWriter)
-			if err != nil {
-				e.log.Println(err)
-
-				responseWriter.WriteHeader(http.StatusInternalServerError)
-			}
-
-			return
-		}
-
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -186,18 +152,14 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request *http.Request) {
 	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
 
 	order, err := e.serviceInstance.ReturnOrder(returnOrderID)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -215,18 +177,14 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request *http.Request) {
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
 
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -235,9 +193,7 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -248,9 +204,7 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 
 	updatedOrder, err := e.serviceInstance.UpdateOrder(order)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -268,18 +222,14 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, request *http.Request) {
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
 
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -288,9 +238,7 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 
 	err = v1.Decode(req, statusData)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -301,9 +249,7 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 
 	_, err = e.serviceInstance.UpdateStatus(status)
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
