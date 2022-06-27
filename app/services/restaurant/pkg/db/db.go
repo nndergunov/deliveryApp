@@ -30,7 +30,7 @@ func NewDatabase(dbURL string) (*Database, error) {
 
 func (d Database) getRestaurantID(restaurant domain.Restaurant) (int, error) {
 	rest, err := models.Restaurants(qm.Where("name=? and city=? and accepting_orders=? and address=? "+
-		"and longitude=? and altitude=?", restaurant.Name, restaurant.City, restaurant.AcceptingOrders,
+		"and longitude=? and latitude=?", restaurant.Name, restaurant.City, restaurant.AcceptingOrders,
 		restaurant.Address, restaurant.Longitude, restaurant.Latitude)).One(d.db)
 	if err != nil {
 		return 0, fmt.Errorf("getRestaurantID: %w", err)

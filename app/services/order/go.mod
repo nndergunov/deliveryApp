@@ -22,6 +22,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/rabbitmq/amqp091-go v1.3.4 // indirect

@@ -1,9 +1,10 @@
-package accountstorage
+package accountingstorage
 
 import (
 	"database/sql"
 
-	"github.com/nndergunov/delivryApp/app/services/accounting/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
+
 )
 
 // Params is the input parameter struct for the module that contains its dependencies
@@ -22,7 +23,7 @@ func NewStorage(p Params) *Storage {
 }
 
 func (c Storage) InsertNewAccount(account domain.Account) (*domain.Account, error) {
-	sql := `INSERT INTO transaction
+	sql := `INSERT INTO account
     			(user_id, user_type, created_at, updated_at)
 			VALUES ($1, $2, now(), now())
 			returning *`
@@ -38,7 +39,7 @@ func (c Storage) InsertNewAccount(account domain.Account) (*domain.Account, erro
 
 func (c Storage) GetAccountByID(id int) (*domain.Account, error) {
 	sql := `SELECT * 
-			FROM transaction
+			FROM account
 			WHERE id = $1;`
 
 	account := domain.Account{}
@@ -53,7 +54,7 @@ func (c Storage) GetAccountByID(id int) (*domain.Account, error) {
 
 func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Account, error) {
 	sql := `SELECT * 
-			FROM transaction`
+			FROM account`
 
 	where := " WHERE 1=1"
 
@@ -89,7 +90,7 @@ func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Accou
 
 func (c Storage) DeleteAccount(id int) error {
 	sql := `DELETE 
-			FROM transaction
+			FROM account
 			WHERE id = $1
 	`
 	if _, err := c.db.Exec(sql, id); err != nil {
@@ -111,8 +112,8 @@ func (c Storage) AddToAccountBalance(tr domain.Transaction) (*domain.Transaction
 	}()
 
 	sql := `
-			UPDATE transaction
-    		SET balance = (SELECT balance FROM transaction WHERE id = $1) + $2
+			UPDATE account
+    		SET balance = (SELECT balance FROM account WHERE id = $1) + $2
     		WHERE id = $1;`
 
 	if _, err := tx.Exec(sql, tr.ToAccountID, tr.Amount); err != nil {
@@ -149,8 +150,8 @@ func (c Storage) SubFromAccountBalance(tr domain.Transaction) (*domain.Transacti
 		err = tx.Rollback()
 	}()
 
-	sql := `UPDATE transaction
-    		SET balance = (SELECT balance FROM transaction WHERE id = $1) - $2
+	sql := `UPDATE account
+    		SET balance = (SELECT balance FROM account WHERE id = $1) - $2
     		WHERE id = $1;`
 
 	if _, err := tx.Exec(sql, tr.FromAccountID, tr.Amount); err != nil {
@@ -187,16 +188,16 @@ func (c Storage) InsertTransaction(tr domain.Transaction) (*domain.Transaction, 
 		err = tx.Rollback()
 	}()
 
-	sql := `UPDATE transaction
-			SET balance = (SELECT balance FROM transaction WHERE id = $1) - $2
+	sql := `UPDATE account
+			SET balance = (SELECT balance FROM account WHERE id = $1) - $2
 			WHERE id = $1;`
 
 	if _, err := tx.Exec(sql, tr.FromAccountID, tr.Amount); err != nil {
 		return nil, err
 	}
 
-	sql2 := `UPDATE transaction
-			 SET balance = (SELECT balance FROM transaction WHERE id = $1) + $2
+	sql2 := `UPDATE account
+			 SET balance = (SELECT balance FROM account WHERE id = $1) + $2
 			 WHERE id = $1;`
 
 	if _, err := tx.Exec(sql2, tr.ToAccountID, tr.Amount); err != nil {
@@ -224,7 +225,7 @@ func (c Storage) InsertTransaction(tr domain.Transaction) (*domain.Transaction, 
 
 func (c Storage) DeleteTransaction(id int) error {
 	sql := `DELETE 
-			FROM transaction 
+			FROM transactions
 			WHERE id = $1
 	`
 	if _, err := c.db.Exec(sql, id); err != nil {
@@ -236,7 +237,8 @@ func (c Storage) DeleteTransaction(id int) error {
 
 func (c Storage) GetTransactionByID(id int) (*domain.Transaction, error) {
 	sql := `SELECT * 
-			FROM transaction 
+			FROM transactions
+
 			WHERE id = $1;`
 
 	tr := domain.Transaction{}

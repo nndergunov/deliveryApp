@@ -11,18 +11,23 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 )
 
-const baseAddr = "http://localhost:8081"
+const baseAddr = "http://localhost:8082"
 
 func TestGetEstimateDeliveryEndpoint(t *testing.T) {
 	tests := []struct {
 		name         string
 		consumerID   string
 		restaurantID string
+		response     deliveryapi.EstimateDeliveryResponse
 	}{
 		{
 			"GetEstimateDeliveryValues simple test",
 			"1",
 			"1",
+			deliveryapi.EstimateDeliveryResponse{
+				Time: "5h24m50s",
+				Cost: 35.73,
+			},
 		},
 	}
 
@@ -30,7 +35,7 @@ func TestGetEstimateDeliveryEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			estimateDeliveryResp, err := http.Get(baseAddr + "/v1/estimate" + "?" + test.consumerID + "?" + test.restaurantID)
+			estimateDeliveryResp, err := http.Get(baseAddr + "/v1/estimate" + "?consumer_id=" + test.consumerID + "&restaurant_id=" + test.restaurantID)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -48,12 +53,12 @@ func TestGetEstimateDeliveryEndpoint(t *testing.T) {
 				t.Error(err)
 			}
 
-			if respData.Time == "" {
-				t.Errorf("Time: Expected : non empty string, Got: %v", respData.Time)
+			if respData.Time != test.response.Time {
+				t.Errorf("Time: Expected : %s, Got: %s", test.response.Time, respData.Time)
 			}
 
-			if respData.Cost == 0 {
-				t.Errorf("Cost: Expected: >0, Got: %v", respData.Cost)
+			if respData.Cost != test.response.Cost {
+				t.Errorf("Cost: Expected: %v, Got: %v", test.response.Cost, respData.Cost)
 			}
 		})
 	}
@@ -64,6 +69,7 @@ func TestAssignOrderEndpoint(t *testing.T) {
 		name            string
 		assignOrderData deliveryapi.AssignOrderRequest
 		orderID         string
+		response        deliveryapi.AssignOrderResponse
 	}{
 		{
 			"AssignOrder simple test",
@@ -72,6 +78,10 @@ func TestAssignOrderEndpoint(t *testing.T) {
 				RestaurantID: 1,
 			},
 			"1",
+			deliveryapi.AssignOrderResponse{
+				OrderID:   1,
+				CourierID: 1,
+			},
 		},
 	}
 
@@ -84,7 +94,7 @@ func TestAssignOrderEndpoint(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			resp, err := http.Post(baseAddr+"/v1/orders/"+test.orderID, "application/json", bytes.NewBuffer(reqBody))
+			resp, err := http.Post(baseAddr+"/v1/orders/"+test.orderID+"/assign", "application/json", bytes.NewBuffer(reqBody))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -107,8 +117,8 @@ func TestAssignOrderEndpoint(t *testing.T) {
 				t.Errorf("OrderID: Expected: %v, Got: %v", orderIDInt, respData.OrderID)
 			}
 
-			if respData.CourierID < 0 {
-				t.Errorf("CourierID: Expected: >0, Got: %v", respData.CourierID)
+			if respData.CourierID != test.response.CourierID {
+				t.Errorf("CourierID: Expected: %v, Got: %v", test.response.CourierID, respData.CourierID)
 			}
 		})
 	}

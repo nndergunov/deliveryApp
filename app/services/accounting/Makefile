@@ -1,5 +1,10 @@
+golangci-lint:
+	golangci-lint run
+gofumpt:
+	gofumpt -l -w .
+
 status-check:
-	-curl http://localhost:8081/status
+	-curl http://localhost:8080/status
 
 cl-start:
 	make -C database docker-build
@@ -12,7 +17,7 @@ docker-build:
 docker-delete:
 	make -C database docker-delete
 	docker-compose down --remove-orphans --volumes
-	docker image rm restaurant_app
+	docker image rm accounting_app
 
 docker-rebuild:
 	make -C database docker-rebuild
@@ -21,11 +26,11 @@ docker-rebuild:
 
 docker-start:
 	make -C database docker-start
-	docker container start restaurant-service
+	docker container start accounting-service
 
 docker-stop:
 	make -C database docker-stop
-	docker container stop restaurant-service
+	docker container stop accounting-service
 
 update-gomod:
 	make download-gomod

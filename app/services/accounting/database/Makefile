@@ -9,8 +9,8 @@ docker-rebuild:
 	make docker-build
 
 docker-start:
-	docker container start consumer_service_db
+	docker container start accouning_service_db
 
 docker-stop:
-	docker container stop consumer_service_db
+	docker container stop accouning_service_db
 

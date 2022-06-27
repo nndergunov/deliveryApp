@@ -1,6 +1,7 @@
 package deliverystorage_test
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -14,14 +15,27 @@ import (
 
 const configFile = "/config.yaml"
 
-func TestInsertCourier(t *testing.T) {
+var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
+	" port=" + configreader.GetString("database.test.port") +
+	" user=" + configreader.GetString("database.test.user") +
+	" password=" + configreader.GetString("database.test.password") +
+	" dbname=" + configreader.GetString("database.test.dbName") +
+	" sslmode=" + configreader.GetString("database.test.sslmode"))
+
+func TestAssignOrder(t *testing.T) {
 	tests := []struct {
 		name        string
 		assignOrder domain.AssignOrder
+		response    domain.AssignOrder
 	}{
 		{
-			name: "Test Insert Courier",
+			name: "TestAssignOrder",
 			assignOrder: domain.AssignOrder{
+				OrderID:   1,
+				CourierID: 1,
+			},
+
+			response: domain.AssignOrder{
 				OrderID:   1,
 				CourierID: 1,
 			},
@@ -45,12 +59,12 @@ func TestInsertCourier(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			database, err := db.OpenDB("postgres", configreader.GetString("DB.test"))
+			database, err := db.OpenDB("postgres", dbURL)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			storage := deliverystorage.NewDeliveryStorage(deliverystorage.Params{database})
+			storage := deliverystorage.NewDeliveryStorage(deliverystorage.Params{DB: database})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -64,11 +78,11 @@ func TestInsertCourier(t *testing.T) {
 				t.Errorf("assignedOrder: Expected: %s, Got: %s", "not nil", "nil")
 			}
 
-			if assignedOrder.OrderID != test.assignOrder.OrderID {
+			if assignedOrder.OrderID != test.response.OrderID {
 				t.Errorf("OrderID: Expected: %v, Got: %v", test.assignOrder.OrderID, assignedOrder.OrderID)
 			}
 
-			if assignedOrder.CourierID != test.assignOrder.CourierID {
+			if assignedOrder.CourierID != test.response.CourierID {
 				t.Errorf("CourierID: Expected: %v, Got: %v", test.assignOrder.CourierID, assignedOrder.CourierID)
 			}
 
