@@ -18,7 +18,7 @@ func TestGetIncompleteOrders(t *testing.T) {
 		orderList orderapi.ReturnOrderList
 	}{
 		{
-			name: "get incomplete orders test",
+			name: "get incomplete orders",
 			orderList: orderapi.ReturnOrderList{
 				Orders: []orderapi.ReturnOrder{
 					{

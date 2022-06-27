@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package db_test
 
 import (
@@ -17,7 +20,7 @@ func TestGetAllRestaurants(t *testing.T) {
 		restaurantData domain.Restaurant
 	}{
 		{
-			name: "Simple fetch restaurants from db test",
+			name: "Simple fetch restaurants from db",
 			restaurantData: domain.Restaurant{
 				ID:              0,
 				Name:            "GetAllName",
@@ -116,7 +119,7 @@ func TestInsertRestaurant(t *testing.T) {
 		restaurantData domain.Restaurant
 	}{
 		{
-			name: "Simple insert restaurant into db test",
+			name: "Simple insert restaurant into db",
 			restaurantData: domain.Restaurant{
 				ID:              0,
 				Name:            "InsertName",
@@ -173,7 +176,7 @@ func TestGetRestaurant(t *testing.T) {
 		restaurantData domain.Restaurant
 	}{
 		{
-			name: "Simple fetch single restaurant from db test",
+			name: "Simple fetch single restaurant from db",
 			restaurantData: domain.Restaurant{
 				ID:              0,
 				Name:            "GetName",
@@ -255,7 +258,7 @@ func TestUpdateRestaurant(t *testing.T) {
 		updatedRestaurantData domain.Restaurant
 	}{
 		{
-			name: "Simple update restaurant in db test",
+			name: "Simple update restaurant in db",
 			initialRestaurantData: domain.Restaurant{
 				ID:              0,
 				Name:            "InitialName",
@@ -322,7 +325,7 @@ func TestDeleteRestaurant(t *testing.T) {
 		restaurantData domain.Restaurant
 	}{
 		{
-			name: "Simple delete restaurant from db test",
+			name: "Simple delete restaurant from db",
 			restaurantData: domain.Restaurant{
 				ID:              0,
 				Name:            "DeleteName",
@@ -377,7 +380,7 @@ func TestInsertMenu(t *testing.T) {
 		menuItemData   domain.MenuItem
 	}{
 		{
-			name: "Simple insert menu to db test",
+			name: "Simple insert menu to db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "InsertMenuName",
@@ -440,7 +443,7 @@ func TestGetMenu(t *testing.T) {
 		menuItemData   domain.MenuItem
 	}{
 		{
-			name: "Simple fetch menu from db test",
+			name: "Simple fetch menu from db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "GetMenuName",
@@ -516,7 +519,7 @@ func TestUpdateMenu(t *testing.T) {
 		updatedMenuItemData domain.MenuItem
 	}{
 		{
-			name: "Simple update menu in db test",
+			name: "Simple update menu in db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "UpdateMenuName",
@@ -593,7 +596,7 @@ func TestDeleteMenu(t *testing.T) {
 		menuItemData   domain.MenuItem
 	}{
 		{
-			name: "Simple delete menu from db test",
+			name: "Simple delete menu from db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "DeleteMenuName",
@@ -658,7 +661,7 @@ func TestAddMenuItem(t *testing.T) {
 		menuItemData   domain.MenuItem
 	}{
 		{
-			name: "Simple adding item to menu in db test",
+			name: "Simple adding item to menu in db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "AddItemName",
@@ -725,7 +728,7 @@ func TestGetMenuItem(t *testing.T) {
 		menuItemData   domain.MenuItem
 	}{
 		{
-			name: "Simple getting item from a menu in db test",
+			name: "Simple getting item from a menu in db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "GetItemName",
@@ -806,7 +809,7 @@ func TestUpdateMenuItem(t *testing.T) {
 		updatedMenuItemData domain.MenuItem
 	}{
 		{
-			name: "Simple updating item in menu in db test",
+			name: "Simple updating item in menu in db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "UpdateItemName",
@@ -884,7 +887,7 @@ func TestDeleteMenuItem(t *testing.T) {
 		menuItemData   domain.MenuItem
 	}{
 		{
-			name: "Simple deleting item from a menu in db test",
+			name: "Simple deleting item from a menu in db",
 			restaurantData: domain.Restaurant{
 				ID:      0,
 				Name:    "DeleteItemName",
