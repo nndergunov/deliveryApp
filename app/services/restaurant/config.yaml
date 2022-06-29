@@ -1,0 +1,15 @@
+server:
+  address: ":8086"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+database:
+  # host: "localhost"
+  host: "host.docker.internal"
+  port: 5436
+  user: "restaurant_db"
+  password: "restaurant_db_pass"
+  dbName: "restaurant_db"
+  sslmode: "disable"

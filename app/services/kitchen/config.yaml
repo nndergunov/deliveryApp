@@ -1,0 +1,9 @@
+server:
+  address: ":8084"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+orderService:
+  URL: "http://localhost:8085"
