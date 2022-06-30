@@ -1,6 +1,5 @@
 \c order_db
 
--- If your docker compose fails, try to comment/uncomment the next line.
 DO
 $do$
 BEGIN
