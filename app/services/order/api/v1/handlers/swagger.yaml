@@ -1,0 +1,65 @@
+basePath: /v1
+consumes:
+- application/json
+host: localhost
+info:
+  description: API specification of the order service
+  version: 0.0.1
+paths:
+  /admin/orders/{id}/status:
+    put:
+      description: Updates status of the specified order
+      operationId: updateOrderStatus
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated order status data
+  /orders:
+    get:
+      description: Returns all orders from the order service
+      operationId: returnAllOrders
+      parameters:
+      - description: search parameters
+        in: body
+        name: Body
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: order lisr response
+    post:
+      description: Creates new order in the order service
+      operationId: createOrder
+      parameters:
+      - description: order data
+        in: body
+        name: Body
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created order data
+  /orders/{id}:
+    get:
+      description: Returns specified order data
+      operationId: returnOrder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: requested order data
+    put:
+      description: Updates data of the specified order
+      operationId: updateOrder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated order data
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
