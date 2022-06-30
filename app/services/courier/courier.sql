@@ -1,0 +1,47 @@
+\c courier_db
+
+DO
+$do$
+    BEGIN
+        IF EXISTS(
+                SELECT
+                FROM pg_catalog.pg_roles
+                WHERE rolname = 'courier_db') THEN
+
+            RAISE NOTICE 'Role "courier_db" already exists. Skipping.';
+        ELSE
+            CREATE ROLE courier_db WITH LOGIN ENCRYPTED PASSWORD 'courier_db_pass';
+        END IF;
+    END
+$do$;
+
+alter user courier_db with superuser;
+grant all privileges on database courier_db to courier_db;
+
+create table IF NOT EXISTS courier
+(
+    id         serial    not null primary key,
+    username   varchar   NOT NULL UNIQUE,
+    password   varchar   NOT NULL,
+    firstname  varchar   NOT NULL DEFAULT '',
+    lastname   varchar   NOT NULL DEFAULT '',
+    email      varchar   NOT NULL DEFAULT '',
+    created_at timestamp NOT NULL,
+    updated_at timestamp NOT NULL,
+    phone      varchar   NOT NULL DEFAULT '',
+    available  boolean   NOT NULL DEFAULT TRUE
+);
+
+create table IF NOT EXISTS location
+(
+    user_id     int     NOT NULL,
+    latitude    varchar NOT NULL DEFAULT '',
+    longitude   varchar NOT NULL DEFAULT '',
+    country     varchar NOT NULL DEFAULT '',
+    city        varchar NOT NULL DEFAULT '',
+    region      varchar NOT NULL DEFAULT '',
+    street      varchar NOT NULL DEFAULT '',
+    home_number varchar NOT NULL DEFAULT '',
+    floor       varchar NOT NULL DEFAULT '',
+    door        varchar NOT NULL DEFAULT ''
+);

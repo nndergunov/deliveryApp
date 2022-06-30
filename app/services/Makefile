@@ -34,16 +34,22 @@ docker-rebuild-all:
 	make -C restaurant docker-rebuild
 
 docker-start-all:
-	cd ./accounting/ ; make docker-start ; cd ../ ; \
-    cd ./delivery/   ; make docker-start ; cd ../ ; \
-    cd ./restaurant/    ; make docker-start ; cd ../ ; \
-    cd ./order/ 	 ; make docker-start
+	make -C accounting docker-start
+	make -C consumer docker-start
+	make -C courier docker-start
+	make -C delivery docker-start
+	make -C kitchen docker-start
+	make -C order docker-start
+	make -C restaurant docker-start
 
 docker-stop-all:
-	cd ./accounting/ ; make docker-stop ; cd ../ ; \
-    cd ./delivery/   ; make docker-stop ; cd ../ ; \
-    cd ./restaurant/    ; make docker-stop ; cd ../ ; \
-    cd ./order/ 	 ; make docker-stop
+	make -C accounting docker-stop
+	make -C consumer docker-stop
+	make -C courier docker-stop
+	make -C delivery docker-stop
+	make -C kitchen docker-stop
+	make -C order docker-stop
+	make -C restaurant docker-stop
 
 cl-start-all:
 	cd ./accounting/ ; make cl-start & cd ../ ; \

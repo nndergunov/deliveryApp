@@ -6,3 +6,7 @@ services:
     ports:
       - "8084:8084"
     restart: on-failure
+networks:
+  default:
+    external:
+      name: delivery_app_net

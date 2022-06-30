@@ -2,7 +2,6 @@ package accountingstorage_test
 
 import (
 	"fmt"
-
 	"os"
 	"strconv"
 	"strings"
@@ -13,7 +12,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"
-
 )
 
 const configFile = "/config.yaml"
@@ -57,7 +55,6 @@ func TestInsertAccount(t *testing.T) {
 			}
 
 			database, err := db.OpenDB("postgres", dbURL)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -135,7 +132,6 @@ func TestGetAccountByID(t *testing.T) {
 			}
 
 			database, err := db.OpenDB("postgres", dbURL)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -217,7 +213,7 @@ func TestGetAccountListByParam(t *testing.T) {
 			}
 
 			database, err := db.OpenDB("postgres", dbURL)
-      if err != nil {
+			if err != nil {
 				t.Fatal(err)
 			}
 
@@ -306,7 +302,6 @@ func TestAddToAccountBalance(t *testing.T) {
 			}
 
 			database, err := db.OpenDB("postgres", dbURL)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -338,7 +333,6 @@ func TestAddToAccountBalance(t *testing.T) {
 			}
 
 			if err = storage.DeleteAccount(respData.ID); err != nil {
-
 				t.Error(err)
 			}
 
@@ -351,7 +345,7 @@ func TestAddToAccountBalance(t *testing.T) {
 
 func TestSubFromAccountBalance(t *testing.T) {
 	tests := []struct {
-		name        string
+		name string
 
 		transaction domain.Transaction
 	}{
@@ -361,7 +355,6 @@ func TestSubFromAccountBalance(t *testing.T) {
 				FromAccountID: 1,
 				ToAccountID:   0,
 				Amount:        50,
-
 			},
 		},
 	}
@@ -384,7 +377,6 @@ func TestSubFromAccountBalance(t *testing.T) {
 			}
 
 			database, err := db.OpenDB("postgres", dbURL)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -393,7 +385,7 @@ func TestSubFromAccountBalance(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-      
+
 			respData, err := storage.SubFromAccountBalance(test.transaction)
 			if err != nil {
 				t.Fatal(err)
@@ -459,7 +451,6 @@ func TestInsertTransaction(t *testing.T) {
 			}
 
 			database, err := db.OpenDB("postgres", dbURL)
-
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -469,7 +460,6 @@ func TestInsertTransaction(t *testing.T) {
 				t.Fatal(err)
 			}
 			respData, err := storage.InsertTransaction(test.transaction)
-
 			if err != nil {
 				t.Fatal(err)
 			}

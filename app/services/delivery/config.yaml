@@ -1,0 +1,19 @@
+server:
+  address: ":8083"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+database:
+  host: "host.docker.internal"
+  port: 5433
+  user: "delivery_db"
+  password: "delivery_db_pass"
+  dbName: "delivery_db"
+  sslmode: "disable"
+
+consumerServiceURl: http://consumer-service:8081
+courierServiceURl: http://courier-service:8082
+restaurantServiceURl: http://restaurant-service:8086
+googleApiKey:

@@ -8,3 +8,20 @@ download-gomod:
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
+
+docker-build:
+	docker-compose up -d
+
+docker-delete:
+	docker-compose down --remove-orphans --volumes
+	docker image rm rabbitmq
+
+docker-rebuild:
+	make docker-delete
+	make docker-build
+
+docker-start:
+	docker container start rabbitmq
+
+docker-stop:
+	docker container stop rabbitmq

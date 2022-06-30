@@ -416,8 +416,8 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
 			}
 
-			if respData.Altitude != MockLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, respData.Altitude)
+			if respData.Latitude != MockLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, respData.Latitude)
 			}
 
 			if respData.Longitude != MockLocationData.Longitude {
@@ -499,8 +499,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
 			}
 
-			if respData.Altitude != MockLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, respData.Altitude)
+			if respData.Latitude != MockLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, respData.Latitude)
 			}
 
 			if respData.Longitude != MockLocationData.Longitude {
@@ -565,8 +565,8 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
 			}
 
-			if respData.Altitude != MockLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", MockLocationData.Latitude, respData.Altitude)
+			if respData.Latitude != MockLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", MockLocationData.Latitude, respData.Latitude)
 			}
 
 			if respData.Longitude != MockLocationData.Longitude {
