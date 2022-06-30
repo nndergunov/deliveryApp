@@ -1,4 +1,4 @@
-docker-build-app:
+docker-build-all:
 	docker network create delivery_app_net
 	make -C app/pkg/messagebroker docker-build
 	make -C app/services docker-build-all
