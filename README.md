@@ -30,23 +30,14 @@ Start all the databases, services and message broker
 #### Post restaurant
 
 ```http
-   curl -X POST http://localhost:8086/v1/admin/restaurants -H 'Content-Type: application/json' -d '{"Name":"your_restaurant_name", "City":"your_restaurant_city", "AcceptingOrders":true/false, "Address":"Address", "Longitude":<your_restaurant_longitude>, "Latitude":<your_restaurant_latitude>}'
+  curl -X POST http://localhost:8086/v1/admin/restaurants -H 'Content-Type: application/json' -d '{"Name":"your_restaurant_name", "City":"your_restaurant_city", "AcceptingOrders":true/false, "Address":"Address", "Longitude":<your_restaurant_longitude>, "Latitude":<your_restaurant_latitude>}'
 ```
-
-| Parameter         | Type     | Description                                   |
-| :---------------- | :------- | :-------------------------------------------- |
-| `Name`            | `string` | Restaurant name                               |
-| `City`            | `string` | City in which restaurant is located           |
-| `AcceptingOrders` | `bool`   | Whether restaurant is accepting orders or not |
-| `Address`         | `string` | Restaurant address                            |
-| `Longitude`       | `float`  | Restaurant coordinates longitude              |
-| `Latitude`        | `float`  | Restaurant coordinates latitude               |
 
 
 #### Post restaurant menu
 
 ```http
-    curl -X POST http://localhost:8086/v1/admin/restaurants/${id}/menu -H 'Content-Type: application/json' -d '{"RestaurantID":<Restaurant ID>,"Items":[{"ID":0,"MenuID":0,"Name":"menu_item_name","Price":<item price>,"Course":"item_course"}, ...]}'
+  curl -X POST http://localhost:8086/v1/admin/restaurants/${id}/menu -H 'Content-Type: application/json' -d '{"RestaurantID":<Restaurant ID>,"Items":[{"ID":0,"MenuID":0,"Name":"menu_item_name","Price":<item price>,"Course":"item_course"}, ...]}'
 ```
 
 | Parameter | Type  | Description                             |
@@ -81,3 +72,25 @@ Start all the databases, services and message broker
 | Parameter | Type  | Description                                             |
 | :-------- | :-----| :------------------------------------------------------ |
 | `id`      | `int` | **Required**. Id of restaurant from which to fetch menu |
+
+
+### Order service
+
+#### Post order
+
+```http
+  curl -X POST http://localhost:8085/v1/orders -H 'Content-Type: application/json' -d '{"FromUserID":<your_user_id>, "RestaurantID":<restaurant_id>, "OrderItems":[<item_1_id>, <item_2_id>, ...]'
+```
+
+
+### Kitchen service
+
+#### Get information of what to cook
+
+```http
+  curl -X GET http://localhost:8084/v1/tasks/${id}
+```
+
+| Parameter | Type  | Description                                              |
+| :-------- | :-----| :------------------------------------------------------- |
+| `id`      | `int` | **Required**. Id of restaurant from which to fetch tasks |
