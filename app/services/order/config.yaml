@@ -1,0 +1,21 @@
+server:
+  address: ":8085"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+services:
+  accounting: http://accounting-service:8080
+  restaurant: http://restaurant-service:8086
+
+database:
+  host: "host.docker.internal"
+  port: 5435
+  user: "order_db"
+  password: "order_db_pass"
+  dbName: "order_db"
+  sslmode: "disable"
+
+publisher:
+  url: amqp://guest:guest@host.docker.internal:5672

@@ -1,11 +1,3 @@
-### sql ###
-*.sql
-
-### Configuration files ###
-*.env
-*.toml
-config.yaml
-
 ### Project-specific files ###
 cleardatabase
 

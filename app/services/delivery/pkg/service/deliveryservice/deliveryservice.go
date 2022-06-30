@@ -63,11 +63,13 @@ func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (
 
 	consumerLocation, err := c.consumerClient.GetLocation(consumerIDInt)
 	if err != nil {
+		c.logger.Println(err)
 		return nil, systemErr
 	}
 
 	restaurant, err := c.restaurantClient.GetRestaurant(restaurantIDInt)
 	if err != nil {
+		c.logger.Println(err)
 		return nil, systemErr
 	}
 

@@ -570,8 +570,8 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 				t.Errorf("UserID: Expected : > 1, Got: %v", consumerLocationRespData.UserID)
 			}
 
-			if consumerLocationRespData.Altitude != test.consumerLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Altitude)
+			if consumerLocationRespData.Latitude != test.consumerLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Latitude)
 			}
 
 			if consumerLocationRespData.Longitude != test.consumerLocationData.Longitude {
@@ -734,8 +734,8 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 				t.Errorf("UserID: Expected :  %v , Got: %v", consumerCreatedRespData.ID, consumerLocationUpdatedRespData.UserID)
 			}
 
-			if consumerLocationUpdatedRespData.Altitude != test.consumerLocationUpdatedData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Latitude, consumerLocationUpdatedRespData.Altitude)
+			if consumerLocationUpdatedRespData.Latitude != test.consumerLocationUpdatedData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Latitude, consumerLocationUpdatedRespData.Latitude)
 			}
 
 			if consumerLocationUpdatedRespData.Longitude != test.consumerLocationUpdatedData.Longitude {
@@ -871,8 +871,8 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 				t.Errorf("UserID: Expected : %v, Got: %v", consumerCreatedRespData.ID, consumerLocationRespData.UserID)
 			}
 
-			if consumerLocationRespData.Altitude != test.consumerLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Altitude)
+			if consumerLocationRespData.Latitude != test.consumerLocationData.Latitude {
+				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Latitude)
 			}
 
 			if consumerLocationRespData.Longitude != test.consumerLocationData.Longitude {

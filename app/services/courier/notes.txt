@@ -1,0 +1,10 @@
+golangci-lint run
+gofumpt -l -w .
+
+docker kill $(docker ps -q)
+docker rm $(docker ps -a -q)
+docker rmi -f $(docker images -aq)
+docker volume rm $(docker volume ls -q)
+v2.
+    1. Implement POSTGIS https://stackoverflow.com/questions/23681934/postgis-how-to-find-n-closest-sets-of-points-to-a-given-set
+    2. Try to reduce repeated code like courier location make them one

@@ -1,0 +1,14 @@
+server:
+  address: ":8080"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+database:
+  host: "host.docker.internal"
+  port: 5430
+  user: "accounting_db"
+  password: "accounting_db_pass"
+  dbName: "accounting_db"
+  sslmode: "disable"

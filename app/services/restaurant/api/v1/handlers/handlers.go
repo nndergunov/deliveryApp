@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -73,18 +72,14 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 
 	status, err := v1.EncodeIndent(data, "", " ")
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
 
 	_, err = io.WriteString(responseWriter, string(status))
 	if err != nil {
-		e.log.Println(err)
-
-		responseWriter.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, responseWriter)
 
 		return
 	}
@@ -97,9 +92,7 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
 	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, w)
 
 		return
 	}
@@ -115,18 +108,14 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	restaurant, err := e.service.ReturnRestaurant(restaurantID)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -142,16 +131,14 @@ func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request
 func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	menu, err := e.service.ReturnMenu(restaurantID)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, w)
 
 		return
 	}
@@ -167,9 +154,7 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -178,9 +163,7 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 
 	err = v1.Decode(req, restaurantData)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -189,9 +172,7 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 
 	createdRest, err := e.service.CreateNewRestaurant(rest)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusInternalServerError)
+		e.handleError(err, w)
 
 		return
 	}
@@ -207,18 +188,14 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -227,9 +204,7 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 
 	err = v1.Decode(req, restaurantData)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -238,13 +213,9 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 
 	updatedRestaurant, err := e.service.UpdateRestaurant(rest)
 	if err != nil {
-		e.log.Println(err)
+		e.handleError(err, w)
 
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
+		return
 	}
 
 	response := restaurantToResponse(*updatedRestaurant)
@@ -258,22 +229,16 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	err = e.service.DeleteRestaurant(restaurantID)
 	if err != nil {
-		e.log.Println(err)
+		e.handleError(err, w)
 
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
+		return
 	}
 
 	err = v1.Respond(nil, w)
@@ -285,18 +250,14 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -305,9 +266,7 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 
 	err = v1.Decode(req, menuData)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -316,13 +275,9 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 
 	createdMenu, err := e.service.CreateMenu(menu)
 	if err != nil {
-		e.log.Println(err)
+		e.handleError(err, w)
 
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
+		return
 	}
 
 	response := menuToResponse(*createdMenu)
@@ -336,18 +291,14 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -356,9 +307,7 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 
 	err = v1.Decode(req, menuItemData)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -367,13 +316,9 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 
 	addedMenuItem, err := e.service.AddMenuItem(restaurantID, menuItem)
 	if err != nil {
-		e.log.Println(err)
+		e.handleError(err, w)
 
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
+		return
 	}
 
 	response := menuItemToResponse(*addedMenuItem)
@@ -387,27 +332,21 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -416,9 +355,7 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 
 	err = v1.Decode(req, menuItemData)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
@@ -427,13 +364,9 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 
 	updatedMenuItem, err := e.service.UpdateMenuItem(restaurantID, menuItem)
 	if err != nil {
-		e.log.Println(err)
+		e.handleError(err, w)
 
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
+		return
 	}
 
 	response := menuItemToResponse(*updatedMenuItem)
@@ -447,43 +380,23 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	menuItemID, err := getIDFromEndpoint(menuIDKey, r)
 	if err != nil {
-		e.log.Println(err)
-
-		w.WriteHeader(http.StatusBadRequest)
+		e.handleError(err, w)
 
 		return
 	}
 
 	err = e.service.DeleteMenuItem(restaurantID, menuItemID)
 	if err != nil {
-		if err != nil {
-			if errors.Is(err, service.ErrItemIsNotInMenu) {
-				err := v1.RespondWithError("requested item is not in menu", http.StatusBadRequest, w)
-				if err != nil {
-					e.log.Println(err)
+		e.handleError(err, w)
 
-					w.WriteHeader(http.StatusInternalServerError)
-
-				}
-
-				return
-			}
-
-			e.log.Println(err)
-
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)

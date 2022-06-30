@@ -7,10 +7,11 @@ import (
 
 	// Postgres drivers.
 	_ "github.com/lib/pq"
-	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db/internal/models"
-	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db/internal/models"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
 type Database struct {
