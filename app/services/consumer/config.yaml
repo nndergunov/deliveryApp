@@ -1,0 +1,14 @@
+server:
+  address: ":8081"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+database:
+  host: "host.docker.internal"
+  port: 5431
+  user: "consumer_db"
+  password: "consumer_db_pass"
+  dbName: "consumer_db"
+  sslmode: "disable"

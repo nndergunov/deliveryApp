@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
-
 )
 
 // Params is the input parameter struct for the module that contains its dependencies

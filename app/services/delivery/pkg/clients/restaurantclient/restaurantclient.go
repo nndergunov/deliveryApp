@@ -18,7 +18,7 @@ func NewRestaurantClient(url string) *RestaurantClient {
 }
 
 func (a RestaurantClient) GetRestaurant(restaurantID int) (*restaurantapi.ReturnRestaurant, error) {
-	resp, err := http.Get(a.restaurantURL + "v1/restaurants/" + strconv.Itoa(restaurantID))
+	resp, err := http.Get(a.restaurantURL + "/v1/restaurants/" + strconv.Itoa(restaurantID))
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}

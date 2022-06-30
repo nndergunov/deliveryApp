@@ -1,8 +1,23 @@
 version: '3.8'
 services:
+  delivery_service_db:
+    image: postgres:latest
+    container_name: delivery_service_db
+    environment:
+      - POSTGRES_USER=${USER}
+      - POSTGRES_PASSWORD=${PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - '5433:5432'
   app:
     container_name: delivery-service
     build: .
     ports:
       - "8083:8083"
     restart: on-failure
+    depends_on:
+      - delivery_service_db
+networks:
+  default:
+    external:
+      name: delivery_app_net

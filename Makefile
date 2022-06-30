@@ -1,9 +1,25 @@
-docker-build-all:
-	make -C app/pkg/messagebroker run-mb
-	make -C app/services/accounting docker-build
-	make -C app/services/consumer docker-build
-	make -C app/services/courier docker-build
-	make -C app/services/delivery docker-build
-	make -C app/services/kitchen docker-build
-	make -C app/services/order docker-build
-	make -C app/services/restaurant docker-build
+docker-build-app:
+	docker network create delivery_app_net
+	make -C pkg/messagebroker docker-build
+	make -C services docker-build-all
+
+
+docker-delete-all:
+	make -C app/pkg/messagebroker docker-delete
+	make -C app/services docker-delete-all
+	docker network rm delivery_app_net
+
+
+docker-rebuild-all:
+	make -C app/pkg/messagebroker docker-rebuild
+	make -C app/services docker-rebuild-all
+
+
+docker-start-all:
+	make -C app/pkg/messagebroker docker-start
+	make -C app/services docker-start-all
+
+
+docker-stop-all:
+	make -C app/pkg/messagebroker docker-stop
+	make -C app/services docker-stop-all

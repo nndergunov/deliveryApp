@@ -1,0 +1,14 @@
+server:
+  address: ":8082"
+  readTime: "5s"
+  writeTime: "5s"
+  idleTime: "5m"
+  readerHeaderTime: "5s"
+
+database:
+  host: "host.docker.internal"
+  port: 5432
+  user: "courier_db"
+  password: "courier_db_pass"
+  dbName: "courier_db"
+  sslmode: "disable"

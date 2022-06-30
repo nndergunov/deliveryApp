@@ -1,4 +1,17 @@
 \c restaurant_db
+DO
+$do$
+    BEGIN
+        IF EXISTS (
+                SELECT FROM pg_catalog.pg_roles
+                WHERE  rolname = 'restaurant_db') THEN
+
+            RAISE NOTICE 'Role "restaurant_db" already exists. Skipping.';
+        ELSE
+            CREATE ROLE restaurant_db LOGIN PASSWORD 'restaurant_db_pass';
+        END IF;
+    END
+$do$;
 
 alter user restaurant_db with superuser;
 

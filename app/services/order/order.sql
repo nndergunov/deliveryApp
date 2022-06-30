@@ -1,7 +1,18 @@
 \c order_db
 
--- If your docker compose fails, try to comment/uncomment the next line.
--- create user order_db with encrypted password 'order_db_pass';
+DO
+$do$
+BEGIN
+   IF EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = 'order_db') THEN
+
+      RAISE NOTICE 'Role "order_db" already exists. Skipping.';
+ELSE
+CREATE ROLE order_db_pass LOGIN PASSWORD 'order_db_pass';
+END IF;
+END
+$do$;
 
 alter user order_db with superuser;
 

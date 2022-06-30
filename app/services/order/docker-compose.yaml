@@ -12,9 +12,15 @@ services:
     volumes:
       - ./order.sql:/docker-entrypoint-initdb.d/order.sql
 
-  app:
+app:
     container_name: order-service
     build: .
     ports:
-      - 8085:8085
+      - "8085:8085"
     restart: on-failure
+    depends_on:
+      - order_service_db
+networks:
+  default:
+    external:
+      name: delivery_app_net
