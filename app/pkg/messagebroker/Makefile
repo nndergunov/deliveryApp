@@ -17,7 +17,7 @@ docker-build:
 
 docker-delete:
 	docker-compose down --remove-orphans --volumes
-	docker image rm rabbitmq
+	docker image rm rabbitmq:3.9.11-management-alpine
 
 docker-rebuild:
 	make docker-delete
