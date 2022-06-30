@@ -5,7 +5,7 @@ gofumpt:
 	gofumpt -l -w .
 
 status-check:
-	-curl http://localhost:8082/status
+	-curl http://localhost:8086/status
 
 cl-start:
 	go run main.go
@@ -23,6 +23,8 @@ docker-rebuild:
 
 docker-start:
 	docker container start restaurant-service
+
+docker-stop:
 	docker container stop restaurant-service
 
 update-gomod:

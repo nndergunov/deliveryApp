@@ -6,6 +6,7 @@ server:
   readerHeaderTime: "5s"
 
 database:
+  # host: "localhost"
   host: "host.docker.internal"
   port: 5436
   user: "restaurant_db"

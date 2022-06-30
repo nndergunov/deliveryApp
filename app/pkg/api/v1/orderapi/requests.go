@@ -6,6 +6,7 @@ type OrderFilters struct {
 	Statuses         []string
 	ExcludeStatuses  []string
 }
+
 type PostOrder struct {
 	OrderData   OrderData
 	UserAccount int

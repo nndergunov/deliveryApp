@@ -11,6 +11,7 @@ services:
       - '5436:5432'
     volumes:
       - ./restaurant.sql:/docker-entrypoint-initdb.d/restaurant.sql
+
   app:
     container_name: restaurant-service
     build: .
