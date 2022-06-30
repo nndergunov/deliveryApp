@@ -9,6 +9,7 @@ require (
 	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220621145645-038a54ec385b
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec385b
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220627125435-139820c76636
 	github.com/stretchr/testify v1.7.4
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
@@ -20,7 +21,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

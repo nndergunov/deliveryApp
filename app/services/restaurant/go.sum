@@ -277,6 +277,8 @@ github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220621145645-038
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220621145645-038a54ec385b/go.mod h1:ZUwhDklV6a8zUSmHhlHE9I7viwpewNgQOFY93kjJtRc=
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec385b h1:CApykkxh8sFpmnlr8PIO8HiaXDJgEnJlAPJHFfnD0tE=
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec385b/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
+github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220627125435-139820c76636 h1:GNM8M+sBq3D0yOA7CEU1452qQjUyAgXnxfKmfXFYoVM=
+github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220627125435-139820c76636/go.mod h1:VZTZLvj3fcLQ3rdlsxBFZfxw2gPH3vd5AqlVnSRGzLU=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pelletier/go-toml v1.9.3/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml v1.9.4/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
