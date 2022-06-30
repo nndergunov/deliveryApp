@@ -20,7 +20,7 @@ func TestCheckIfAvailable(t *testing.T) {
 		restaurantData restaurantapi.ReturnRestaurant
 	}{
 		{
-			name: "restaurant is unavailable test",
+			name: "restaurant is unavailable",
 			restaurantData: restaurantapi.ReturnRestaurant{
 				ID:              0,
 				Name:            "test restaurant 1",
@@ -32,7 +32,7 @@ func TestCheckIfAvailable(t *testing.T) {
 			},
 		},
 		{
-			name: "restaurant is available test",
+			name: "restaurant is available",
 			restaurantData: restaurantapi.ReturnRestaurant{
 				ID:              0,
 				Name:            "test restaurant 2",
@@ -85,12 +85,13 @@ func TestCalculateOrderPrice(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name      string
-		menuData  restaurantapi.ReturnMenu
-		orderData domain.Order
+		name          string
+		menuData      restaurantapi.ReturnMenu
+		orderData     domain.Order
+		expectedPrice float64
 	}{
 		{
-			name: "restaurant is available test",
+			name: "basic order",
 			menuData: restaurantapi.ReturnMenu{
 				RestaurantID: 0,
 				MenuItems: []restaurantapi.ReturnMenuItem{
@@ -121,6 +122,7 @@ func TestCalculateOrderPrice(t *testing.T) {
 				OrderItems:   []int{1, 2, 3, 3},
 				Status:       domain.OrderStatus{},
 			},
+			expectedPrice: 13,
 		},
 	}
 
@@ -153,20 +155,8 @@ func TestCalculateOrderPrice(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			var expPrice float64
-
-			for _, orderedItemID := range test.orderData.OrderItems {
-				for _, menuItem := range test.menuData.MenuItems {
-					if menuItem.ID != orderedItemID {
-						continue
-					}
-
-					expPrice += menuItem.Price
-				}
-			}
-
-			if expPrice != price {
-				t.Fatalf("Expected price: %f, Got: %f", expPrice, price)
+			if test.expectedPrice != price {
+				t.Fatalf("Expected price: %f, Got: %f", test.expectedPrice, price)
 			}
 		})
 	}

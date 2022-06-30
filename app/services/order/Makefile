@@ -32,14 +32,17 @@ update-gomod:
 	make gomod-tidy
 
 download-gomod:
+	go get -u github.com/friendsofgo/errors
+	go get -u github.com/gorilla/mux
+	go get -u github.com/lib/pq
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/api
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/configreader
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
-	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/messagebroker
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
+	go get -u github.com/stretchr/testify
 	go get -u github.com/volatiletech/sqlboiler/v4
-	go get -u github.com/gorilla/mux
-	go get -u github.com/lib/pq
+	go get -u github.com/volatiletech/strmangle
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
