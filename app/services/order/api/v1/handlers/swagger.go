@@ -1,7 +1,7 @@
 // API specification of the order service
 //
 //     Schemes: http
-//     Host: localhost
+//     Host: localhost:8085
 //     BasePath: /v1
 //     Version: 0.0.1
 //

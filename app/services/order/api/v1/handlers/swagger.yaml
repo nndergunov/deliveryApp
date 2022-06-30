@@ -1,7 +1,7 @@
 basePath: /v1
 consumes:
 - application/json
-host: localhost
+host: localhost:8085
 info:
   description: API specification of the order service
   version: 0.0.1
@@ -10,6 +10,11 @@ paths:
     put:
       description: Updates status of the specified order
       operationId: updateOrderStatus
+      parameters:
+      - description: order status data
+        in: body
+        name: Body
+        required: true
       produces:
       - application/json
       responses:
@@ -53,6 +58,11 @@ paths:
     put:
       description: Updates data of the specified order
       operationId: updateOrder
+      parameters:
+      - description: order data
+        in: body
+        name: Body
+        required: true
       produces:
       - application/json
       responses:

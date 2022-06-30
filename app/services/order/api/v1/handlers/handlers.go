@@ -222,6 +222,11 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	// ---
 	// produces:
 	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: order data
+	//     required: true
 	// responses:
 	//   '200':
 	//     description: updated order data
@@ -277,6 +282,11 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	// ---
 	// produces:
 	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: order status data
+	//     required: true
 	// responses:
 	//   '200':
 	//     description: updated order status data

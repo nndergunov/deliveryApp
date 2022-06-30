@@ -1,7 +1,7 @@
-// API specification of the kitchen service
+// API specification of the restaurant service
 //
 //     Schemes: http
-//     Host: localhost:8084
+//     Host: localhost:8086
 //     BasePath: /v1
 //     Version: 0.0.1
 //
