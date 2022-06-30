@@ -5,7 +5,7 @@ docker-build-app:
 
 
 docker-delete-all:
-#	make -C app/pkg/messagebroker docker-delete
+	make -C app/pkg/messagebroker docker-delete
 	make -C app/services docker-delete-all
 	docker network rm delivery_app_net
 
