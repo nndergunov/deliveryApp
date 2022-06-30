@@ -11,6 +11,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/handlers"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/service"

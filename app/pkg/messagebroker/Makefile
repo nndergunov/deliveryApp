@@ -1,3 +1,6 @@
+run-mb:
+	docker-compose up -d
+
 update-gomod:
 	make download-gomod
 	make gomod-tidy

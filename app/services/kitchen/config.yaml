@@ -4,3 +4,6 @@ server:
   writeTime: "5s"
   idleTime: "5m"
   readerHeaderTime: "5s"
+
+orderService:
+  URL: "http://localhost:8085"

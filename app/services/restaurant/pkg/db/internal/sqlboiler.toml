@@ -1,0 +1,7 @@
+[psql]
+    dbname = "restaurant_db"
+    host = "localhost"
+    port = 5436
+    user = "restaurant_db"
+    pass = "restaurant_db_pass"
+    sslmode = "disable"
