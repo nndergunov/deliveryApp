@@ -7,6 +7,7 @@ import (
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
+
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/restaurantclient"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
@@ -27,7 +28,7 @@ func TestCheckIfAvailable(t *testing.T) {
 				City:            "test city 1",
 				Address:         "test address 1",
 				Longitude:       0,
-				Altitude:        0,
+				Latitude:        0,
 			},
 		},
 		{
@@ -39,7 +40,7 @@ func TestCheckIfAvailable(t *testing.T) {
 				City:            "test city 2",
 				Address:         "test address 2",
 				Longitude:       0,
-				Altitude:        0,
+				Latitude:        0,
 			},
 		},
 	}

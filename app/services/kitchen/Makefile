@@ -1,5 +1,8 @@
-lint:
+golangci-lint:
 	golangci-lint run
+
+gofumpt:
+	gofumpt -l -w .
 
 status-check:
 	-curl http://localhost:8084/status

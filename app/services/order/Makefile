@@ -1,33 +1,30 @@
-lint:
+golangci-lint:
 	golangci-lint run
+
+gofumpt:
+	gofumpt -l -w .
 
 status-check:
 	-curl http://localhost:8085/status
 
 cl-start:
-	make -C database docker-build
 	go run main.go
 
 docker-build:
-	make -C database docker-build
 	docker-compose up -d
 
 docker-delete:
-	make -C database docker-delete
 	docker-compose down --remove-orphans --volumes
 	docker image rm order_app
 
 docker-rebuild:
-	make -C database docker-rebuild
 	make docker-delete
 	make docker-build
 
 docker-start:
-	make -C database docker-start
 	docker container start order-service
 
 docker-stop:
-	make -C database docker-stop
 	docker container stop order-service
 
 update-gomod:
