@@ -215,6 +215,38 @@ func TestInsertTransactions(t *testing.T) {
 				Valid:         true,
 			},
 		},
+		{
+			name: "from account",
+			in: domain.Transaction{
+				FromAccountID: 1,
+				Amount:        50,
+			},
+			out: &domain.Transaction{
+				ID:            1,
+				FromAccountID: 1,
+				ToAccountID:   0,
+				Amount:        50,
+				CreatedAt:     time.Now(),
+				UpdatedAt:     time.Now(),
+				Valid:         true,
+			},
+		},
+		{
+			name: "to account",
+			in: domain.Transaction{
+				ToAccountID: 2,
+				Amount:      50,
+			},
+			out: &domain.Transaction{
+				ID:            1,
+				FromAccountID: 0,
+				ToAccountID:   2,
+				Amount:        50,
+				CreatedAt:     time.Now(),
+				UpdatedAt:     time.Now(),
+				Valid:         true,
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -239,6 +271,8 @@ func TestInsertTransactions(t *testing.T) {
 
 			storage.EXPECT().GetAccountByID(test.in.FromAccountID).Return(fromAccount, nil)
 			storage.EXPECT().GetAccountByID(test.in.ToAccountID).Return(toAccount, nil)
+			storage.EXPECT().SubFromAccountBalance(test.in).Return(test.out, nil)
+			storage.EXPECT().AddToAccountBalance(test.in).Return(test.out, nil)
 			storage.EXPECT().InsertTransaction(test.in).Return(test.out, nil)
 
 			service := accountingservice.NewService(accountingservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
