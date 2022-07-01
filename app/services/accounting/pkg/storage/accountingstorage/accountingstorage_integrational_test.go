@@ -2,6 +2,7 @@ package accountingstorage_test
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"os"
 	"strconv"
 	"strings"
@@ -10,6 +11,8 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db/dbtest"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/docker"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"
 )
@@ -22,6 +25,20 @@ var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
 	" password=" + configreader.GetString("database.test.password") +
 	" dbname=" + configreader.GetString("database.test.dbName") +
 	" sslmode=" + configreader.GetString("database.test.sslmode"))
+
+var c *docker.Container
+
+func TestMain(m *testing.M) {
+	var err error
+	c, err = dbtest.StartDB()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer dbtest.StopDB(c)
+
+	m.Run()
+}
 
 func TestInsertAccount(t *testing.T) {
 	tests := []struct {
@@ -43,35 +60,31 @@ func TestInsertAccount(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
+			_, database, teardown := dbtest.NewUnit(t, c, "test_db")
+			t.Cleanup(teardown)
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			//line, err := os.Getwd()
+			//if err != nil {
+			//	t.Fatal(err)
+			//}
+			//confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
+			//
+			//err = configreader.SetConfigFile(confPath + configFile)
+			//if err != nil {
+			//	t.Fatal(err)
+			//}
+			//
+			//database, err := db.OpenDB("postgres", dbURL)
+			//if err != nil {
+			//	t.Fatal(err)
+			//}
+			//
 
 			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
 
 			resp, err := storage.InsertNewAccount(test.account)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp == nil {
-				t.Errorf("createCourier: Expected: %s, Got: %s", "not nil", "nil")
-			}
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
 			if resp.ID != test.account.ID {
 				t.Errorf("ID: Expected: %v, Got: %v", test.account.ID, resp.ID)
@@ -89,13 +102,8 @@ func TestInsertAccount(t *testing.T) {
 				t.Errorf("Balance: Expected: %v, Got: %v", test.account.Balance, resp.Balance)
 			}
 
-			if err = storage.DeleteAccount(resp.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			err = storage.DeleteAccount(resp.ID)
+			require.NoError(t, err)
 		})
 	}
 }

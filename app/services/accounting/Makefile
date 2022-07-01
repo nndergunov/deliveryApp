@@ -4,6 +4,14 @@ golangci-lint:
 gofumpt:
 	gofumpt -l -w .
 
+genstorage:
+	mockgen -source=pkg/service/accountingservice/accountingstorage.go \
+	-destination=pkg/mocks/mock_storage.go
+
+genservice:
+	mockgen -source=pkg/service/accountingservice/accountingservice.go \
+    -destination=pkg/mocks/mock_service.go
+
 status-check:
 	-curl http://localhost:8080/status
 

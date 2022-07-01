@@ -12,3 +12,9 @@ database:
   password: "accounting_db_pass"
   dbName: "accounting_db"
   sslmode: "disable"
+
+  test:
+    port: 5430
+    user: "accounting_db"
+    password: "test_accounting_db_pass"
+    sslmode: "disable"
