@@ -1,4 +1,3 @@
-
 # deliveryApp
 
 This project is an example of a simple backend delivery app that uses microservice pattern.
@@ -33,7 +32,6 @@ Start all the databases, services and message broker
   curl -X POST http://localhost:8086/v1/admin/restaurants -H 'Content-Type: application/json' -d '{"Name":"your_restaurant_name", "City":"your_restaurant_city", "AcceptingOrders":true/false, "Address":"Address", "Longitude":<your_restaurant_longitude>, "Latitude":<your_restaurant_latitude>}'
 ```
 
-
 #### Post restaurant menu
 
 ```http
@@ -44,13 +42,11 @@ Start all the databases, services and message broker
 | :-------- | :---- | :-------------------------------------- |
 | `id`      | `int` | **Required**. Id of restaurant to fetch |
 
-
 #### Get all restaurants (menus are not returned)
 
 ```http
   curl -X GET http://localhost:8086/v1/restaurants
 ```
-
 
 #### Get restaurant by Id
 
@@ -62,7 +58,6 @@ Start all the databases, services and message broker
 | :-------- | :---- | :-------------------------------------- |
 | `id`      | `int` | **Required**. Id of restaurant to fetch |
 
-
 #### Get restaurant menu
 
 ```http
@@ -73,7 +68,6 @@ Start all the databases, services and message broker
 | :-------- | :-----| :------------------------------------------------------ |
 | `id`      | `int` | **Required**. Id of restaurant from which to fetch menu |
 
-
 ### Order service
 
 #### Post order
@@ -81,7 +75,6 @@ Start all the databases, services and message broker
 ```http
   curl -X POST http://localhost:8085/v1/orders -H 'Content-Type: application/json' -d '{"FromUserID":<your_user_id>, "RestaurantID":<restaurant_id>, "OrderItems":[<item_1_id>, <item_2_id>, ...]'
 ```
-
 
 ### Kitchen service
 
@@ -94,3 +87,159 @@ Start all the databases, services and message broker
 | Parameter | Type  | Description                                              |
 | :-------- | :-----| :------------------------------------------------------- |
 | `id`      | `int` | **Required**. Id of restaurant from which to fetch tasks |
+
+#### Courier service
+
+##### Post courier
+
+```http
+  curl -X POST http://localhost:8082/v1/couriers
+```
+
+##### Post courier location
+
+```http
+  curl -X POST http://localhost:8082/v1/locations
+```
+
+##### Get courier
+
+```http
+  curl -X GET http://localhost:8082/v1/couriers/{id}
+```
+
+| Parameter | Type  | Description                                    |
+| :-------- | :-----|:-----------------------------------------------|
+| `id`      | `int` | **Required**. Id of courier to fetch           |
+
+##### Get courier location
+
+```http
+  curl -X GET http://localhost:8082/v1/locations/{id}
+```
+
+| Parameter | Type  | Description                                    |
+| :-------- | :-----|:-----------------------------------------------|
+| `id`      | `int` | **Required**. Id of courier to fetch           |
+
+#### Consumer service
+
+##### Post consumer
+
+```http
+  curl -X POST http://localhost:8082/v1/consumers
+```
+
+##### Post consumer location
+
+```http
+  curl -X POST http://localhost:8082/v1/locations
+```
+
+##### Get consumer
+
+```http
+  curl -X GET http://localhost:8082/v1/couriers/{id}
+```
+
+| Parameter | Type  | Description                           |
+| :-------- | :-----|:--------------------------------------|
+| `id`      | `int` | **Required**. Id of consumer to fetch |
+
+##### Get consumer location
+
+```http
+  curl -X GET http://localhost:8082/v1/locations/{id}
+```
+
+| Parameter | Type  | Description                           |
+| :-------- | :-----|:--------------------------------------|
+| `id`      | `int` | **Required**. Id of consumer to fetch |
+
+#### Accounting service
+
+##### Post account
+
+```http
+  curl -X GET http://localhost:8080/v1/accounts
+```
+
+##### Get account
+
+```http
+  curl -X GET http://localhost:8082/v1/accounts/{id}
+```
+
+| Parameter | Type  | Description                           |
+| :-------- | :-----|:--------------------------------------|
+| `id`      | `int` | **Required**. Id of consumer to fetch |
+
+##### Get account list
+
+```http
+  curl -X GET http://localhost:8082/v1/accounts
+```
+
+| query Parameter | Type     | Description                              |
+|:-----------------|:---------|:-----------------------------------------|
+| `user_id`        | `string` | **Required**. Id of user to fetch        |
+| `user_type`      | `string` | **Required**. user type of user to fetch |
+
+##### Transaction adding to balance
+
+```http
+  curl -X POST http://localhost:8082/v1/transactions
+```
+
+| body              | Type      | Description                   |
+|:------------------|:----------|:------------------------------|
+| `to_account_id`   | `int`     | **Required**. to account id   |
+| `amount`          | `float64` | **Required**.amount           | 
+
+##### Transaction sub from balance
+
+```http
+  curl -X POST http://localhost:8082/v1/transactions
+```
+
+| body              | Type      | Description                   |
+|:------------------|:----------|:------------------------------|
+| `from_account_id` | `int`     | **Required**. from account id |
+| `amount`          | `float64` | **Required**.amount           | 
+
+##### Transaction from balance to balance
+
+```http
+  curl -X POST http://localhost:8082/v1/transactions
+```
+
+| body              | Type      | Description                   |
+|:------------------|:----------|:------------------------------|
+| `from_account_id` | `int`     | **Required**. from account id |
+| `to_account_id`   | `int`     | **Required**. to account id   |
+| `amount`          | `float64` | **Required**.amount           | 
+
+#### Delivery service
+
+##### Get estimate values
+
+```http
+  curl -X GET http://localhost:8083/v1/estimate
+```
+
+| query param     | Type  | Description                 |
+|:----------------|:------|:----------------------------|
+| `consumer_id`   | `int` | **Required**. consumer id   |
+| `restaurant_id` | `int` | **Required**. restaurant id |
+
+##### Assign order to available courier near restaurant
+
+```http
+  curl -X POST http://localhost:8083/v1/orders/{id}/assing
+```
+
+| body            | Type  | Description                 |
+|:----------------|:------|:----------------------------|
+| `from_user_id`  | `int` | **Required**. from user id  |
+| `restaurant_id` | `int` | **Required**. restaurant id |
+
