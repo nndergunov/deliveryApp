@@ -1,0 +1,22 @@
+basePath: /v1
+consumes:
+- application/json
+host: localhost:8084
+info:
+  description: API specification of the kitchen service
+  version: 0.0.1
+paths:
+  /tasks/{id}:
+    get:
+      description: Returns tasks for the specified restaurant
+      operationId: returnTasks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: requested data
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

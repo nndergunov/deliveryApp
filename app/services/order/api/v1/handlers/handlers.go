@@ -69,6 +69,21 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 }
 
 func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, request *http.Request) {
+	// swagger:operation GET /orders returnAllOrders
+	//
+	// Returns all orders from the order service
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: search parameters
+	//     required: false
+	// responses:
+	//   '200':
+	//     description: order lisr response
 	parameters := domain.SearchParameters{
 		FromRestaurantID: nil,
 		Statuses:         nil,
@@ -114,6 +129,21 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 }
 
 func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request *http.Request) {
+	// swagger:operation POST /orders createOrder
+	//
+	// Creates new order in the order service
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: order data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: created order data
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -150,6 +180,16 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 }
 
 func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request *http.Request) {
+	// swagger:operation GET /orders/{id} returnOrder
+	//
+	// Returns specified order data
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: requested order data
 	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -175,6 +215,21 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 }
 
 func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request *http.Request) {
+	// swagger:operation PUT /orders/{id} updateOrder
+	//
+	// Updates data of the specified order
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: order data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: updated order data
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -220,6 +275,21 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 }
 
 func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, request *http.Request) {
+	// swagger:operation PUT /admin/orders/{id}/status updateOrderStatus
+	//
+	// Updates status of the specified order
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: order status data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: updated order status data
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)

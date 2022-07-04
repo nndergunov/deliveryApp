@@ -90,6 +90,16 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 }
 
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
+	// swagger:operation GET /restaurants returnRestaurantList
+	//
+	// Returns restaurant list
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: restaurant list
 	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
 		e.handleError(err, w)
@@ -106,6 +116,16 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 }
 
 func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation GET /restaurants/{id} returnRestaurant
+	//
+	// Returns requested restaurant restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: requested restaurtant
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -129,6 +149,16 @@ func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request
 }
 
 func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation GET /restaurants/{id}/menu returnMenu
+	//
+	// Returns menu of the requested restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: menu of the requested restaurtant
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -152,6 +182,21 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation POST /restaurants createRestaurant
+	//
+	// Returns menu of the requested restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: restaurant data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: created restaurant
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.handleError(err, w)
@@ -186,6 +231,21 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 }
 
 func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation PUT /restaurants/{id} updateRestaurant
+	//
+	// Updates restaurant data
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: updated restaurant data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: updated restaurant data
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -227,6 +287,15 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 }
 
 func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation DELETE /restaurants/{id} deleteRestaurant
+	//
+	// Deletes restaurant data
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -248,6 +317,21 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 }
 
 func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation POST /restaurants/{id}/menu createMenu
+	//
+	// Creates menu in the restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: menu data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: created menu
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -289,6 +373,21 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation PUT /restaurants/{id}/menu addMenuItem
+	//
+	// Adds new menu item in the restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: menu item data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: created menu item
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -330,6 +429,21 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation PATCH /restaurants/{id}/menu/{itemid} updateMenuItem
+	//
+	// Updates menu item in the restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	//   - name: Body
+	//     in: body
+	//     description: updated menu item data
+	//     required: true
+	// responses:
+	//   '200':
+	//     description: updated menu item
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -378,6 +492,15 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 }
 
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
+	// swagger:operation DELETE /restaurants/{id}/menu/{itemid} deleteMenuItem
+	//
+	// Deletes menu item in the restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
