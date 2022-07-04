@@ -1,0 +1,122 @@
+basePath: /v1
+consumes:
+- application/json
+host: localhost:8086
+info:
+  description: API specification of the restaurant service
+  version: 0.0.1
+paths:
+  /restaurants:
+    get:
+      description: Returns restaurant list
+      operationId: returnRestaurantList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: restaurant list
+    post:
+      description: Returns menu of the requested restaurant
+      operationId: createRestaurant
+      parameters:
+      - description: restaurant data
+        in: body
+        name: Body
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created restaurant
+  /restaurants/{id}:
+    delete:
+      description: Deletes restaurant data
+      operationId: deleteRestaurant
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+    get:
+      description: Returns requested restaurant restaurant
+      operationId: returnRestaurant
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: requested restaurtant
+    put:
+      description: Updates restaurant data
+      operationId: updateRestaurant
+      parameters:
+      - description: updated restaurant data
+        in: body
+        name: Body
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated restaurant data
+  /restaurants/{id}/menu:
+    get:
+      description: Returns menu of the requested restaurant
+      operationId: returnMenu
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: menu of the requested restaurtant
+    post:
+      description: Creates menu in the restaurant
+      operationId: createMenu
+      parameters:
+      - description: menu data
+        in: body
+        name: Body
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created menu
+    put:
+      description: Adds new menu item in the restaurant
+      operationId: addMenuItem
+      parameters:
+      - description: menu item data
+        in: body
+        name: Body
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created menu item
+  /restaurants/{id}/menu/{itemid}:
+    delete:
+      description: Deletes menu item in the restaurant
+      operationId: deleteMenuItem
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+    patch:
+      description: Updates menu item in the restaurant
+      operationId: updateMenuItem
+      parameters:
+      - description: updated menu item data
+        in: body
+        name: Body
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated menu item
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
