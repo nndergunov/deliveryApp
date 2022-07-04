@@ -32,6 +32,10 @@ func (a AccountingClient) CreateTransaction(accountID, restaurantID int, orderPr
 		return false, fmt.Errorf("sending request: %w", err)
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("%w: error %d", ErrAccountingServiceFail, resp.StatusCode)
+	}
+
 	paymentStatus := new(accountingapi.TransactionResponse)
 
 	err = v1.DecodeResponse(resp, paymentStatus)
@@ -39,5 +43,5 @@ func (a AccountingClient) CreateTransaction(accountID, restaurantID int, orderPr
 		return false, fmt.Errorf("decoding response: %w", err)
 	}
 
-	return paymentStatus.Valid, nil
+	return true, nil
 }
