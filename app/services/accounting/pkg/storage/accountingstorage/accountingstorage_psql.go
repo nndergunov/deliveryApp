@@ -59,12 +59,13 @@ func (c Storage) GetAccountListByParam(param domain.SearchParam) ([]domain.Accou
 
 	userID := param["user_id"]
 	if userID != "" {
-		where = where + " AND user_id = " + userID + ""
+		where = where + " AND user_id IN (" + userID + ")"
 	}
 
 	userType := param["user_type"]
+
 	if userType != "" {
-		where = where + " AND user_type = '" + userType + "'"
+		where = where + " AND user_type IN (" + userType + ")"
 	}
 
 	sql = sql + where

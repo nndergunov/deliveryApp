@@ -4,9 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"os"
 	"testing"
+	"time"
 
 	database "github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db/dbschema"
@@ -15,8 +14,8 @@ import (
 
 // StartDB starts a database instance.
 func StartDB() (*docker.Container, error) {
-	image := "postgres:14-alpine"
-	port := "5432"
+	image := "postgres:latest"
+	port := "5000"
 	args := []string{"-e", "POSTGRES_PASSWORD=postgres"}
 
 	return docker.StartContainer(image, port, args...)
@@ -30,18 +29,17 @@ func StopDB(c *docker.Container) {
 // NewUnit creates a test database inside a Docker container. It creates the
 // required table structure but the database is otherwise empty. It returns
 // the database to use as well as a function to call at the end of the test.
-func NewUnit(t *testing.T, c *docker.Container, dbName string) (*logger.Logger, *sql.DB, func()) {
-	ctx := context.TODO()
-	//defer cancel()
+func NewUnit(t *testing.T, c *docker.Container, dbName string) (*sql.DB, func()) {
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
+	defer cancel()
 
-	var dbURL = fmt.Sprintf(
-		"host=" + "host.docker.internal" +
-			" user=postgres" +
-			" password=postgres" +
-			" dbname=postgres" +
-			" sslmode=true")
-
-	dbM, err := database.OpenDB("postgres", dbURL)
+	dbM, err := database.OpenDB("postgres",
+		fmt.Sprintf("host="+c.Host+
+			" port="+c.Port+
+			" user=postgres"+
+			" password=postgres"+
+			" dbname=postgres"+
+			" sslmode=disable"))
 	if err != nil {
 		t.Fatalf("Opening database connection: %v", err)
 	}
@@ -60,26 +58,32 @@ func NewUnit(t *testing.T, c *docker.Container, dbName string) (*logger.Logger, 
 	dbM.Close()
 
 	// =========================================================================
-	db, err := database.OpenDB("postgres", fmt.Sprintf(
-		"host="+"host.docker.internal"+
+
+	db, err := database.OpenDB("postgres",
+		fmt.Sprintf("host="+c.Host+
+			" port="+c.Port+
 			" user=postgres"+
 			" password=postgres"+
 			" dbname="+dbName+
-			" sslmode=true"))
+			" sslmode=disable"))
 	if err != nil {
 		t.Fatalf("Opening database connection: %v", err)
 	}
 
-	t.Log("seed database ...")
+	t.Log("Migrate and seed database ...")
 
-	if err := dbschema.Seed(ctx, db); err != nil {
+	if err := dbschema.Migrate(ctx, db); err != nil {
 		docker.DumpContainerLogs(t, c.ID)
-		t.Fatalf("Seeding error: %s", err)
+		t.Fatalf("Migrating error: %s", err)
 	}
+
+	//if err := dbschema.Seed(ctx, db); err != nil {
+	//	docker.DumpContainerLogs(t, c.ID)
+	//	t.Fatalf("Seeding error: %s", err)
+	//}
 
 	t.Log("Ready for testing ...")
 
-	log := logger.NewLogger(os.Stdout, "service: ")
 	// teardown is the function that should be invoked when the caller is done
 	// with the database.
 	teardown := func() {
@@ -87,5 +91,5 @@ func NewUnit(t *testing.T, c *docker.Container, dbName string) (*logger.Logger, 
 		db.Close()
 	}
 
-	return log, db, teardown
+	return db, teardown
 }
