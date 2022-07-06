@@ -24,6 +24,10 @@ func (r RestaurantClient) CheckIfAvailable(restaurantID int) (bool, error) {
 		return false, fmt.Errorf("getting restaurant: %w", err)
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("%w: response code %d", ErrRestaurantFail, resp.StatusCode)
+	}
+
 	restaurant := new(restaurantapi.ReturnRestaurant)
 
 	err = v1.DecodeResponse(resp, restaurant)
@@ -38,6 +42,10 @@ func (r RestaurantClient) CalculateOrderPrice(order domain.Order) (float64, erro
 	resp, err := http.Get(r.restaurantURL + "/v1/restaurants/" + strconv.Itoa(order.RestaurantID) + "/menu")
 	if err != nil {
 		return 0, fmt.Errorf("getting menu: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("%w: response code %d", ErrRestaurantFail, resp.StatusCode)
 	}
 
 	menu := new(restaurantapi.ReturnMenu)
