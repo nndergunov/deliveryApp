@@ -4,13 +4,13 @@ golangci-lint:
 gofumpt:
 	gofumpt -l -w .
 
-genstorage:
-	mockgen -source=pkg/service/accountingservice/accountingstorage.go \
-	-destination=pkg/mocks/mock_storage.go
-
 genservice:
 	mockgen -source=pkg/service/accountingservice/accountingservice.go \
     -destination=pkg/mocks/mock_service.go
+
+genstorage:
+	mockgen -source=pkg/service/accountingservice/accountingstorage.go \
+	-destination=pkg/mocks/mock_storage.go
 
 go-test-unit:
 	go test api/v1/handlers/accountinghandler/accountinghandler_test.go -v

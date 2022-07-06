@@ -59,6 +59,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestInsertAccount(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   domain.Account
@@ -77,7 +79,9 @@ func TestInsertAccount(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -96,6 +100,8 @@ func TestInsertAccount(t *testing.T) {
 }
 
 func TestGetAccountByID(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   domain.Account
@@ -114,7 +120,9 @@ func TestGetAccountByID(t *testing.T) {
 			},
 		},
 	}
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -135,6 +143,8 @@ func TestGetAccountByID(t *testing.T) {
 }
 
 func TestGetAccountListByParam(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   []domain.Account
@@ -165,7 +175,9 @@ func TestGetAccountListByParam(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -201,6 +213,8 @@ func TestGetAccountListByParam(t *testing.T) {
 }
 
 func TestAddToAccountBalance(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   domain.Transaction
@@ -221,7 +235,9 @@ func TestAddToAccountBalance(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -240,6 +256,8 @@ func TestAddToAccountBalance(t *testing.T) {
 }
 
 func TestSubFromAccountBalance(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   domain.Transaction
@@ -260,7 +278,9 @@ func TestSubFromAccountBalance(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -279,6 +299,8 @@ func TestSubFromAccountBalance(t *testing.T) {
 }
 
 func TestInsertTransaction(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   domain.Transaction
@@ -300,7 +322,9 @@ func TestInsertTransaction(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 

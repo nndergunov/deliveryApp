@@ -43,7 +43,9 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -110,7 +112,9 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -178,7 +182,8 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 			},
 		},
 	}
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -236,7 +241,9 @@ func TestDeleteEndpointSuccess(t *testing.T) {
 			"account deleted",
 		},
 	}
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -321,7 +328,9 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 

@@ -37,7 +37,9 @@ func TestInsertNewAccount(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			ctl := gomock.NewController(t)
@@ -55,6 +57,8 @@ func TestInsertNewAccount(t *testing.T) {
 }
 
 func TestGetAccountByID(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   int
@@ -70,7 +74,9 @@ func TestGetAccountByID(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			ctl := gomock.NewController(t)
@@ -89,6 +95,8 @@ func TestGetAccountByID(t *testing.T) {
 }
 
 func TestGetAccountList(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		in   domain.SearchParam
@@ -114,7 +122,9 @@ func TestGetAccountList(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			ctl := gomock.NewController(t)
 			storage := mockstorage.NewMockAccountStorage(ctl)
@@ -184,7 +194,9 @@ func TestInsertTransactions(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
+	for _, currentTest := range tests {
+		test := currentTest
+
 		t.Run(test.name, func(t *testing.T) {
 			ctl := gomock.NewController(t)
 			storage := mockstorage.NewMockAccountStorage(ctl)
