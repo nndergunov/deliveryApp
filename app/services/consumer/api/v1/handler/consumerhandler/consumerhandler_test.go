@@ -2,23 +2,22 @@ package consumerhandler_test
 
 import (
 	"bytes"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	mockservice "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/mocks"
-
 	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/handler/consumerhandler"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
+	mockservice "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/mocks"
 )
 
 func TestInsertNewConsumerEndpoint(t *testing.T) {
@@ -221,7 +220,6 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, respData, test.out)
-
 		})
 	}
 }
@@ -237,14 +235,14 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 			name: "Get all consumer test",
 			out: consumerapi.ReturnConsumerResponseList{
 				ConsumerResponseList: []consumerapi.ConsumerResponse{
-					consumerapi.ConsumerResponse{
+					{
 						ID:        1,
 						Firstname: "test1FName",
 						Lastname:  "test1LName",
 						Email:     "test1@gmail.com",
 						Phone:     "111111111",
 					},
-					consumerapi.ConsumerResponse{
+					{
 						ID:        2,
 						Firstname: "test2FName",
 						Lastname:  "test2LName",
@@ -364,7 +362,6 @@ func TestGetConsumerEndpoint(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, respData, test.out)
-
 		})
 	}
 }

@@ -1,29 +1,39 @@
 package consumerservice_test
 
 import (
-	"bytes"
-	"net/http"
+	"os"
 	"strconv"
 	"testing"
 
-	consumerapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+	"github.com/golang/mock/gomock"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
+	mockstorage "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/mocks"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
 )
 
-const baseAddr = "http://localhost:8080"
-
-func TestInsertNewConsumerEndpoint(t *testing.T) {
+func TestInsertNewConsumer(t *testing.T) {
 	tests := []struct {
-		name         string
-		consumerData consumerapi2.NewConsumerRequest
+		name string
+		in   domain.Consumer
+		out  *domain.Consumer
 	}{
 		{
-			"Insert consumer simple test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "vasya",
-				Lastname:  "testLastname",
-				Email:     "vasya@gmail.com",
+			"Insert consumer test",
+			domain.Consumer{
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+			},
+			&domain.Consumer{
+				ID:        1,
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
 			},
 		},
@@ -33,84 +43,31 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody, err := v1.Encode(test.consumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
+			storage.EXPECT().GetConsumerDuplicateByParam(domain.SearchParam{"email": test.in.Email, "phone": test.in.Phone}).Return(nil, nil)
+			storage.EXPECT().InsertConsumer(test.in).Return(test.out, nil)
 
-			resp, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
-			if err != nil {
-				t.Fatal(err)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			newAccount, err := service.InsertConsumer(test.in)
+			require.NoError(t, err)
 
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp.StatusCode)
-			}
-
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("StatusCode: %d", resp.StatusCode)
-			}
-
-			respData := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if respData.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", respData.ID)
-			}
-
-			if respData.Firstname != test.consumerData.Firstname {
-				t.Errorf("Firstname: Expected: %s, Got: %s", test.consumerData.Firstname, respData.Firstname)
-			}
-
-			if respData.Lastname != test.consumerData.Lastname {
-				t.Errorf("Lastname: Expected: %s, Got: %s", test.consumerData.Lastname, respData.Lastname)
-			}
-
-			if respData.Email != test.consumerData.Email {
-				t.Errorf("Email: Expected: %s, Got: %s", test.consumerData.Email, respData.Email)
-			}
-
-			if respData.Phone != test.consumerData.Phone {
-				t.Errorf("Phone: Expected: %s, Got: %s", test.consumerData.Phone, respData.Phone)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(respData.ID), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
+			assert.Equal(t, test.out, newAccount)
 		})
 	}
 }
 
 func TestDeleteConsumerEndpoint(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name         string
-		consumerData consumerapi2.NewConsumerRequest
-		delRespData  string
+		name string
+		in   string
+		out  string
 	}{
 		{
-			"Insert consumer simple test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "vasya",
-				Lastname:  "testLastname",
-				Email:     "vasya@gmail.com",
-				Phone:     "123456789",
-			},
+			"delete consumer test",
+			"1",
 			"Consumer deleted",
 		},
 	}
@@ -119,82 +76,46 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody, err := v1.Encode(test.consumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
+			mockInData := 1
+			mockOutData := &domain.Consumer{}
+			storage.EXPECT().GetConsumerByID(mockInData).Return(mockOutData, nil)
+			storage.EXPECT().DeleteConsumer(mockInData).Return(nil)
+			storage.EXPECT().DeleteLocation(mockInData).Return(nil)
 
-			resp, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
-			if err != nil {
-				t.Fatal(err)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.DeleteConsumer(test.in)
+			require.NoError(t, err)
 
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp.StatusCode)
-			}
-
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("StatusCode: %d", resp.StatusCode)
-			}
-
-			respData := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if respData.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", respData.ID)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(int(respData.ID)), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			delResp, err := deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
-
-			delRespData := ""
-			if err = consumerapi2.DecodeJSON(delResp.Body, &delRespData); err != nil {
-				t.Fatal(err)
-			}
-			if delRespData != test.delRespData {
-				t.Errorf("delRespData: Expected: %s, Got: %s", test.delRespData, delRespData)
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
-func TestUpdateConsumerEndpoint(t *testing.T) {
+func TestUpdateConsumer(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name                string
-		initialConsumerData consumerapi2.NewConsumerRequest
-		UpdatedConsumerData consumerapi2.UpdateConsumerRequest
+		name string
+		in   domain.Consumer
+		out  *domain.Consumer
 	}{
 		{
-			"Update consumer simple test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
+			"update consumer test",
+			domain.Consumer{
+				ID:        1,
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
 			},
-
-			consumerapi2.UpdateConsumerRequest{
-				Firstname: "updatedFName",
-				Lastname:  "updatedLName",
-				Email:     "updatedVasya@gmail.com",
-				Phone:     "987654321",
+			&domain.Consumer{
+				ID:        1,
+				Firstname: "utestFName",
+				Lastname:  "utestLName",
+				Email:     "utest@gmail.com",
+				Phone:     "1234567899",
 			},
 		},
 	}
@@ -203,117 +124,44 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody, err := v1.Encode(test.initialConsumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
+			intStr := strconv.Itoa(test.in.ID)
+			storage.EXPECT().GetConsumerDuplicateByParam(domain.SearchParam{"id": intStr, "email": test.in.Email, "phone": test.in.Phone}).Return(nil, nil)
+			storage.EXPECT().UpdateConsumer(test.in).Return(test.out, nil)
 
-			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
-			if err != nil {
-				t.Fatal(err)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.UpdateConsumer(test.in, intStr)
+			require.NoError(t, err)
 
-			if resp1.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp1.StatusCode)
-			}
-
-			respData := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp1.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp1.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if respData.ID < 1 {
-				t.Errorf("ID: Expected : > 1, Got: %v", respData.ID)
-			}
-
-			reqBody2, err := v1.Encode(test.UpdatedConsumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			client2 := http.DefaultClient
-
-			req, err := http.NewRequest(http.MethodPut,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(int(respData.ID)), bytes.NewBuffer(reqBody2))
-			if err != nil {
-				t.Error(err)
-			}
-
-			resp2, err := client2.Do(req)
-			if err != nil {
-				t.Errorf("Could not update consumer: %v", err)
-			}
-
-			updatedConsumerResponse := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp2.Body, &updatedConsumerResponse); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp2.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if updatedConsumerResponse.ID != respData.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", respData.ID, updatedConsumerResponse.Firstname)
-			}
-
-			if updatedConsumerResponse.Firstname != test.UpdatedConsumerData.Firstname {
-				t.Errorf("Firstname: Expected: %s, Got: %s", test.UpdatedConsumerData.Firstname, updatedConsumerResponse.Firstname)
-			}
-
-			if updatedConsumerResponse.Lastname != test.UpdatedConsumerData.Lastname {
-				t.Errorf("Lastname: Expected: %s, Got: %s", test.UpdatedConsumerData.Lastname, updatedConsumerResponse.Lastname)
-			}
-
-			if updatedConsumerResponse.Email != test.UpdatedConsumerData.Email {
-				t.Errorf("Email: Expected: %s, Got: %s", test.UpdatedConsumerData.Email, updatedConsumerResponse.Email)
-			}
-
-			if updatedConsumerResponse.Phone != test.UpdatedConsumerData.Phone {
-				t.Errorf("Phone: Expected: %s, Got: %s", test.UpdatedConsumerData.Phone, updatedConsumerResponse.Phone)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(int(respData.ID)), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
-func TestGetAllConsumerEndpoint(t *testing.T) {
+func TestGetAllConsumer(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name             string
-		consumerDataList []consumerapi2.NewConsumerRequest
+		name string
+		out  []domain.Consumer
 	}{
 		{
-			"TestGetAllConsumerEndpoint test",
-			[]consumerapi2.NewConsumerRequest{
+			"get all consumer test",
+			[]domain.Consumer{
 				{
-					Firstname: "consumer1FName",
-					Lastname:  "consumer1LName",
-					Email:     "consumer1@gmail.com",
-					Phone:     "111111111",
+					ID:        1,
+					Firstname: "test1FName",
+					Lastname:  "test1LName",
+					Email:     "test1@gmail.com",
+					Phone:     "1234567891",
 				},
-
 				{
-					Firstname: "consumer2FName",
-					Lastname:  "consumer2LName",
-					Email:     "consumer2@gmail.com",
-					Phone:     "222222222",
+					ID:        2,
+					Firstname: "test2FName",
+					Lastname:  "test2LName",
+					Email:     "test2@gmail.com",
+					Phone:     "1234567892",
 				},
 			},
 		},
@@ -323,92 +171,36 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			var createdConsumerList []consumerapi2.ConsumerResponse
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
+			storage.EXPECT().GetAllConsumer().Return(test.out, nil)
 
-			for _, consumer := range test.consumerDataList {
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.GetAllConsumer()
+			require.NoError(t, err)
 
-				reqBody, err := v1.Encode(consumer)
-				if err != nil {
-					t.Fatal(err)
-				}
-
-				resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
-				if err != nil {
-					t.Fatal(err)
-				}
-
-				if resp1.StatusCode != http.StatusOK {
-					t.Fatalf("Response status: %d", resp1.StatusCode)
-				}
-
-				createdConsumer := consumerapi2.ConsumerResponse{}
-				if err = consumerapi2.DecodeJSON(resp1.Body, &createdConsumer); err != nil {
-					t.Fatal(err)
-				}
-
-				if err := resp1.Body.Close(); err != nil {
-					t.Error(err)
-				}
-
-				createdConsumerList = append(createdConsumerList, createdConsumer)
-			}
-
-			resp2, err := http.Get(baseAddr + "/v1/consumers")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp2.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp2.StatusCode)
-			}
-
-			respDataList2 := consumerapi2.ReturnConsumerResponseList{}
-			if err = consumerapi2.DecodeJSON(resp2.Body, &respDataList2); err != nil {
-				t.Fatal(err)
-			}
-
-			if len(respDataList2.ConsumerResponseList) != len(test.consumerDataList) {
-				t.Errorf("len: Expected: %v, Got: %v", len(test.consumerDataList), len(respDataList2.ConsumerResponseList))
-			}
-
-			if err := resp2.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			// delete all consumer we have created
-			for _, createdConsumer := range createdConsumerList {
-
-				// Deleting consumer instance.
-				deleter := http.DefaultClient
-
-				delReq, err := http.NewRequest(http.MethodDelete,
-					baseAddr+"/v1/consumers/"+strconv.Itoa(int(createdConsumer.ID)), nil)
-				if err != nil {
-					t.Error(err)
-				}
-
-				_, err = deleter.Do(delReq)
-				if err != nil {
-					t.Errorf("Could not delete created consumer: %v", err)
-				}
-
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
-func TestGetConsumerEndpoint(t *testing.T) {
+func TestGetConsumer(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name         string
-		consumerData consumerapi2.NewConsumerRequest
+		name string
+		in   string
+		out  *domain.Consumer
 	}{
 		{
-			"TestGetAllConsumerEndpoint test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "consumer1FName",
-				Lastname:  "consumer1LName",
-				Email:     "consumer1@gmail.com",
-				Phone:     "111111111",
+			"get consumer test",
+			"1",
+			&domain.Consumer{
+				ID:        1,
+				Firstname: "test1FName",
+				Lastname:  "test1LName",
+				Email:     "test1@gmail.com",
+				Phone:     "1234567891",
 			},
 		},
 	}
@@ -417,99 +209,50 @@ func TestGetConsumerEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody, err := v1.Encode(test.consumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
+			id, err := strconv.Atoi(test.in)
+			require.NoError(t, err)
 
-			respPostConsumer, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody))
-			if err != nil {
-				t.Fatal(err)
-			}
+			storage.EXPECT().GetConsumerByID(id).Return(test.out, nil)
 
-			if respPostConsumer.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", respPostConsumer.StatusCode)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.GetConsumer(test.in)
+			require.NoError(t, err)
 
-			createdConsumerResponse := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(respPostConsumer.Body, &createdConsumerResponse); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := respPostConsumer.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			respGetConsumer, err := http.Get(baseAddr + "/v1/consumers/" + strconv.Itoa(int(createdConsumerResponse.ID)))
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if respGetConsumer.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", respGetConsumer.StatusCode)
-			}
-
-			gotConsumerResponse := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(respGetConsumer.Body, &gotConsumerResponse); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := respGetConsumer.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if gotConsumerResponse.Firstname != test.consumerData.Firstname {
-				t.Errorf("Firstname: Expected: %s, Got: %s", test.consumerData.Firstname, gotConsumerResponse.Firstname)
-			}
-
-			if gotConsumerResponse.Lastname != test.consumerData.Lastname {
-				t.Errorf("Lastname: Expected: %s, Got: %s", test.consumerData.Lastname, gotConsumerResponse.Lastname)
-			}
-
-			if gotConsumerResponse.Email != test.consumerData.Email {
-				t.Errorf("Email: Expected: %s, Got: %s", test.consumerData.Email, gotConsumerResponse.Email)
-			}
-
-			if gotConsumerResponse.Phone != test.consumerData.Phone {
-				t.Errorf("Phone: Expected: %s, Got: %s", test.consumerData.Phone, gotConsumerResponse.Phone)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(int(createdConsumerResponse.ID)), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
-func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
+func TestInsertNewConsumerLocation(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name                 string
-		consumerData         consumerapi2.NewConsumerRequest
-		consumerLocationData consumerapi2.NewLocationRequest
+		name string
+		in   domain.Location
+		out  *domain.Location
 	}{
 		{
-			"InsertNewConsumerLocationEndpoint simple test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "TestFName",
-				Lastname:  "TestLName",
-				Email:     "TestEmail",
-				Phone:     "TestPhone",
-			},
-			consumerapi2.NewLocationRequest{
-				Latitude:   "987654321",
-				Longitude:  "123456789",
+			"insert new location test",
+			domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
 				Country:    "TestCountry",
-				City:       "TestCity",
+				City:       "Test City",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
+			},
+			&domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
+				Country:    "TestCountry",
+				City:       "Test City",
 				Region:     "TestRegion",
 				Street:     "TestStreet",
 				HomeNumber: "TestHomeNumber",
@@ -523,138 +266,65 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody1, err := v1.Encode(test.consumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
 
-			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody1))
-			if err != nil {
-				t.Fatal(err)
-			}
+			mockOutData := &domain.Consumer{}
+			storage.EXPECT().GetConsumerByID(test.in.UserID).Return(mockOutData, nil)
+			storage.EXPECT().GetLocation(test.in.UserID).Return(nil, nil)
+			storage.EXPECT().InsertLocation(test.in).Return(test.out, nil)
 
-			if resp1.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp1.StatusCode)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.InsertLocation(test.in, strconv.Itoa(test.in.UserID))
+			require.NoError(t, err)
 
-			consumerCreatedRespData := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
-				t.Fatal(err)
-			}
-
-			reqBody2, err := v1.Encode(test.consumerLocationData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			resp2, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID),
-				"application/json", bytes.NewBuffer(reqBody2))
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp2.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp2.StatusCode)
-			}
-
-			consumerLocationRespData := consumerapi2.LocationResponse{}
-			if err = consumerapi2.DecodeJSON(resp2.Body, &consumerLocationRespData); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp2.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if consumerLocationRespData.UserID < 1 {
-				t.Errorf("UserID: Expected : > 1, Got: %v", consumerLocationRespData.UserID)
-			}
-
-			if consumerLocationRespData.Latitude != test.consumerLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Latitude)
-			}
-
-			if consumerLocationRespData.Longitude != test.consumerLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.consumerLocationData.Longitude, consumerLocationRespData.Longitude)
-			}
-
-			if consumerLocationRespData.Country != test.consumerLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.consumerLocationData.Country, consumerLocationRespData.Country)
-			}
-
-			if consumerLocationRespData.Region != test.consumerLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.consumerLocationData.Region, consumerLocationRespData.Region)
-			}
-
-			if consumerLocationRespData.Street != test.consumerLocationData.Street {
-				t.Errorf("Street: Expected: %s, Got: %s", test.consumerLocationData.Street, consumerLocationRespData.Street)
-			}
-
-			if consumerLocationRespData.HomeNumber != test.consumerLocationData.HomeNumber {
-				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.consumerLocationData.HomeNumber, consumerLocationRespData.HomeNumber)
-			}
-
-			if consumerLocationRespData.Floor != test.consumerLocationData.Floor {
-				t.Errorf("Floor: Expected: %s, Got: %s", test.consumerLocationData.Floor, consumerLocationRespData.Floor)
-			}
-
-			if consumerLocationRespData.Door != test.consumerLocationData.Door {
-				t.Errorf("Door: Expected: %s, Got: %s", test.consumerLocationData.Door, consumerLocationRespData.Door)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
-func TestUpdateConsumerLocationEndpoint(t *testing.T) {
+func TestUpdateConsumerLocation(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name                        string
-		consumerData                consumerapi2.NewConsumerRequest
-		consumerLocationInitialData consumerapi2.NewLocationRequest
-		consumerLocationUpdatedData consumerapi2.UpdateLocationRequest
+		name string
+		in   struct {
+			location domain.Location
+			userID   string
+		}
+		out *domain.Location
 	}{
 		{
-			"UpdateConsumerLocationEndpoint simple test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "TestFName",
-				Lastname:  "TestLName",
-				Email:     "TestEmail",
-				Phone:     "TestPhone",
+			"update location test",
+			struct {
+				location domain.Location
+				userID   string
+			}{
+				location: domain.Location{
+					Latitude:   "0123456789",
+					Longitude:  "0123456789",
+					Country:    "TestCountry",
+					City:       "Test City",
+					Region:     "TestRegion",
+					Street:     "TestStreet",
+					HomeNumber: "TestHomeNumber",
+					Floor:      "TestFloor",
+					Door:       "TestDoor",
+				},
+				userID: "1",
 			},
-			consumerapi2.NewLocationRequest{
-				Latitude:   "987654321",
-				Longitude:  "123456789",
+
+			&domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
 				Country:    "TestCountry",
-				City:       "TestCity",
+				City:       "Test City",
 				Region:     "TestRegion",
 				Street:     "TestStreet",
 				HomeNumber: "TestHomeNumber",
 				Floor:      "TestFloor",
 				Door:       "TestDoor",
-			},
-			consumerapi2.UpdateLocationRequest{
-				Latitude:   "123456789",
-				Longitude:  "987654321",
-				Country:    "UpdatedTestCountry",
-				City:       "UpdatedTestCity",
-				Region:     "UpdatedTestRegion",
-				Street:     "UpdatedTestStreet",
-				HomeNumber: "UpdatedTestHomeNumber",
-				Floor:      "UpdatedTestFloor",
-				Door:       "UpdatedTestDoor",
 			},
 		},
 	}
@@ -663,145 +333,41 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody1, err := v1.Encode(test.consumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
 
-			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody1))
-			if err != nil {
-				t.Fatal(err)
-			}
+			id, err := strconv.Atoi(test.in.userID)
+			require.NoError(t, err)
+			test.in.location.UserID = id
 
-			if resp1.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp1.StatusCode)
-			}
+			storage.EXPECT().UpdateLocation(test.in.location).Return(test.out, nil)
 
-			consumerCreatedRespData := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
-				t.Fatal(err)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.UpdateLocation(test.in.location, test.in.userID)
+			require.NoError(t, err)
 
-			reqBody2, err := v1.Encode(test.consumerLocationInitialData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			resp2, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID),
-				"application/json", bytes.NewBuffer(reqBody2))
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp2.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp2.StatusCode)
-			}
-
-			if err := resp2.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			reqBody3, err := v1.Encode(test.consumerLocationUpdatedData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			client := http.Client{}
-
-			req, err := http.NewRequest(http.MethodPut, baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID), bytes.NewBuffer(reqBody3))
-			if err != nil {
-				t.Fatal(err)
-			}
-			resp3, err := client.Do(req)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp3.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp3.StatusCode)
-			}
-
-			consumerLocationUpdatedRespData := consumerapi2.LocationResponse{}
-			if err = consumerapi2.DecodeJSON(resp3.Body, &consumerLocationUpdatedRespData); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp3.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if consumerLocationUpdatedRespData.UserID != consumerCreatedRespData.ID {
-				t.Errorf("UserID: Expected :  %v , Got: %v", consumerCreatedRespData.ID, consumerLocationUpdatedRespData.UserID)
-			}
-
-			if consumerLocationUpdatedRespData.Latitude != test.consumerLocationUpdatedData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Latitude, consumerLocationUpdatedRespData.Latitude)
-			}
-
-			if consumerLocationUpdatedRespData.Longitude != test.consumerLocationUpdatedData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Longitude, consumerLocationUpdatedRespData.Longitude)
-			}
-
-			if consumerLocationUpdatedRespData.Country != test.consumerLocationUpdatedData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Country, consumerLocationUpdatedRespData.Country)
-			}
-
-			if consumerLocationUpdatedRespData.Region != test.consumerLocationUpdatedData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Region, consumerLocationUpdatedRespData.Region)
-			}
-
-			if consumerLocationUpdatedRespData.Street != test.consumerLocationUpdatedData.Street {
-				t.Errorf("Street: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Street, consumerLocationUpdatedRespData.Street)
-			}
-
-			if consumerLocationUpdatedRespData.HomeNumber != test.consumerLocationUpdatedData.HomeNumber {
-				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.consumerLocationUpdatedData.HomeNumber, consumerLocationUpdatedRespData.HomeNumber)
-			}
-
-			if consumerLocationUpdatedRespData.Floor != test.consumerLocationUpdatedData.Floor {
-				t.Errorf("Floor: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Floor, consumerLocationUpdatedRespData.Floor)
-			}
-
-			if consumerLocationUpdatedRespData.Door != test.consumerLocationUpdatedData.Door {
-				t.Errorf("Door: Expected: %s, Got: %s", test.consumerLocationUpdatedData.Door, consumerLocationUpdatedRespData.Door)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(consumerCreatedRespData.ID), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
 func TestGetConsumerLocationEndpoint(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name                 string
-		consumerData         consumerapi2.NewConsumerRequest
-		consumerLocationData consumerapi2.NewLocationRequest
+		name string
+		in   string
+		out  *domain.Location
 	}{
 		{
-			"GetConsumerLocationEndpoint simple test",
-			consumerapi2.NewConsumerRequest{
-				Firstname: "TestFName",
-				Lastname:  "TestLName",
-				Email:     "TestEmail",
-				Phone:     "TestPhone",
-			},
-			consumerapi2.NewLocationRequest{
-				Latitude:   "987654321",
-				Longitude:  "123456789",
+			"get location test",
+			"1",
+			&domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
 				Country:    "TestCountry",
-				City:       "TestCity",
+				City:       "Test City",
 				Region:     "TestRegion",
 				Street:     "TestStreet",
 				HomeNumber: "TestHomeNumber",
@@ -815,107 +381,20 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody1, err := v1.Encode(test.consumerData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockConsumerStorage(ctl)
 
-			resp1, err := http.Post(baseAddr+"/v1/consumers", "application/json", bytes.NewBuffer(reqBody1))
-			if err != nil {
-				t.Fatal(err)
-			}
+			mockInData, err := strconv.Atoi(test.in)
+			require.NoError(t, err)
 
-			if resp1.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp1.StatusCode)
-			}
+			storage.EXPECT().GetLocation(mockInData).Return(test.out, nil)
 
-			consumerCreatedRespData := consumerapi2.ConsumerResponse{}
-			if err = consumerapi2.DecodeJSON(resp1.Body, &consumerCreatedRespData); err != nil {
-				t.Fatal(err)
-			}
+			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.GetLocation(test.in)
+			require.NoError(t, err)
 
-			reqBody2, err := v1.Encode(test.consumerLocationData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			resp2, err := http.Post(baseAddr+"/v1/locations/"+strconv.Itoa(consumerCreatedRespData.ID),
-				"application/json", bytes.NewBuffer(reqBody2))
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp2.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp2.StatusCode)
-			}
-
-			resp3, err := http.Get(baseAddr + "/v1/locations/" + strconv.Itoa(consumerCreatedRespData.ID))
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp3.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp2.StatusCode)
-			}
-
-			consumerLocationRespData := consumerapi2.LocationResponse{}
-			if err = consumerapi2.DecodeJSON(resp3.Body, &consumerLocationRespData); err != nil {
-				t.Fatal(err)
-			}
-
-			if err := resp3.Body.Close(); err != nil {
-				t.Error(err)
-			}
-
-			if consumerLocationRespData.UserID != consumerCreatedRespData.ID {
-				t.Errorf("UserID: Expected : %v, Got: %v", consumerCreatedRespData.ID, consumerLocationRespData.UserID)
-			}
-
-			if consumerLocationRespData.Latitude != test.consumerLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.consumerLocationData.Latitude, consumerLocationRespData.Latitude)
-			}
-
-			if consumerLocationRespData.Longitude != test.consumerLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.consumerLocationData.Longitude, consumerLocationRespData.Longitude)
-			}
-
-			if consumerLocationRespData.Country != test.consumerLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.consumerLocationData.Country, consumerLocationRespData.Country)
-			}
-
-			if consumerLocationRespData.Region != test.consumerLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.consumerLocationData.Region, consumerLocationRespData.Region)
-			}
-
-			if consumerLocationRespData.Street != test.consumerLocationData.Street {
-				t.Errorf("Street: Expected: %s, Got: %s", test.consumerLocationData.Street, consumerLocationRespData.Street)
-			}
-
-			if consumerLocationRespData.HomeNumber != test.consumerLocationData.HomeNumber {
-				t.Errorf("HomeNumber: Expected: %s, Got: %s", test.consumerLocationData.HomeNumber, consumerLocationRespData.HomeNumber)
-			}
-
-			if consumerLocationRespData.Floor != test.consumerLocationData.Floor {
-				t.Errorf("Floor: Expected: %s, Got: %s", test.consumerLocationData.Floor, consumerLocationRespData.Floor)
-			}
-
-			if consumerLocationRespData.Door != test.consumerLocationData.Door {
-				t.Errorf("Door: Expected: %s, Got: %s", test.consumerLocationData.Door, consumerLocationRespData.Door)
-			}
-
-			// Deleting consumer instance.
-			deleter := http.DefaultClient
-
-			delReq, err := http.NewRequest(http.MethodDelete,
-				baseAddr+"/v1/consumers/"+strconv.Itoa(int(consumerCreatedRespData.ID)), nil)
-			if err != nil {
-				t.Error(err)
-			}
-
-			_, err = deleter.Do(delReq)
-			if err != nil {
-				t.Errorf("Could not delete created consumer: %v", err)
-			}
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
