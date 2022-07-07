@@ -3,16 +3,19 @@ module github.com/nndergunov/deliveryApp/app/services/courier
 go 1.18
 
 require (
+	github.com/golang/mock v1.4.4
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.5
 	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220616102258-b756e3b373eb
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220421192017-5bea05ecd937
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220506135343-b98520baf981
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52
+	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
@@ -20,6 +23,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

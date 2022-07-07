@@ -4,6 +4,25 @@ golangci-lint:
 gofumpt:
 	gofumpt -l -w .
 
+genservice:
+	mockgen -source=pkg/service/courierservice/courierservice.go \
+    -destination=pkg/mocks/mock_courierservice.go
+
+genstorage:
+	mockgen -source=pkg/service/courierservice/storage.go \
+	-destination=pkg/mocks/mock_courierstorage.go
+
+go-test-unit:
+	go test api/v1/handler/courierhandler/courierhandler_test.go -v
+	go test pkg/service/courierservice/courierservice_test.go -v
+
+go-test-integrational:
+	go test pkg/storage/courierstorage/courierstorage_integrational_test.go -v
+
+go-test-all:
+	make go-test-unit
+	make go-test-integrational
+
 status-check:
 	-curl http://localhost:8082/status
 

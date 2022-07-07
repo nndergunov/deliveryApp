@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
-	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/service"
-
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
 // CourierService is the interface for the user service.
@@ -28,12 +27,12 @@ type CourierService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	CourierStorage service.CourierStorage
+	CourierStorage CourierStorage
 	Logger         *logger.Logger
 }
 
 type courierService struct {
-	courierStorage service.CourierStorage
+	courierStorage CourierStorage
 	logger         *logger.Logger
 }
 
