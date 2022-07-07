@@ -1,9 +1,87 @@
 basePath: /v1
 consumes:
 - application/json
+definitions:
+  OrderData:
+    properties:
+      FromUserID:
+        format: int64
+        type: integer
+      OrderItems:
+        items:
+          format: int64
+          type: integer
+        type: array
+      RestaurantID:
+        format: int64
+        type: integer
+    required:
+    - FromUserID
+    - RestaurantID
+    - OrderItems
+    title: OrderData contains information about created order.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+  OrderFilters:
+    properties:
+      ExcludeStatuses:
+        items:
+          type: string
+        type: array
+      FromRestaurantID:
+        format: int64
+        type: integer
+      Statuses:
+        items:
+          type: string
+        type: array
+    title: OrderFilters struct lets user determine which orders they want to see.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+  OrderStatusData:
+    properties:
+      Status:
+        type: string
+    required:
+    - Status
+    title: OrderStatusData is used by admins to update current order status.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+  ReturnOrder:
+    properties:
+      FromUserID:
+        format: int64
+        type: integer
+      OrderID:
+        format: int64
+        type: integer
+      OrderItems:
+        items:
+          format: int64
+          type: integer
+        type: array
+      RestaurantID:
+        format: int64
+        type: integer
+      Status:
+        type: string
+    title: ReturnOrder contains order information.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+  ReturnOrderList:
+    properties:
+      Orders:
+        description: all the requested orders
+        items:
+          $ref: '#/definitions/ReturnOrder'
+        type: array
+    title: ReturnOrderList contains information about all the requested orders.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
 host: localhost:8085
 info:
   description: API specification of the order service
+  title: Order Service.
   version: 0.0.1
 paths:
   /admin/orders/{id}/status:
@@ -15,24 +93,30 @@ paths:
         in: body
         name: Body
         required: true
+        schema:
+          $ref: '#/definitions/OrderStatusData'
       produces:
       - application/json
       responses:
         "200":
-          description: updated order status data
+          description: ""
   /orders:
     get:
       description: Returns all orders from the order service
       operationId: returnAllOrders
       parameters:
-      - description: search parameters
+      - description: order search filters
         in: body
         name: Body
+        schema:
+          $ref: '#/definitions/OrderFilters'
       produces:
       - application/json
       responses:
         "200":
-          description: order lisr response
+          description: order list response
+          schema:
+            $ref: '#/definitions/ReturnOrderList'
     post:
       description: Creates new order in the order service
       operationId: createOrder
@@ -41,11 +125,15 @@ paths:
         in: body
         name: Body
         required: true
+        schema:
+          $ref: '#/definitions/OrderData'
       produces:
       - application/json
       responses:
         "200":
           description: created order data
+          schema:
+            $ref: '#/definitions/ReturnOrder'
   /orders/{id}:
     get:
       description: Returns specified order data
@@ -55,6 +143,8 @@ paths:
       responses:
         "200":
           description: requested order data
+          schema:
+            $ref: '#/definitions/ReturnOrder'
     put:
       description: Updates data of the specified order
       operationId: updateOrder
@@ -63,11 +153,15 @@ paths:
         in: body
         name: Body
         required: true
+        schema:
+          $ref: '#/definitions/OrderData'
       produces:
       - application/json
       responses:
         "200":
           description: updated order data
+          schema:
+            $ref: '#/definitions/ReturnOrder'
 produces:
 - application/json
 schemes:

@@ -1,3 +1,5 @@
+// Package classification Order Service.
+//
 // API specification of the order service
 //
 //     Schemes: http

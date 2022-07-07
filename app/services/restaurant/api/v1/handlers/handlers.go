@@ -190,10 +190,10 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: restaurant data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: restaurant data
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created restaurant
@@ -239,10 +239,10 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: updated restaurant data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: updated restaurant data
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated restaurant data
@@ -325,10 +325,10 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: menu data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: menu data
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created menu
@@ -381,10 +381,10 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: menu item data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: menu item data
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created menu item
@@ -437,10 +437,10 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: updated menu item data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: updated menu item data
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated menu item

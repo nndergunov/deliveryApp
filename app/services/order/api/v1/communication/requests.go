@@ -1,24 +1,30 @@
 package communication
 
 // OrderFilters struct lets user determine which orders they want to see.
+// swagger:model
 type OrderFilters struct {
+	// required: false
 	FromRestaurantID *int
-	Statuses         []string
-	ExcludeStatuses  []string
+	// required: false
+	Statuses []string
+	// required: false
+	ExcludeStatuses []string
 }
 
-type PostOrder struct {
-	OrderData   OrderData
-	UserAccount int
-}
-
+// OrderData contains information about created order.
+// swagger:model
 type OrderData struct {
-	FromUserID     int
-	RestaurantID   int
-	OrderItems     []int
-	PaymentHashKey string
+	// required: true
+	FromUserID int
+	// required: true
+	RestaurantID int
+	// required: true
+	OrderItems []int
 }
 
+// OrderStatusData is used by admins to update current order status.
+// swagger:model
 type OrderStatusData struct {
+	// required: true
 	Status string
 }
