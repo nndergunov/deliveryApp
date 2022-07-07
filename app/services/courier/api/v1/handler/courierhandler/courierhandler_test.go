@@ -2,23 +2,22 @@ package courierhandler_test
 
 import (
 	"bytes"
-	"github.com/golang/mock/gomock"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
+	"github.com/golang/mock/gomock"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
+	mockservice "github.com/nndergunov/deliveryApp/app/services/courier/pkg/mocks"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
-	mockservice "github.com/nndergunov/deliveryApp/app/services/courier/pkg/mocks"
 )
 
 func TestInsertNewCourierEndpoint(t *testing.T) {
