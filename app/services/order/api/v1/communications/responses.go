@@ -1,4 +1,4 @@
-package orderapi
+package communications
 
 type ReturnOrderList struct {
 	Orders []ReturnOrder

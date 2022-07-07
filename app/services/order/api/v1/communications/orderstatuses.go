@@ -1,4 +1,4 @@
-package orderapi
+package communications
 
 const (
 	Sending             = "Sending"

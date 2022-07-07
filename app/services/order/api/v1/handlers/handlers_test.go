@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communications"
 	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/handlers"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service/mockservice"
@@ -61,7 +61,7 @@ func TestReturnAllOrders(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			orders := new(orderapi.ReturnOrderList)
+			orders := new(communications.ReturnOrderList)
 
 			err := v1.Decode(resp.Body.Bytes(), orders)
 			if err != nil {
@@ -116,7 +116,7 @@ func TestCreateOrderEndpoint(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			order := new(orderapi.ReturnOrder)
+			order := new(communications.ReturnOrder)
 
 			err = v1.Decode(resp.Body.Bytes(), order)
 			if err != nil {
@@ -176,7 +176,7 @@ func TestReturnOrderEndpoint(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			order := new(orderapi.ReturnOrder)
+			order := new(communications.ReturnOrder)
 
 			err := v1.Decode(resp.Body.Bytes(), order)
 			if err != nil {
@@ -240,7 +240,7 @@ func TestUpdateOrderEndpoint(t *testing.T) {
 
 			handler.ServeHTTP(resp, req)
 
-			order := new(orderapi.ReturnOrder)
+			order := new(communications.ReturnOrder)
 
 			err = v1.Decode(resp.Body.Bytes(), order)
 			if err != nil {
