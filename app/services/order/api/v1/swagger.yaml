@@ -81,7 +81,7 @@ definitions:
 host: localhost:8085
 info:
   description: API specification of the order service
-  title: Order Service.
+  title: Order Service API V1.
   version: 0.0.1
 paths:
   /admin/orders/{id}/status:

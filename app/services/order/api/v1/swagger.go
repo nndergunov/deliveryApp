@@ -1,4 +1,4 @@
-// Package classification Order Service.
+// Package v1 Order Service API V1.
 //
 // API specification of the order service
 //

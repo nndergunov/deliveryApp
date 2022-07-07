@@ -1,3 +1,5 @@
+// Package v1 Kitchen Service API V1.
+//
 // API specification of the kitchen service
 //
 //     Schemes: http
