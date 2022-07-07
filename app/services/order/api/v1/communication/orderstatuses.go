@@ -1,4 +1,4 @@
-package communications
+package communication
 
 const (
 	Sending             = "Sending"

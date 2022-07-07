@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communications"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
 )
@@ -97,7 +97,7 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 		return
 	}
 
-	searchParams := new(communications.OrderFilters)
+	searchParams := new(communication.OrderFilters)
 
 	// if request body is empty we do not need to parse searchParams as it would result in err
 	if len(req) != 0 {
@@ -151,7 +151,7 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	orderData := new(communications.OrderData)
+	orderData := new(communication.OrderData)
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
@@ -244,7 +244,7 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	orderData := new(communications.OrderData)
+	orderData := new(communication.OrderData)
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
@@ -304,7 +304,7 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 		return
 	}
 
-	statusData := new(communications.OrderStatusData)
+	statusData := new(communication.OrderStatusData)
 
 	err = v1.Decode(req, statusData)
 	if err != nil {

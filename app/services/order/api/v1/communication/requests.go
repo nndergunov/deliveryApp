@@ -1,4 +1,4 @@
-package communications
+package communication
 
 // OrderFilters struct lets user determine which orders they want to see.
 type OrderFilters struct {
