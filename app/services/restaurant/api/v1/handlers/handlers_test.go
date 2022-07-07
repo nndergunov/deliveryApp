@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/handlers"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/service/mockservice"
@@ -53,7 +53,7 @@ func TestCreateRestaurantEndpoint(t *testing.T) {
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := handlers.NewEndpointHandler(&repo, log)
 
-			reqData, _ := v1.Encode(restaurantapi.RestaurantData{
+			reqData, _ := v1.Encode(communication.RestaurantData{
 				Name:    test.restaurantData.Name,
 				City:    test.restaurantData.City,
 				Address: test.restaurantData.Address,
@@ -68,7 +68,7 @@ func TestCreateRestaurantEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnRestaurant)
+			respData := new(communication.ReturnRestaurant)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
@@ -137,7 +137,7 @@ func TestGetRestaurantsEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnRestaurantList)
+			respData := new(communication.ReturnRestaurantList)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
@@ -191,7 +191,7 @@ func TestUpdateRestaurantEndpoint(t *testing.T) {
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := handlers.NewEndpointHandler(&repo, log)
 
-			reqData, _ := v1.Encode(restaurantapi.RestaurantData{
+			reqData, _ := v1.Encode(communication.RestaurantData{
 				Name:    test.restaurantData.Name,
 				City:    test.restaurantData.City,
 				Address: test.restaurantData.Address,
@@ -206,7 +206,7 @@ func TestUpdateRestaurantEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnRestaurant)
+			respData := new(communication.ReturnRestaurant)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
@@ -326,7 +326,7 @@ func TestCreateMenuEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnMenu)
+			respData := new(communication.ReturnMenu)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
@@ -392,7 +392,7 @@ func TestGetMenuEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnMenu)
+			respData := new(communication.ReturnMenu)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
@@ -444,7 +444,7 @@ func TestAddMenuItemEndpoint(t *testing.T) {
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := handlers.NewEndpointHandler(&repo, log)
 
-			reqData, _ := v1.Encode(restaurantapi.MenuItemData{
+			reqData, _ := v1.Encode(communication.MenuItemData{
 				ID:     0,
 				Name:   test.menuItemData.Name,
 				Course: test.menuItemData.Course,
@@ -459,7 +459,7 @@ func TestAddMenuItemEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnMenuItem)
+			respData := new(communication.ReturnMenuItem)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {
@@ -510,7 +510,7 @@ func TestUpdateMenuItemEndpoint(t *testing.T) {
 			log := logger.NewLogger(os.Stdout, test.name)
 			handler := handlers.NewEndpointHandler(&repo, log)
 
-			reqData, _ := v1.Encode(restaurantapi.MenuItemData{
+			reqData, _ := v1.Encode(communication.MenuItemData{
 				ID:     0,
 				Name:   test.menuItemData.Name,
 				Course: test.menuItemData.Course,
@@ -525,7 +525,7 @@ func TestUpdateMenuItemEndpoint(t *testing.T) {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := new(restaurantapi.ReturnMenuItem)
+			respData := new(communication.ReturnMenuItem)
 
 			err := v1.Decode(resp.Body.Bytes(), respData)
 			if err != nil {

@@ -1,4 +1,4 @@
-package restaurantapi
+package communication
 
 type ReturnRestaurant struct {
 	ID              int

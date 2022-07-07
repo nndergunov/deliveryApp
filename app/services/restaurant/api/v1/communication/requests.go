@@ -1,4 +1,4 @@
-package restaurantapi
+package communication
 
 type RestaurantData struct {
 	Name            string
