@@ -12,4 +12,4 @@
 //     - application/json
 //
 // swagger:meta
-package handlers
+package v1
