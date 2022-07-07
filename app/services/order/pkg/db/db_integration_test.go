@@ -155,8 +155,6 @@ func TestGetAllOrders(t *testing.T) {
 						i, test.order.OrderItems[i], order.OrderItems[i])
 				}
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -260,8 +258,6 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 						i, test.incompleteOrder.OrderItems[i], order.OrderItems[i])
 				}
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -301,8 +297,6 @@ func TestInsertOrder(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -362,8 +356,6 @@ func TestGetOrder(t *testing.T) {
 						i, test.order.OrderItems[i], order.OrderItems[i])
 				}
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -418,8 +410,6 @@ func TestUpdateOrder(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -504,8 +494,6 @@ func TestUpdateOrderStatus(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }

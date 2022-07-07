@@ -41,6 +41,8 @@ download-gomod:
 	go get -u github.com/stretchr/testify
 	go get -u github.com/volatiletech/sqlboiler/v4
 	go get -u github.com/volatiletech/strmangle
+	go get -u github.com/adrianbrad/psqldocker
+	go get -u github.com/adrianbrad/psqltest
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
