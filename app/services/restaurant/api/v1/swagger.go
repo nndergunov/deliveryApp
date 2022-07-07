@@ -1,3 +1,5 @@
+// Package v1 Restaurant Service API V1.
+//
 // API specification of the restaurant service
 //
 //     Schemes: http

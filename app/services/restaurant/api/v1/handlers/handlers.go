@@ -100,6 +100,8 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 	// responses:
 	//   '200':
 	//     description: restaurant list
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurantList"
 	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
 		e.handleError(err, w)
@@ -126,6 +128,8 @@ func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request
 	// responses:
 	//   '200':
 	//     description: requested restaurtant
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurant"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -158,7 +162,9 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	// - application/json
 	// responses:
 	//   '200':
-	//     description: menu of the requested restaurtant
+	//     description: menu of the requested restaurant
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenu"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -193,10 +199,14 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	// - name: Body
 	//   in: body
 	//   description: restaurant data
+	//   schema:
+	//     $ref: "#/definitions/RestaurantData"
 	//   required: true
 	// responses:
 	//   '200':
 	//     description: created restaurant
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurant"
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.handleError(err, w)
@@ -242,10 +252,14 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 	// - name: Body
 	//   in: body
 	//   description: updated restaurant data
+	//   schema:
+	//     $ref: "#/definitions/RestaurantData"
 	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated restaurant data
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurant"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -292,8 +306,6 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 	// Deletes restaurant data
 	//
 	// ---
-	// produces:
-	// - application/json
 	// responses:
 	//   '200':
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
@@ -328,10 +340,14 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	// - name: Body
 	//   in: body
 	//   description: menu data
+	//   schema:
+	//     $ref: "#/definitions/MenuData"
 	//   required: true
 	// responses:
 	//   '200':
 	//     description: created menu
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenu"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -384,10 +400,14 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	// - name: Body
 	//   in: body
 	//   description: menu item data
+	//   schema:
+	//     $ref: "#/definitions/MenuItemData"
 	//   required: true
 	// responses:
 	//   '200':
 	//     description: created menu item
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenuItem"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -440,10 +460,14 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 	// - name: Body
 	//   in: body
 	//   description: updated menu item data
+	//   schema:
+	//     $ref: "#/definitions/MenuItemData"
 	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated menu item
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenuItem"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -497,8 +521,6 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 	// Deletes menu item in the restaurant
 	//
 	// ---
-	// produces:
-	// - application/json
 	// responses:
 	//   '200':
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)

@@ -1,22 +1,39 @@
 package communication
 
+// RestaurantData contains information about the restaurant.
+// swagger:model
 type RestaurantData struct {
-	Name            string
-	City            string
+	// required: true
+	Name string
+	// required: true
+	City string
+	// required: true
 	AcceptingOrders bool
-	Address         string
-	Longitude       float64
-	Latitude        float64
+	// required: true
+	Address string
+	// required: true
+	Longitude float64
+	// required: true
+	Latitude float64
 }
 
+// MenuData contains information about the menu.
+// swagger:model
 type MenuData struct {
+	// required: true
 	MenuItems []MenuItemData
 }
 
+// MenuItemData contains information about the menu item.
+// swagger:model
 type MenuItemData struct {
-	ID    int
-	Name  string
+	// required: true
+	ID int
+	// required: true
+	Name string
+	// required: true
 	Price float64
 	// Photo []byte
+	// required: true
 	Course string // first/main/salad etc.
 }
