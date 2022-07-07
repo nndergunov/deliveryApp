@@ -1,39 +1,70 @@
 package consumerstorage_test
 
 import (
-	"database/sql"
 	"fmt"
-	"os"
-	"strings"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
-
-	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db/dbtest"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/docker"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/storage/consumerstorage"
 )
 
-const configFile = "/config.yaml"
+var c *docker.Container
 
-var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
-	" port=" + configreader.GetString("database.test.port") +
-	" user=" + configreader.GetString("database.test.user") +
-	" password=" + configreader.GetString("database.test.password") +
-	" dbname=" + configreader.GetString("database.test.dbName") +
-	" sslmode=" + configreader.GetString("database.test.sslmode"))
+func TestMain(m *testing.M) {
+	var err error
+	c, err = dbtest.StartDB()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer dbtest.StopDB(c)
+
+	m.Run()
+}
+
+// equalConsumer - function to compare selected fields from struct. Fields which needed
+func equalConsumer(t *testing.T, get *domain.Consumer, want *domain.Consumer) {
+	if get.Firstname != want.Firstname {
+		t.Errorf("Firstname: Expected: %s, Got: %s", want.Firstname, get.Firstname)
+	}
+	if get.Lastname != want.Lastname {
+		t.Errorf("Lastname: Expected: %s, Got: %s", want.Lastname, get.Lastname)
+	}
+
+	if get.Email != want.Email {
+		t.Errorf("Email: Expected: %s, Got: %s", want.Email, get.Email)
+	}
+
+	if get.Phone != want.Phone {
+		t.Errorf("Phone: Expected: %s, Got: %s", want.Phone, get.Phone)
+	}
+}
 
 func TestInsertConsumer(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name     string
-		consumer domain.Consumer
+		name string
+		in   domain.Consumer
+		out  *domain.Consumer
 	}{
 		{
-			name: "Test Insert Consumer",
-			consumer: domain.Consumer{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
+			"insert_consumer_test",
+			domain.Consumer{
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+			},
+			&domain.Consumer{
+				ID:        1,
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
 			},
 		},
@@ -43,75 +74,40 @@ func TestInsertConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.InsertConsumer(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumer, err := consumerStorage.InsertConsumer(test.consumer)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if insertedConsumer == nil {
-				t.Errorf("inserted Consumer: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			if insertedConsumer.Firstname != test.consumer.Firstname {
-				t.Errorf("inserted Consumer Firstname: Expected: %s, Got: %s", test.consumer.Firstname, insertedConsumer.Firstname)
-			}
-			if insertedConsumer.Lastname != test.consumer.Lastname {
-				t.Errorf("inserted Consumer: Expected Lastname: %s, Got: %s", test.consumer.Lastname, insertedConsumer.Lastname)
-			}
-
-			if insertedConsumer.Email != test.consumer.Email {
-				t.Errorf("inserted Consumer Email: Expected: %s, Got: %s", test.consumer.Email, insertedConsumer.Email)
-			}
-
-			if insertedConsumer.Phone != test.consumer.Phone {
-				t.Errorf("inserted Consumer Phone: Expected: %s, Got: %s", test.consumer.Phone, insertedConsumer.Phone)
-			}
-
-			if err := consumerStorage.DeleteConsumer(insertedConsumer.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			equalConsumer(t, resp, test.out)
 		})
 	}
 }
 
 func TestDeleteConsumer(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name     string
-		consumer domain.Consumer
+		name string
+		in   domain.Consumer
+		out  error
 	}{
 		{
-			name: "Test Delete Consumer",
-			consumer: domain.Consumer{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
+			"delete_consumer_test",
+			domain.Consumer{
+				ID:        1,
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
 			},
+			nil,
 		},
 	}
 
@@ -119,76 +115,56 @@ func TestDeleteConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.InsertConsumer(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumer, err := consumerStorage.InsertConsumer(test.consumer)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if insertedConsumer == nil {
-				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			err = consumerStorage.DeleteConsumer(insertedConsumer.ID)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			deletedConsumer, err := consumerStorage.GetConsumerByID(insertedConsumer.ID)
-			if err != nil && err != sql.ErrNoRows {
-				t.Fatal(err)
-			}
-
-			if deletedConsumer != nil {
-				t.Errorf("deleted Consumer: Expected: %v, Got: %v", nil, deletedConsumer)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
+			err = s.DeleteConsumer(test.in.ID)
+			if err != test.out {
+				t.Errorf("DeleteConsumer: Expected: %v, Got: %v", test.out, err)
 			}
 		})
 	}
 }
 
 func TestUpdateConsumer(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name            string
-		initialConsumer domain.Consumer
-		updateConsumer  domain.Consumer
+		name     string
+		in       domain.Consumer
+		updateIn domain.Consumer
+		out      *domain.Consumer
 	}{
 		{
-			name: "Test Update Consumer",
-			initialConsumer: domain.Consumer{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
+			"update_consumer_test",
+			domain.Consumer{
+				ID:        1,
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
 			},
-			updateConsumer: domain.Consumer{
-				Firstname: "updatedvasya",
-				Lastname:  "vasyavov",
-				Email:     "updatedvasya@gmail.com",
-				Phone:     "123456789",
+			domain.Consumer{
+				ID:        1,
+				Firstname: "utestFName",
+				Lastname:  "utestLName",
+				Email:     "utest@gmail.com",
+				Phone:     "1234567899",
+			},
+			&domain.Consumer{
+				ID:        1,
+				Firstname: "utestFName",
+				Lastname:  "utestLName",
+				Email:     "utest@gmail.com",
+				Phone:     "1234567899",
 			},
 		},
 	}
@@ -197,79 +173,49 @@ func TestUpdateConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.InsertConsumer(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumer, err := consumerStorage.InsertConsumer(test.initialConsumer)
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp2, err := s.UpdateConsumer(test.updateIn)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			if insertedConsumer == nil {
-				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			test.updateConsumer.ID = insertedConsumer.ID
-			updatedConsumer, err := consumerStorage.UpdateConsumer(test.updateConsumer)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if updatedConsumer.Firstname != test.updateConsumer.Firstname {
-				t.Errorf("updatedConsumer Firstname: Expected: %s, Got: %s", test.updateConsumer.Firstname, updatedConsumer.Firstname)
-			}
-
-			if updatedConsumer.Lastname != test.updateConsumer.Lastname {
-				t.Errorf("updatedConsumer Lastname: Expected: %s, Got: %s", test.updateConsumer.Lastname, updatedConsumer.Lastname)
-			}
-
-			if updatedConsumer.Email != test.updateConsumer.Email {
-				t.Errorf("updatedConsumer Email: Expected: %s, Got: %s", test.updateConsumer.Email, updatedConsumer.Email)
-			}
-
-			err = consumerStorage.DeleteConsumer(insertedConsumer.ID)
-			if err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			equalConsumer(t, resp2, test.out)
 		})
 	}
 }
 
 func TestGetAllConsumer(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name                string
-		initialConsumerList []domain.Consumer
+		name string
+		out  []domain.Consumer
 	}{
 		{
-			name: "Test Get ALl Consumer",
-			initialConsumerList: []domain.Consumer{
-				{
-					Firstname: "vasya",
-					Lastname:  "",
-					Email:     "vasya@gmail.com",
-					Phone:     "123456789",
+			"get_all_consumer_test",
+			[]domain.Consumer{
+				domain.Consumer{
+					ID:        1,
+					Firstname: "test1FName",
+					Lastname:  "test1LName",
+					Email:     "test1@gmail.com",
+					Phone:     "1234567891",
+				},
+				domain.Consumer{
+					ID:        2,
+					Firstname: "test2FName",
+					Lastname:  "test2LName",
+					Email:     "test2@gmail.com",
+					Phone:     "1234567892",
 				},
 			},
 		},
@@ -279,69 +225,46 @@ func TestGetAllConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+
+			for _, data := range test.out {
+				resp, err := s.InsertConsumer(data)
+				require.NoError(t, err)
+				require.NotNil(t, resp)
 			}
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			for _, initialConsumer := range test.initialConsumerList {
-				insertedConsumer, err := consumerStorage.InsertConsumer(initialConsumer)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if insertedConsumer == nil {
-					t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
-				}
-			}
-
-			allConsumer, err := consumerStorage.GetAllConsumer()
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if len(allConsumer) != len(test.initialConsumerList) {
-				t.Errorf("GetaAllConsumer len: Expected: %v, Got: %v", len(test.initialConsumerList), len(allConsumer))
-			}
-
-			if err = consumerStorage.CleanConsumerTable(); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
+			respList, err := s.GetAllConsumer()
+			require.NoError(t, err)
+			require.NotNil(t, respList)
+			for i, resp := range respList {
+				equalConsumer(t, &resp, &test.out[i])
 			}
 		})
 	}
 }
 
 func TestGetConsumer(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name            string
-		initialConsumer domain.Consumer
+		name string
+		in   int
+		out  *domain.Consumer
 	}{
 		{
-			name: "Test Get Consumer",
-			initialConsumer: domain.Consumer{
-				Firstname: "vasya",
-				Lastname:  "",
-				Email:     "vasya@gmail.com",
-				Phone:     "123456789",
+			"get_consumer_test",
+			1,
+			&domain.Consumer{
+				ID:        1,
+				Firstname: "test1FName",
+				Lastname:  "test1LName",
+				Email:     "test1@gmail.com",
+				Phone:     "1234567891",
 			},
 		},
 	}
@@ -350,86 +273,60 @@ func TestGetConsumer(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.InsertConsumer(*test.out)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumer, err := consumerStorage.InsertConsumer(test.initialConsumer)
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp2, err := s.GetConsumerByID(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp2)
 
-			if insertedConsumer == nil {
-				t.Errorf("insertedConsumer: Expected: %s, Got: %s", "not nill", "nil")
-			}
+			equalConsumer(t, resp2, test.out)
 
-			gotConsumer, err := consumerStorage.GetConsumerByID(insertedConsumer.ID)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if gotConsumer.Firstname != test.initialConsumer.Firstname {
-				t.Errorf("get consumer Firstname: Expected: %s, Got: %s", test.initialConsumer.Firstname, gotConsumer.Firstname)
-			}
-
-			if gotConsumer.Lastname != test.initialConsumer.Lastname {
-				t.Errorf("get consumer Lastname: Expected: %s, Got: %s", test.initialConsumer.Lastname, gotConsumer.Lastname)
-			}
-
-			if gotConsumer.Phone != test.initialConsumer.Phone {
-				t.Errorf("get consumer Phone: Expected: %s, Got: %s", test.initialConsumer.Phone, gotConsumer.Phone)
-			}
-
-			if gotConsumer.Email != test.initialConsumer.Email {
-				t.Errorf("get consumer Email: Expected: %s, Got: %s", test.initialConsumer.Email, gotConsumer.Email)
-			}
-
-			if err = consumerStorage.DeleteConsumer(insertedConsumer.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
 		})
 	}
 }
 
 func TestInsertConsumerLocation(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name             string
-		consumerLocation domain.Location
+		name string
+		in   domain.Location
+		out  *domain.Location
 	}{
 		{
-			name: "TestInsertConsumerLocation",
-			consumerLocation: domain.Location{
+			"insert_consumer_location_test",
+			domain.Location{
 				UserID:     1,
 				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
-				City:       "TestCity",
-				Region:     "",
-				Street:     "",
-				HomeNumber: "",
-				Floor:      "",
-				Door:       "",
+				City:       "Test City",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
+			},
+			&domain.Location{
+				UserID:     1,
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
+				Country:    "TestCountry",
+				City:       "Test City",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
 			},
 		},
 	}
@@ -438,107 +335,69 @@ func TestInsertConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.InsertLocation(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumerLocation, err := consumerStorage.InsertLocation(test.consumerLocation)
-			if err != nil {
-				t.Fatal(err)
-			}
+			assert.Equal(t, resp, test.out)
 
-			if insertedConsumerLocation == nil {
-				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			if insertedConsumerLocation == nil {
-				t.Errorf("updatedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			if insertedConsumerLocation.UserID != test.consumerLocation.UserID {
-				t.Errorf("insertedConsumerLocation UserID: Expected: %v, Got: %v", test.consumerLocation.UserID, insertedConsumerLocation.UserID)
-			}
-
-			if insertedConsumerLocation.Latitude != test.consumerLocation.Latitude {
-				t.Errorf("insertedConsumerLocation Latitude: Expected: %v, Got: %v", test.consumerLocation.Latitude, insertedConsumerLocation.Latitude)
-			}
-
-			if insertedConsumerLocation.Longitude != test.consumerLocation.Longitude {
-				t.Errorf("insertedConsumerLocation Longitude: Expected: %v, Got: %v", test.consumerLocation.Longitude, insertedConsumerLocation.Longitude)
-			}
-
-			if insertedConsumerLocation.Country != test.consumerLocation.Country {
-				t.Errorf("insertedConsumerLocation Country: Expected: %v, Got: %v", test.consumerLocation.Country, insertedConsumerLocation.Country)
-			}
-
-			if insertedConsumerLocation.City != test.consumerLocation.City {
-				t.Errorf("insertedConsumerLocation City: Expected: %v, Got: %v", test.consumerLocation.City, insertedConsumerLocation.City)
-			}
-
-			if insertedConsumerLocation.Region != test.consumerLocation.Region {
-				t.Errorf("insertedConsumerLocation Region: Expected: %v, Got: %v", test.consumerLocation.Region, insertedConsumerLocation.Region)
-			}
-
-			if err = consumerStorage.DeleteLocation(insertedConsumerLocation.UserID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
 		})
 	}
 }
 
 func TestUpdateConsumerLocation(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name                    string
-		initialConsumerLocation domain.Location
-		updateConsumerLocation  domain.Location
+		name     string
+		in       domain.Location
+		updateIn domain.Location
+		out      *domain.Location
 	}{
 		{
-			name: "Test Update Consumer",
-			initialConsumerLocation: domain.Location{
+			"update_consumer_location_test",
+			domain.Location{
 				UserID:     1,
 				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
-				City:       "TestCity",
-				Region:     "",
-				Street:     "",
-				HomeNumber: "",
-				Floor:      "",
-				Door:       "",
-			},
-
-			updateConsumerLocation: domain.Location{
-				UserID:     1,
-				Latitude:   "9876543210",
-				Longitude:  "9876543210",
-				Country:    "CountryTest",
-				City:       "CityTest",
+				City:       "Test City",
 				Region:     "TestRegion",
-				Street:     "",
-				HomeNumber: "",
-				Floor:      "",
-				Door:       "",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
+			},
+			domain.Location{
+				UserID:     1,
+				Latitude:   "01234567892",
+				Longitude:  "01234567892",
+				Country:    "TestCountry2",
+				City:       "Test City2",
+				Region:     "TestRegion2",
+				Street:     "TestStreet2",
+				HomeNumber: "TestHomeNumber2",
+				Floor:      "TestFloor2",
+				Door:       "TestDoor2",
+			},
+			&domain.Location{
+				UserID:     1,
+				Latitude:   "01234567892",
+				Longitude:  "01234567892",
+				Country:    "TestCountry2",
+				City:       "Test City2",
+				Region:     "TestRegion2",
+				Street:     "TestStreet2",
+				HomeNumber: "TestHomeNumber2",
+				Floor:      "TestFloor2",
+				Door:       "TestDoor2",
 			},
 		},
 	}
@@ -547,98 +406,49 @@ func TestUpdateConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.InsertLocation(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumerLocation, err := consumerStorage.InsertLocation(test.initialConsumerLocation)
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp2, err := s.UpdateLocation(test.updateIn)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			if insertedConsumerLocation == nil {
-				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
-			}
+			assert.Equal(t, resp2, test.out)
 
-			updatedConsumerLocation, err := consumerStorage.UpdateLocation(test.updateConsumerLocation)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if updatedConsumerLocation == nil {
-				t.Errorf("updatedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			if updatedConsumerLocation.UserID != test.updateConsumerLocation.UserID {
-				t.Errorf("updatedConsumerLocation UserID: Expected: %v, Got: %v", test.updateConsumerLocation.UserID, updatedConsumerLocation.UserID)
-			}
-
-			if updatedConsumerLocation.Latitude != test.updateConsumerLocation.Latitude {
-				t.Errorf("updatedConsumerLocation Latitude: Expected: %v, Got: %v", test.updateConsumerLocation.Latitude, updatedConsumerLocation.Latitude)
-			}
-
-			if updatedConsumerLocation.Longitude != test.updateConsumerLocation.Longitude {
-				t.Errorf("updatedConsumerLocation Longitude: Expected: %v, Got: %v", test.updateConsumerLocation.Longitude, updatedConsumerLocation.Longitude)
-			}
-
-			if updatedConsumerLocation.Country != test.updateConsumerLocation.Country {
-				t.Errorf("updatedConsumerLocation Country: Expected: %v, Got: %v", test.updateConsumerLocation.Country, updatedConsumerLocation.Country)
-			}
-
-			if updatedConsumerLocation.City != test.updateConsumerLocation.City {
-				t.Errorf("updatedConsumerLocation City: Expected: %v, Got: %v", test.updateConsumerLocation.City, updatedConsumerLocation.City)
-			}
-
-			if updatedConsumerLocation.Region != test.updateConsumerLocation.Region {
-				t.Errorf("updatedConsumerLocation Region: Expected: %v, Got: %v", test.updateConsumerLocation.Region, updatedConsumerLocation.Region)
-			}
-
-			if err = consumerStorage.DeleteLocation(insertedConsumerLocation.UserID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
 		})
 	}
 }
 
 func TestGetConsumerLocation(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name             string
-		consumerLocation domain.Location
+		name string
+		in   int
+		out  *domain.Location
 	}{
 		{
-			name: "TestGetConsumerLocation",
-			consumerLocation: domain.Location{
+			"get_consumer_location_test",
+			1,
+			&domain.Location{
 				UserID:     1,
 				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
-				City:       "TestCity",
-				Region:     "",
-				Street:     "",
-				HomeNumber: "",
-				Floor:      "",
-				Door:       "",
+				City:       "Test City",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
 			},
 		},
 	}
@@ -647,76 +457,24 @@ func TestGetConsumerLocation(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\consumerstorage")
+			t.Parallel()
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
 
-			consumerStorage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			mockData := *test.out
+			resp, err := s.InsertLocation(mockData)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			insertedConsumerLocation, err := consumerStorage.InsertLocation(test.consumerLocation)
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp2, err := s.GetLocation(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			if insertedConsumerLocation == nil {
-				t.Errorf("insertedConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
-			}
+			assert.Equal(t, resp2, test.out)
 
-			getConsumerLocation, err := consumerStorage.GetLocation(insertedConsumerLocation.UserID)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if getConsumerLocation == nil {
-				t.Errorf("getConsumerLocation: Expected: %s, Got: %s", "not nill", "nil")
-			}
-
-			if getConsumerLocation.UserID != test.consumerLocation.UserID {
-				t.Errorf("getConsumerLocation UserID: Expected: %v, Got: %v", test.consumerLocation.UserID, getConsumerLocation.UserID)
-			}
-
-			if getConsumerLocation.Latitude != test.consumerLocation.Latitude {
-				t.Errorf("getConsumerLocation Latitude: Expected: %v, Got: %v", test.consumerLocation.Latitude, getConsumerLocation.Latitude)
-			}
-
-			if getConsumerLocation.Longitude != test.consumerLocation.Longitude {
-				t.Errorf("getConsumerLocation Longitude: Expected: %v, Got: %v", test.consumerLocation.Longitude, getConsumerLocation.Longitude)
-			}
-
-			if getConsumerLocation.Country != test.consumerLocation.Country {
-				t.Errorf("getConsumerLocation Country: Expected: %v, Got: %v", test.consumerLocation.Country, getConsumerLocation.Country)
-			}
-
-			if getConsumerLocation.City != test.consumerLocation.City {
-				t.Errorf("getConsumerLocation City: Expected: %v, Got: %v", test.consumerLocation.City, getConsumerLocation.City)
-			}
-
-			if getConsumerLocation.Region != test.consumerLocation.Region {
-				t.Errorf("getConsumerLocation Region: Expected: %v, Got: %v", test.consumerLocation.Region, getConsumerLocation.Region)
-			}
-
-			if err = consumerStorage.DeleteLocation(insertedConsumerLocation.UserID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
 		})
 	}
 }

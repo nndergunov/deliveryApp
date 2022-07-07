@@ -3,6 +3,7 @@ module github.com/nndergunov/deliveryApp/app/services/consumer
 go 1.18
 
 require (
+	github.com/ardanlabs/darwin v1.3.0
 	github.com/golang/mock v1.4.4
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
@@ -10,6 +11,7 @@ require (
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220621145645-038a54ec385b
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec385b
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220621145645-038a54ec385b
+	github.com/nndergunov/deliveryApp/app/services/accounting v0.0.0-20220704103046-40bd7e9ee247
 	github.com/stretchr/testify v1.7.2
 )
 
