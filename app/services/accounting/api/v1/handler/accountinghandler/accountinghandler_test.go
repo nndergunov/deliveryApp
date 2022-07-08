@@ -15,7 +15,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handlers/accountinghandler"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handler/accountinghandler"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 	mockservice "github.com/nndergunov/deliveryApp/app/services/accounting/pkg/mocks"
 )

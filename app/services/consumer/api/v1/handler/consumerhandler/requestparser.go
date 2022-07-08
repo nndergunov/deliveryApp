@@ -1,8 +1,7 @@
 package consumerhandler
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
-
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 

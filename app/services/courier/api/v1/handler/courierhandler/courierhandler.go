@@ -5,11 +5,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi"
 
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/service/courierservice"

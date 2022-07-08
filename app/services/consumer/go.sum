@@ -175,8 +175,6 @@ github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec3
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec385b/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
 github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220621145645-038a54ec385b h1:YBNTFsgDoZVFHYoFqWhdOi5PGmrwSVGmJCIOkZHqrFc=
 github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220621145645-038a54ec385b/go.mod h1:VZTZLvj3fcLQ3rdlsxBFZfxw2gPH3vd5AqlVnSRGzLU=
-github.com/nndergunov/deliveryApp/app/services/accounting v0.0.0-20220704103046-40bd7e9ee247 h1:V+p8DYNMdwMO1NzdToBBQLSHSINJzOEGHzx8r91fipY=
-github.com/nndergunov/deliveryApp/app/services/accounting v0.0.0-20220704103046-40bd7e9ee247/go.mod h1:Yo5V+4QOe7mZT2rHHUlSCYQjhSxD9tXME/eDgp4wkJM=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml/v2 v2.0.2 h1:+jQXlF3scKIcSEKkdHzXhCTDLPFi5r1wnK6yPS+49Gw=

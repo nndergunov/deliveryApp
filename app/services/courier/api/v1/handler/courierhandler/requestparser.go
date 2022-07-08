@@ -1,8 +1,7 @@
 package courierhandler
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
