@@ -1,6 +1,10 @@
 package deliveryservice_test
 
 import (
+	"os"
+	"strconv"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
@@ -8,9 +12,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
-	"strconv"
-	"testing"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 	mock "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks"
@@ -145,8 +146,8 @@ func TestAssignOrder(t *testing.T) {
 			restaurantClient.EXPECT().GetRestaurant(test.inBody.FromRestaurantID).Return(mockRestaurantClientOutData, nil)
 
 			mockCourierClientOutData := &courierapi.LocationResponseList{
-				[]courierapi.LocationResponse{
-					courierapi.LocationResponse{
+				LocationResponseList: []courierapi.LocationResponse{
+					{
 						UserID:     1,
 						Latitude:   "41.03641945369733",
 						Longitude:  "28.919665086287385",
@@ -189,7 +190,6 @@ func TestAssignOrder(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, resp, test.out)
-
 		})
 	}
 }

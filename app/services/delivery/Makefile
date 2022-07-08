@@ -17,11 +17,15 @@ genclient:
 	-destination=pkg/mocks/mock_clients.go
 
 go-test-unit:
-	go test api/v1/handler/courierhandler/courierhandler_test.go -v
-	go test pkg/service/courierservice/courierservice_test.go -v
+	go test api/v1/handler/deliveryhandler/deliveryhandler_test.go -v
+	go test pkg/service/deliveryservice/deliveryservice_test.go -v
 
 go-test-integrational:
-	go test pkg/storage/courierstorage/courierstorage_integrational_test.go -v
+	go test pkg/storage/deliverystorage/deliverystorage_integrational_test.go -v
+
+go-test-all:
+	make go-test-unit
+	make go-test-integrational
 
 status-check:
 	-curl http://localhost:8083/status

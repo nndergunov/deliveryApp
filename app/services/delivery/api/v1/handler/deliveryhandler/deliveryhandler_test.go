@@ -2,13 +2,14 @@ package deliveryhandler_test
 
 import (
 	"bytes"
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 
