@@ -1,24 +1,5 @@
 -- Version: 1.1
 -- Description: Create table accounts,transactions
-\c accounting_db
-
-DO
-$do$
-    BEGIN
-        IF EXISTS (
-                SELECT FROM pg_catalog.pg_roles
-                WHERE  rolname = 'accounting_db') THEN
-
-            RAISE NOTICE 'Role "accounting_db" already exists. Skipping.';
-        ELSE
-            CREATE ROLE accounting_db LOGIN PASSWORD 'accounting_db_pass';
-        END IF;
-    END
-$do$;
-
-alter user accounting_db with superuser;
-
-grant all privileges on database accounting_db to accounting_db;
 
 create table IF NOT EXISTS account
 (
@@ -40,4 +21,3 @@ create table IF NOT EXISTS transactions
     updated_at      timestamp NOT NULL,
     valid           bool      NOT NULL DEFAULT false
 );
-

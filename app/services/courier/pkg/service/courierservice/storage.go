@@ -1,4 +1,4 @@
-package service
+package courierservice
 
 import (
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"

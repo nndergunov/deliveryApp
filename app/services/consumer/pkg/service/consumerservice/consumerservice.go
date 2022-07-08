@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
-	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service"
-
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
 // ConsumerService is the interface for the user service.
@@ -19,19 +18,19 @@ type ConsumerService interface {
 	GetAllConsumer() ([]domain.Consumer, error)
 	GetConsumer(id string) (*domain.Consumer, error)
 
-	InsertLocation(consumer domain.Location, id string) (*domain.Location, error)
-	UpdateLocation(consumer domain.Location, id string) (*domain.Location, error)
+	InsertLocation(location domain.Location, id string) (*domain.Location, error)
+	UpdateLocation(location domain.Location, id string) (*domain.Location, error)
 	GetLocation(id string) (*domain.Location, error)
 }
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	ConsumerStorage service.ConsumerStorage
+	ConsumerStorage ConsumerStorage
 	Logger          *logger.Logger
 }
 
 type consumerService struct {
-	consumerStorage service.ConsumerStorage
+	consumerStorage ConsumerStorage
 	logger          *logger.Logger
 }
 

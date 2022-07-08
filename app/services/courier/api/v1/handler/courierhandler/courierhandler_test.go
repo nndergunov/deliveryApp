@@ -7,97 +7,45 @@ import (
 	"os"
 	"testing"
 
-	courierapi2 "github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/golang/mock/gomock"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
+	mockservice "github.com/nndergunov/deliveryApp/app/services/courier/pkg/mocks"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 )
-
-var (
-	MockCourierData = &domain.Courier{
-		ID:        1,
-		Username:  "TestUsername",
-		Firstname: "TestFName",
-		Lastname:  "TestLName",
-		Email:     "Test@gmail.com",
-		Phone:     "123456789",
-		Available: true,
-	}
-
-	MockLocationData = &domain.Location{
-		UserID:     1,
-		Latitude:   "0123456789",
-		Longitude:  "0123456789",
-		Country:    "TestCountry",
-		City:       "Test City",
-		Region:     "",
-		Street:     "",
-		HomeNumber: "",
-		Floor:      "",
-		Door:       "",
-	}
-)
-
-type MockService struct{}
-
-func (m MockService) InsertCourier(_ domain.Courier) (*domain.Courier, error) {
-	return MockCourierData, nil
-}
-
-func (m MockService) DeleteCourier(_ string) (data string, err error) {
-	return "courier deleted", nil
-}
-
-func (m MockService) UpdateCourier(_ domain.Courier, _ string) (*domain.Courier, error) {
-	return MockCourierData, nil
-}
-
-func (m MockService) UpdateCourierAvailable(_, _ string) (*domain.Courier, error) {
-	return MockCourierData, nil
-}
-
-func (m MockService) GetCourierList(_ domain.SearchParam) ([]domain.Courier, error) {
-	return []domain.Courier{*MockCourierData}, nil
-}
-
-func (m MockService) GetCourier(_ string) (*domain.Courier, error) {
-	return MockCourierData, nil
-}
-
-func (m MockService) InsertLocation(_ domain.Location, _ string) (*domain.Location, error) {
-	return MockLocationData, nil
-}
-
-func (m MockService) GetLocation(_ string) (*domain.Location, error) {
-	return MockLocationData, nil
-}
-
-func (m MockService) UpdateLocation(_ domain.Location, id string) (*domain.Location, error) {
-	return MockLocationData, nil
-}
-
-func (m MockService) GetLocationList(_ domain.SearchParam) ([]domain.Location, error) {
-	return []domain.Location{*MockLocationData}, nil
-}
 
 func TestInsertNewCourierEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		courierData courierapi2.NewCourierRequest
+		name string
+		in   courierapi.NewCourierRequest
+		out  courierapi.CourierResponse
 	}{
 		{
-			"Insert courier simple test",
-			courierapi2.NewCourierRequest{
-				Username:  "TestUsername",
-				Firstname: "TestFName",
-				Lastname:  "TestLName",
-				Email:     "Test@gmail.com",
+			"insert_courier_test",
+			courierapi.NewCourierRequest{
+				Username:  "testUsername",
+				Password:  "testPassword",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
+			},
+			courierapi.CourierResponse{
+				ID:        1,
+				Username:  "testUsername",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+				Available: true,
 			},
 		},
 	}
@@ -108,60 +56,53 @@ func TestInsertNewCourierEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         log,
-				CourierService: mockService,
+			mockInData := domain.Courier{
+				Username:  test.in.Username,
+				Password:  test.in.Password,
+				Firstname: test.in.Firstname,
+				Lastname:  test.in.Lastname,
+				Email:     test.in.Email,
+				Phone:     test.in.Phone,
+			}
+
+			mockOutData := &domain.Courier{
+				ID:        test.out.ID,
+				Username:  test.out.Username,
+				Password:  test.in.Password,
+				Firstname: test.out.Firstname,
+				Lastname:  test.out.Lastname,
+				Email:     test.out.Email,
+				Phone:     test.out.Phone,
+				Available: test.out.Available,
+			}
+
+			service.EXPECT().InsertCourier(mockInData).Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
 			})
 
-			reqBody, err := v1.Encode(test.courierData)
-			if err != nil {
-				t.Fatal(err)
-			}
+			reqBody, err := v1.Encode(test.in)
+			require.NoError(t, err)
 
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/couriers", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			handler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := courierapi2.CourierResponse{}
-			if err = courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			respData := courierapi.CourierResponse{}
+			err = courierapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
 
-			if respData.ID != MockCourierData.ID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockCourierData.ID, respData.ID)
-			}
-
-			if respData.Username != MockCourierData.Username {
-				t.Errorf("Username: Expected: %v, Got: %v", test.courierData.Username, respData.Username)
-			}
-
-			if respData.Firstname != MockCourierData.Firstname {
-				t.Errorf("Firstname: Expected: %s, Got: %s", test.courierData.Firstname, respData.Firstname)
-			}
-
-			if respData.Lastname != MockCourierData.Lastname {
-				t.Errorf("Lastname: Expected: %s, Got: %s", test.courierData.Lastname, respData.Lastname)
-			}
-
-			if respData.Email != MockCourierData.Email {
-				t.Errorf("Email: Expected: %s, Got: %s", test.courierData.Email, respData.Email)
-			}
-
-			if respData.Phone != MockCourierData.Phone {
-				t.Errorf("Phone: Expected: %s, Got: %s", test.courierData.Phone, respData.Phone)
-			}
-
-			if respData.Available != MockCourierData.Available {
-				t.Errorf("Available: Expected: %s, Got: %s", test.courierData.Phone, respData.Phone)
-			}
+			assert.Equal(t, test.out, respData)
 		})
 	}
 }
@@ -169,51 +110,78 @@ func TestInsertNewCourierEndpoint(t *testing.T) {
 func TestDeleteCourierEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("Delete Courier simple test", func(t *testing.T) {
-		t.Parallel()
+	tests := []struct {
+		name string
+		in   string
+		out  string
+	}{
+		{
+			"delete_courier_test",
+			"1",
+			"courier deleted",
+		},
+	}
 
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "Delete Courier simple test")
-		handler := courierhandler.NewCourierHandler(courierhandler.Params{
-			Logger:         log,
-			CourierService: mockService,
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
+
+			service.EXPECT().DeleteCourier(test.in).Return(test.out, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodDelete, "/v1/couriers/"+test.in, nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			respData := ""
+			err := courierapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.out, respData)
 		})
-
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodDelete, "/v1/couriers/1", nil)
-
-		handler.ServeHTTP(resp, req)
-		var respData string
-		expData := "courier deleted"
-
-		if err := courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-			t.Fatal(err)
-		}
-
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
-		if respData != expData {
-			t.Errorf("response: Expected: %s, Got: %s", expData, respData)
-		}
-	})
+	}
 }
 
 func TestUpdateCourierEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		courierData courierapi2.UpdateCourierRequest
+		name   string
+		inID   string
+		inBody courierapi.UpdateCourierRequest
+		out    courierapi.CourierResponse
 	}{
 		{
-			"Update courier simple test",
-			courierapi2.UpdateCourierRequest{
-				Username:  "TestUsername",
-				Firstname: "TestFName",
-				Lastname:  "TestLName",
-				Email:     "Test@gmail.com",
+			"update_courier_test",
+			"1",
+			courierapi.UpdateCourierRequest{
+				Username:  "testUsername",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
 				Phone:     "123456789",
+			},
+			courierapi.CourierResponse{
+				Username:  "testUsername",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+				Available: true,
 			},
 		},
 	}
@@ -224,60 +192,52 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         log,
-				CourierService: mockService,
-			})
-
-			reqBody, err := v1.Encode(test.courierData)
-			if err != nil {
-				t.Fatal(err)
+			mockInData := domain.Courier{
+				Username:  test.inBody.Username,
+				Firstname: test.inBody.Firstname,
+				Lastname:  test.inBody.Lastname,
+				Email:     test.inBody.Email,
+				Phone:     test.inBody.Phone,
 			}
 
-			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPut, "/v1/couriers/1", bytes.NewBuffer(reqBody))
+			mockOutData := &domain.Courier{
+				ID:        test.out.ID,
+				Username:  test.out.Username,
+				Password:  "",
+				Firstname: test.out.Firstname,
+				Lastname:  test.out.Lastname,
+				Email:     test.out.Email,
+				Phone:     test.out.Phone,
+				Available: test.out.Available,
+			}
 
-			courierHandler.ServeHTTP(resp, req)
+			service.EXPECT().UpdateCourier(mockInData, test.inID).Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
+			})
+
+			reqBody, err := v1.Encode(test.inBody)
+			require.NoError(t, err)
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPut, "/v1/couriers/"+test.inID, bytes.NewBuffer(reqBody))
+
+			handler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := courierapi2.CourierResponse{}
-			if err = courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			respData := courierapi.CourierResponse{}
+			err = courierapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
 
-			if respData.ID != MockCourierData.ID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockCourierData.ID, respData.ID)
-			}
-
-			if respData.Username != MockCourierData.Username {
-				t.Errorf("Username: Expected: %v, Got: %v", test.courierData.Username, respData.Username)
-			}
-
-			if respData.Firstname != MockCourierData.Firstname {
-				t.Errorf("Firstname: Expected: %s, Got: %s", test.courierData.Firstname, respData.Firstname)
-			}
-
-			if respData.Lastname != MockCourierData.Lastname {
-				t.Errorf("Lastname: Expected: %s, Got: %s", test.courierData.Lastname, respData.Lastname)
-			}
-
-			if respData.Email != MockCourierData.Email {
-				t.Errorf("Email: Expected: %s, Got: %s", test.courierData.Email, respData.Email)
-			}
-
-			if respData.Phone != MockCourierData.Phone {
-				t.Errorf("Phone: Expected: %s, Got: %s", test.courierData.Phone, respData.Phone)
-			}
-
-			if respData.Available != MockCourierData.Available {
-				t.Errorf("Available: Expected: %s, Got: %s", test.courierData.Phone, respData.Phone)
-			}
+			assert.Equal(t, test.out, respData)
 		})
 	}
 }
@@ -285,176 +245,23 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 	t.Parallel()
 
-	t.Run("update courier-available simple test", func(t *testing.T) {
-		t.Parallel()
-
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "update courier-available simple test")
-		handler := courierhandler.NewCourierHandler(courierhandler.Params{
-			Logger:         log,
-			CourierService: mockService,
-		})
-
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodPut, "/v1/couriers-available/1?available=true", nil)
-
-		handler.ServeHTTP(resp, req)
-
-		respData := courierapi2.CourierResponse{}
-
-		if err := courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-			t.Fatal(err)
-		}
-
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
-		if !respData.Available {
-			t.Errorf("response: Expected: %v, Got: %v", true, respData.Available)
-		}
-	})
-}
-
-func TestGetCourierEndpoint(t *testing.T) {
-	t.Parallel()
-
-	t.Run("get courier simple test", func(t *testing.T) {
-		t.Parallel()
-
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "get courier simple test")
-		handler := courierhandler.NewCourierHandler(courierhandler.Params{
-			Logger:         log,
-			CourierService: mockService,
-		})
-
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/couriers/1", nil)
-
-		handler.ServeHTTP(resp, req)
-
-		respData := courierapi2.CourierResponse{}
-		if err := courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-			t.Fatal(err)
-		}
-
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
-		if respData.ID != MockCourierData.ID {
-			t.Errorf("UserID: Expected: %v, Got: %v", MockCourierData.ID, respData.ID)
-		}
-
-		if respData.Username != MockCourierData.Username {
-			t.Errorf("Username: Expected: %v, Got: %v", MockCourierData.Username, respData.Username)
-		}
-
-		if respData.Firstname != MockCourierData.Firstname {
-			t.Errorf("Firstname: Expected: %s, Got: %s", MockCourierData.Firstname, respData.Firstname)
-		}
-
-		if respData.Lastname != MockCourierData.Lastname {
-			t.Errorf("Lastname: Expected: %s, Got: %s", MockCourierData.Lastname, respData.Lastname)
-		}
-
-		if respData.Email != MockCourierData.Email {
-			t.Errorf("Email: Expected: %s, Got: %s", MockCourierData.Email, respData.Email)
-		}
-
-		if respData.Phone != MockCourierData.Phone {
-			t.Errorf("Phone: Expected: %s, Got: %s", MockCourierData.Phone, respData.Phone)
-		}
-
-		if respData.Available != MockCourierData.Available {
-			t.Errorf("Available: Expected: %s, Got: %s", MockCourierData.Phone, respData.Phone)
-		}
-	})
-}
-
-func TestGetCourierListEndpoint(t *testing.T) {
-	t.Parallel()
-
-	t.Run("get courier list simple test", func(t *testing.T) {
-		t.Parallel()
-		testGetRespList := []*domain.Courier{MockCourierData}
-		mockService := new(MockService)
-		log := logger.NewLogger(os.Stdout, "get courier list simple test")
-		handler := courierhandler.NewCourierHandler(courierhandler.Params{
-			Logger:         log,
-			CourierService: mockService,
-		})
-
-		resp := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/v1/couriers", nil)
-
-		handler.ServeHTTP(resp, req)
-
-		if resp.Code != http.StatusOK {
-			t.Fatalf("StatusCode: %d", resp.Code)
-		}
-
-		respDataList := courierapi2.CourierResponseList{}
-		if err := courierapi2.DecodeJSON(resp.Body, &respDataList); err != nil {
-			t.Fatal(err)
-		}
-
-		if len(respDataList.CourierResponseList) != len(testGetRespList) {
-			t.Errorf("len: Expected: %v, Got: %v", len(testGetRespList), len(respDataList.CourierResponseList))
-		}
-
-		for _, respData := range respDataList.CourierResponseList {
-
-			if respData.ID != MockCourierData.ID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockCourierData.ID, respData.ID)
-			}
-
-			if respData.Username != MockCourierData.Username {
-				t.Errorf("Username: Expected: %v, Got: %v", MockCourierData.Username, respData.Username)
-			}
-
-			if respData.Firstname != MockCourierData.Firstname {
-				t.Errorf("Firstname: Expected: %s, Got: %s", MockCourierData.Firstname, respData.Firstname)
-			}
-
-			if respData.Lastname != MockCourierData.Lastname {
-				t.Errorf("Lastname: Expected: %s, Got: %s", MockCourierData.Lastname, respData.Lastname)
-			}
-
-			if respData.Email != MockCourierData.Email {
-				t.Errorf("Email: Expected: %s, Got: %s", MockCourierData.Email, respData.Email)
-			}
-
-			if respData.Phone != MockCourierData.Phone {
-				t.Errorf("Phone: Expected: %s, Got: %s", MockCourierData.Phone, respData.Phone)
-			}
-
-			if respData.Available != MockCourierData.Available {
-				t.Errorf("Available: Expected: %s, Got: %s", MockCourierData.Phone, respData.Phone)
-			}
-
-		}
-	})
-}
-
-func TestInsertNewLocationEndpoint(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
-		name         string
-		locationData courierapi2.NewLocationRequest
+		name    string
+		inID    string
+		inParam string
+		out     courierapi.CourierResponse
 	}{
 		{
-			"New Location simple test",
-			courierapi2.NewLocationRequest{
-				Latitude:   "0123456789",
-				Longitude:  "0123456789",
-				Country:    "TestCountry",
-				City:       "Test City",
-				Region:     "",
-				Street:     "",
-				HomeNumber: "",
-				Floor:      "",
-				Door:       "",
+			"update_courier_test",
+			"1",
+			"true",
+			courierapi.CourierResponse{
+				Username:  "testUsername",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+				Available: true,
 			},
 		},
 	}
@@ -465,15 +272,274 @@ func TestInsertNewLocationEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         log,
-				CourierService: mockService,
+			mockOutData := &domain.Courier{
+				ID:        test.out.ID,
+				Username:  test.out.Username,
+				Password:  "",
+				Firstname: test.out.Firstname,
+				Lastname:  test.out.Lastname,
+				Email:     test.out.Email,
+				Phone:     test.out.Phone,
+				Available: test.out.Available,
+			}
+			service.EXPECT().UpdateCourierAvailable(test.inID, test.inParam).Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
 			})
 
-			reqBody, err := v1.Encode(test.locationData)
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPut, "/v1/couriers-available/"+test.inID+"?available="+test.inParam, nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			respData := courierapi.CourierResponse{}
+			err := courierapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.out, respData)
+		})
+	}
+}
+
+func TestGetCourierEndpoint(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		in   string
+		out  courierapi.CourierResponse
+	}{
+		{
+			"get_courier_test",
+			"1",
+			courierapi.CourierResponse{
+				Username:  "testUsername",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+				Available: true,
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
+
+			mockOutData := &domain.Courier{
+				ID:        test.out.ID,
+				Username:  test.out.Username,
+				Password:  "",
+				Firstname: test.out.Firstname,
+				Lastname:  test.out.Lastname,
+				Email:     test.out.Email,
+				Phone:     test.out.Phone,
+				Available: test.out.Available,
+			}
+
+			service.EXPECT().GetCourier(test.in).Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/couriers/"+test.in, nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			respData := courierapi.CourierResponse{}
+			err := courierapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.out, respData)
+		})
+	}
+}
+
+func TestGetCourierListEndpoint(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		out  courierapi.CourierResponseList
+	}{
+		{
+			"get_courier_list_test",
+			courierapi.CourierResponseList{
+				CourierResponseList: []courierapi.CourierResponse{
+					{
+						ID:        1,
+						Username:  "test2Username",
+						Firstname: "test2FName",
+						Lastname:  "test2LName",
+						Email:     "test2@gmail.com",
+						Phone:     "1234567892",
+						Available: false,
+					},
+					{
+						ID:        2,
+						Username:  "test2Username",
+						Firstname: "test2FName",
+						Lastname:  "test2LName",
+						Email:     "test2@gmail.com",
+						Phone:     "1234567892",
+						Available: true,
+					},
+				},
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
+
+			mockInData := domain.SearchParam{}
+
+			mockOutDataList := []domain.Courier{}
+			for _, data := range test.out.CourierResponseList {
+				mockOutData := domain.Courier{
+					ID:        data.ID,
+					Username:  data.Username,
+					Password:  "",
+					Firstname: data.Firstname,
+					Lastname:  data.Lastname,
+					Email:     data.Email,
+					Phone:     data.Phone,
+					Available: data.Available,
+				}
+				mockOutDataList = append(mockOutDataList, mockOutData)
+			}
+
+			service.EXPECT().GetCourierList(mockInData).Return(mockOutDataList, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
+			})
+
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/couriers", nil)
+
+			handler.ServeHTTP(resp, req)
+
+			if resp.Code != http.StatusOK {
+				t.Fatalf("StatusCode: %d", resp.Code)
+			}
+
+			respData := courierapi.CourierResponseList{}
+			err := courierapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.out, respData)
+		})
+	}
+}
+
+func TestInsertNewLocationEndpoint(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		in   courierapi.NewLocationRequest
+		out  courierapi.LocationResponse
+	}{
+		{
+			"insert_new_location_test",
+			courierapi.NewLocationRequest{
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
+				Country:    "TestCountry",
+				City:       "Test City",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
+			},
+			courierapi.LocationResponse{
+				UserID:     1,
+				Latitude:   "0123456789",
+				Longitude:  "0123456789",
+				Country:    "TestCountry",
+				City:       "Test City",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
+
+			mockInData := domain.Location{
+				Latitude:   test.in.Latitude,
+				Longitude:  test.in.Longitude,
+				Country:    test.in.Country,
+				City:       test.in.City,
+				Region:     test.in.Region,
+				Street:     test.in.Street,
+				HomeNumber: test.in.HomeNumber,
+				Floor:      test.in.Floor,
+				Door:       test.in.Door,
+			}
+
+			mockOutData := &domain.Location{
+				UserID:     test.out.UserID,
+				Latitude:   test.out.Latitude,
+				Longitude:  test.out.Longitude,
+				Country:    test.out.Country,
+				City:       test.out.City,
+				Region:     test.out.Region,
+				Street:     test.out.Street,
+				HomeNumber: test.out.HomeNumber,
+				Floor:      test.out.Floor,
+				Door:       test.out.Door,
+			}
+
+			service.EXPECT().InsertLocation(mockInData, "1").Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
+			})
+
+			reqBody, err := v1.Encode(test.in)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -481,40 +547,17 @@ func TestInsertNewLocationEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/v1/locations/1", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			handler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := courierapi2.LocationResponse{}
-			if err = courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			respData := courierapi.LocationResponse{}
+			err = courierapi.DecodeJSON(resp.Body, &respData)
+			assert.NoError(t, err)
 
-			if respData.UserID != MockLocationData.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
-			}
-
-			if respData.Latitude != MockLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.locationData.Latitude, respData.Latitude)
-			}
-
-			if respData.Longitude != MockLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.locationData.Longitude, respData.Longitude)
-			}
-
-			if respData.Country != MockLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.locationData.Country, respData.Country)
-			}
-
-			if respData.City != MockLocationData.City {
-				t.Errorf("City: Expected: %s, Got: %s", test.locationData.City, respData.City)
-			}
-
-			if respData.Region != MockLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.locationData.Region, respData.Region)
-			}
+			assert.Equal(t, respData, test.out)
 		})
 	}
 }
@@ -523,21 +566,34 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name         string
-		locationData courierapi2.NewLocationRequest
+		name string
+		in   courierapi.NewLocationRequest
+		out  courierapi.LocationResponse
 	}{
 		{
-			"UpdateLocation simple test",
-			courierapi2.NewLocationRequest{
+			"update_location_test",
+			courierapi.NewLocationRequest{
 				Latitude:   "0123456789",
 				Longitude:  "0123456789",
 				Country:    "TestCountry",
 				City:       "Test City",
-				Region:     "",
-				Street:     "",
-				HomeNumber: "",
-				Floor:      "",
-				Door:       "",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
+			},
+			courierapi.LocationResponse{
+				UserID:     1,
+				Latitude:   "u0123456789",
+				Longitude:  "u0123456789",
+				Country:    "uTestCountry",
+				City:       "uTest City",
+				Region:     "uTestRegion",
+				Street:     "uTestStreet",
+				HomeNumber: "uTestHomeNumber",
+				Floor:      "uTestFloor",
+				Door:       "uTestDoor",
 			},
 		},
 	}
@@ -548,15 +604,42 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         log,
-				CourierService: mockService,
+			mockInData := domain.Location{
+				Latitude:   test.in.Latitude,
+				Longitude:  test.in.Longitude,
+				Country:    test.in.Country,
+				City:       test.in.City,
+				Region:     test.in.Region,
+				Street:     test.in.Street,
+				HomeNumber: test.in.HomeNumber,
+				Floor:      test.in.Floor,
+				Door:       test.in.Door,
+			}
+
+			mockOutData := &domain.Location{
+				UserID:     test.out.UserID,
+				Latitude:   test.out.Latitude,
+				Longitude:  test.out.Longitude,
+				Country:    test.out.Country,
+				City:       test.out.City,
+				Region:     test.out.Region,
+				Street:     test.out.Street,
+				HomeNumber: test.out.HomeNumber,
+				Floor:      test.out.Floor,
+				Door:       test.out.Door,
+			}
+
+			service.EXPECT().UpdateLocation(mockInData, "1").Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
 			})
 
-			reqBody, err := v1.Encode(test.locationData)
+			reqBody, err := v1.Encode(test.in)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -564,40 +647,17 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPut, "/v1/locations/1", bytes.NewBuffer(reqBody))
 
-			courierHandler.ServeHTTP(resp, req)
+			handler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := courierapi2.LocationResponse{}
-			if err = courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			respData := courierapi.LocationResponse{}
+			err = courierapi.DecodeJSON(resp.Body, &respData)
+			assert.NoError(t, err)
 
-			if respData.UserID != MockLocationData.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
-			}
-
-			if respData.Latitude != MockLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", test.locationData.Latitude, respData.Latitude)
-			}
-
-			if respData.Longitude != MockLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", test.locationData.Longitude, respData.Longitude)
-			}
-
-			if respData.Country != MockLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", test.locationData.Country, respData.Country)
-			}
-
-			if respData.City != MockLocationData.City {
-				t.Errorf("City: Expected: %s, Got: %s", test.locationData.City, respData.City)
-			}
-
-			if respData.Region != MockLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", test.locationData.Region, respData.Region)
-			}
+			assert.Equal(t, respData, test.out)
 		})
 	}
 }
@@ -607,9 +667,24 @@ func TestGetLocationEndpoint(t *testing.T) {
 
 	tests := []struct {
 		name string
+		in   string
+		out  courierapi.LocationResponse
 	}{
 		{
-			"GetLocation simple test",
+			"get location test",
+			"1",
+			courierapi.LocationResponse{
+				UserID:     1,
+				Latitude:   "u0123456789",
+				Longitude:  "u0123456789",
+				Country:    "uTestCountry",
+				City:       "uTest City",
+				Region:     "uTestRegion",
+				Street:     "uTestStreet",
+				HomeNumber: "uTestHomeNumber",
+				Floor:      "uTestFloor",
+				Door:       "uTestDoor",
+			},
 		},
 	}
 
@@ -619,51 +694,48 @@ func TestGetLocationEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         log,
-				CourierService: mockService,
+			mockOutData := &domain.Location{
+				UserID:     test.out.UserID,
+				Latitude:   test.out.Latitude,
+				Longitude:  test.out.Longitude,
+				Country:    test.out.Country,
+				City:       test.out.City,
+				Region:     test.out.Region,
+				Street:     test.out.Street,
+				HomeNumber: test.out.HomeNumber,
+				Floor:      test.out.Floor,
+				Door:       test.out.Door,
+			}
+
+			service.EXPECT().GetLocation(test.in).Return(mockOutData, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
 			})
 
-			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/locations/1", nil)
+			reqBody, err := v1.Encode(test.in)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-			courierHandler.ServeHTTP(resp, req)
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/locations/1", bytes.NewBuffer(reqBody))
+
+			handler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respData := courierapi2.LocationResponse{}
-			if err := courierapi2.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			respData := courierapi.LocationResponse{}
+			err = courierapi.DecodeJSON(resp.Body, &respData)
+			assert.NoError(t, err)
 
-			if respData.UserID != MockLocationData.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
-			}
-
-			if respData.Latitude != MockLocationData.Latitude {
-				t.Errorf("Latitude: Expected: %s, Got: %s", MockLocationData.Latitude, respData.Latitude)
-			}
-
-			if respData.Longitude != MockLocationData.Longitude {
-				t.Errorf("Longitude: Expected: %s, Got: %s", MockLocationData.Longitude, respData.Longitude)
-			}
-
-			if respData.Country != MockLocationData.Country {
-				t.Errorf("Country: Expected: %s, Got: %s", MockLocationData.Country, respData.Country)
-			}
-
-			if respData.City != MockLocationData.City {
-				t.Errorf("City: Expected: %s, Got: %s", MockLocationData.City, respData.City)
-			}
-
-			if respData.Region != MockLocationData.Region {
-				t.Errorf("Region: Expected: %s, Got: %s", MockLocationData.Region, respData.Region)
-			}
+			assert.Equal(t, respData, test.out)
 		})
 	}
 }
@@ -673,73 +745,95 @@ func TestGetLocationListEndpoint(t *testing.T) {
 
 	tests := []struct {
 		name string
+		in   string
+		out  courierapi.LocationResponseList
 	}{
 		{
-			"Get Location list simple test",
+			"get location test",
+			"testCity",
+			courierapi.LocationResponseList{
+				[]courierapi.LocationResponse{
+					{
+						UserID:     1,
+						Latitude:   "u0123456789",
+						Longitude:  "u0123456789",
+						Country:    "uTestCountry",
+						City:       "uTest City",
+						Region:     "uTestRegion",
+						Street:     "uTestStreet",
+						HomeNumber: "uTestHomeNumber",
+						Floor:      "uTestFloor",
+						Door:       "uTestDoor",
+					},
+					{
+						UserID:     2,
+						Latitude:   "u01234567892",
+						Longitude:  "u01234567892",
+						Country:    "uTestCountry2",
+						City:       "uTest City2",
+						Region:     "uTestRegion2",
+						Street:     "uTestStreet2",
+						HomeNumber: "uTestHomeNumber2",
+						Floor:      "uTestFloor2",
+						Door:       "uTestDoor2",
+					},
+				},
+			},
 		},
 	}
 
 	for _, currentTest := range tests {
 		test := currentTest
-		testGetRespList := []*domain.Location{MockLocationData}
 
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockCourierService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			courierHandler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         log,
-				CourierService: mockService,
+			mockOutDataList := []domain.Location{}
+			for _, data := range test.out.LocationResponseList {
+				mockOutData := domain.Location{
+					UserID:     data.UserID,
+					Latitude:   data.Latitude,
+					Longitude:  data.Longitude,
+					Country:    data.Country,
+					City:       data.City,
+					Region:     data.Region,
+					Street:     data.Street,
+					HomeNumber: data.HomeNumber,
+					Floor:      data.Floor,
+					Door:       data.Door,
+				}
+				mockOutDataList = append(mockOutDataList, mockOutData)
+			}
+
+			service.EXPECT().GetLocationList(domain.SearchParam{"city": "testCity"}).Return(mockOutDataList, nil)
+
+			handler := courierhandler.NewCourierHandler(courierhandler.Params{
+				Logger:         logger.NewLogger(os.Stdout, test.name),
+				CourierService: service,
 			})
 
-			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/locations", nil)
+			reqBody, err := v1.Encode(test.in)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-			courierHandler.ServeHTTP(resp, req)
+			resp := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/v1/locations?city="+test.in, bytes.NewBuffer(reqBody))
+
+			handler.ServeHTTP(resp, req)
 
 			if resp.Code != http.StatusOK {
 				t.Fatalf("StatusCode: %d", resp.Code)
 			}
 
-			respDataList := courierapi2.LocationResponseList{}
+			respData := courierapi.LocationResponseList{}
+			err = courierapi.DecodeJSON(resp.Body, &respData)
+			assert.NoError(t, err)
 
-			if err := courierapi2.DecodeJSON(resp.Body, &respDataList); err != nil {
-				t.Fatal(err)
-			}
-
-			if len(respDataList.LocationResponseList) != len(testGetRespList) {
-				t.Errorf("len: Expected: %v, Got: %v", len(testGetRespList), len(respDataList.LocationResponseList))
-			}
-
-			for _, respData := range respDataList.LocationResponseList {
-
-				if respData.UserID != MockLocationData.UserID {
-					t.Errorf("UserID: Expected: %v, Got: %v", MockLocationData.UserID, respData.UserID)
-				}
-
-				if respData.Latitude != MockLocationData.Latitude {
-					t.Errorf("Latitude: Expected: %s, Got: %s", MockLocationData.Latitude, respData.Latitude)
-				}
-
-				if respData.Longitude != MockLocationData.Longitude {
-					t.Errorf("Longitude: Expected: %s, Got: %s", MockLocationData.Longitude, respData.Longitude)
-				}
-
-				if respData.Country != MockLocationData.Country {
-					t.Errorf("Country: Expected: %s, Got: %s", MockLocationData.Country, respData.Country)
-				}
-
-				if respData.City != MockLocationData.City {
-					t.Errorf("City: Expected: %s, Got: %s", MockLocationData.City, respData.City)
-				}
-
-				if respData.Region != MockLocationData.Region {
-					t.Errorf("Region: Expected: %s, Got: %s", MockLocationData.Region, respData.Region)
-				}
-
-			}
+			assert.Equal(t, respData, test.out)
 		})
 	}
 }

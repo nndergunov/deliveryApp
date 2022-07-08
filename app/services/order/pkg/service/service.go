@@ -1,11 +1,13 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/messages"
 	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/publisher"
+	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/accountingclient"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
@@ -60,7 +62,7 @@ func (s Service) CreateOrder(order domain.Order, accountID int) (*domain.Order, 
 	}
 
 	orderPaid, err := s.accountingClient.CreateTransaction(accountID, order.RestaurantID, orderPrice)
-	if err != nil {
+	if err != nil && !errors.Is(err, accountingclient.ErrAccountingServiceFail) {
 		return nil, fmt.Errorf("checking client account: %w", err)
 	}
 

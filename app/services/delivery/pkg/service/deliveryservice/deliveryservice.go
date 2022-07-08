@@ -21,7 +21,7 @@ type DeliveryService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	DeliveryStorage  service.DeliveryStorage
+	DeliveryStorage  DeliveryStorage
 	Logger           *logger.Logger
 	RestaurantClient service.RestaurantClient
 	CourierClient    service.CourierClient
@@ -29,7 +29,7 @@ type Params struct {
 }
 
 type deliveryService struct {
-	deliveryStorage  service.DeliveryStorage
+	deliveryStorage  DeliveryStorage
 	logger           *logger.Logger
 	restaurantClient service.RestaurantClient
 	courierClient    service.CourierClient

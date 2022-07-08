@@ -9,7 +9,7 @@ BEGIN
 
       RAISE NOTICE 'Role "order_db" already exists. Skipping.';
 ELSE
-CREATE ROLE order_db_pass LOGIN PASSWORD 'order_db_pass';
+CREATE ROLE order_db LOGIN PASSWORD 'order_db_pass';
 END IF;
 END
 $do$;

@@ -69,6 +69,16 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 }
 
 func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request *http.Request) {
+	// swagger:operation GET /tasks/{id} returnTasks
+	//
+	// Returns tasks for the specified restaurant
+	//
+	// ---
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: requested data
 	kitchenID, err := getIDFromEndpoint(kitchenIDKey, request)
 	if err != nil {
 		e.log.Println(err)

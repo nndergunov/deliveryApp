@@ -5,11 +5,11 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
-
 	"github.com/gorilla/mux"
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi"
 
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
 )
