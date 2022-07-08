@@ -3,6 +3,7 @@ module github.com/nndergunov/deliveryApp/app/services/courier
 go 1.18
 
 require (
+	github.com/ardanlabs/darwin v1.3.0
 	github.com/golang/mock v1.4.4
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.5

@@ -2,9 +2,10 @@ package consumerstorage_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db/dbtest"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/docker"
@@ -203,14 +204,14 @@ func TestGetAllConsumer(t *testing.T) {
 		{
 			"get_all_consumer_test",
 			[]domain.Consumer{
-				domain.Consumer{
+				{
 					ID:        1,
 					Firstname: "test1FName",
 					Lastname:  "test1LName",
 					Email:     "test1@gmail.com",
 					Phone:     "1234567891",
 				},
-				domain.Consumer{
+				{
 					ID:        2,
 					Firstname: "test2FName",
 					Lastname:  "test2LName",
@@ -289,7 +290,6 @@ func TestGetConsumer(t *testing.T) {
 			require.NotNil(t, resp2)
 
 			equalConsumer(t, resp2, test.out)
-
 		})
 	}
 }
@@ -347,7 +347,6 @@ func TestInsertConsumerLocation(t *testing.T) {
 			require.NotNil(t, resp)
 
 			assert.Equal(t, resp, test.out)
-
 		})
 	}
 }
@@ -422,7 +421,6 @@ func TestUpdateConsumerLocation(t *testing.T) {
 			require.NotNil(t, resp)
 
 			assert.Equal(t, resp2, test.out)
-
 		})
 	}
 }
@@ -474,7 +472,6 @@ func TestGetConsumerLocation(t *testing.T) {
 			require.NotNil(t, resp)
 
 			assert.Equal(t, resp2, test.out)
-
 		})
 	}
 }

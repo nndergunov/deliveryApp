@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	database "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
-	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db/dbschema"
-	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/docker"
+	database "github.com/nndergunov/deliveryApp/app/services/courier/pkg/db"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/db/dbschema"
+	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/docker"
 )
 
 // StartDB starts a database instance.
@@ -70,7 +70,7 @@ func NewUnit(t *testing.T, c *docker.Container, dbName string) (*sql.DB, func())
 		t.Fatalf("Opening database connection: %v", err)
 	}
 
-	t.Log("Migrate database ...")
+	t.Log("Migrate database...")
 
 	if err := dbschema.Migrate(ctx, db); err != nil {
 		docker.DumpContainerLogs(t, c.ID)

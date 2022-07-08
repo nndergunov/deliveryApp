@@ -9,7 +9,7 @@ import (
 
 	"github.com/ardanlabs/darwin"
 
-	database "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
+	database "github.com/nndergunov/deliveryApp/app/services/courier/pkg/db"
 )
 
 //go:embed sql/schema.sql

@@ -149,6 +149,58 @@ func TestUpdateCourier(t *testing.T) {
 	}
 }
 
+func TestUpdateCourierAvailable(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name        string
+		inID        string
+		InAvailable string
+		out         *domain.Courier
+	}{
+		{
+			"update_courier_available_test",
+			"1",
+			"true",
+			&domain.Courier{
+				ID:        1,
+				Username:  "testUsername",
+				Password:  "testPassword",
+				Firstname: "testFName",
+				Lastname:  "testLName",
+				Email:     "test@gmail.com",
+				Phone:     "123456789",
+				Available: true,
+			},
+		},
+	}
+
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mockstorage.NewMockCourierStorage(ctl)
+
+			idInt, err := strconv.Atoi(test.inID)
+			require.NoError(t, err)
+
+			storage.EXPECT().GetCourierByID(idInt).Return(test.out, nil)
+
+			availableBool, err := strconv.ParseBool(test.InAvailable)
+			require.NoError(t, err)
+
+			storage.EXPECT().UpdateCourierAvailable(idInt, availableBool).Return(test.out, nil)
+
+			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			resp, err := service.UpdateCourierAvailable(test.inID, test.InAvailable)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.out, resp)
+		})
+	}
+}
+
 func TestGetAllCourier(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
@@ -433,7 +485,7 @@ func TestGetCourierLocationList(t *testing.T) {
 				"city": "testIstanbul",
 			},
 			[]domain.Location{
-				domain.Location{
+				{
 					UserID:     1,
 					Latitude:   "0123456789",
 					Longitude:  "0123456789",

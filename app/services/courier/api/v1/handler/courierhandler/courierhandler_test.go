@@ -388,7 +388,7 @@ func TestGetCourierListEndpoint(t *testing.T) {
 			"get_courier_list_test",
 			courierapi.CourierResponseList{
 				CourierResponseList: []courierapi.CourierResponse{
-					courierapi.CourierResponse{
+					{
 						ID:        1,
 						Username:  "test2Username",
 						Firstname: "test2FName",
@@ -397,7 +397,7 @@ func TestGetCourierListEndpoint(t *testing.T) {
 						Phone:     "1234567892",
 						Available: false,
 					},
-					courierapi.CourierResponse{
+					{
 						ID:        2,
 						Username:  "test2Username",
 						Firstname: "test2FName",
@@ -753,7 +753,7 @@ func TestGetLocationListEndpoint(t *testing.T) {
 			"testCity",
 			courierapi.LocationResponseList{
 				[]courierapi.LocationResponse{
-					courierapi.LocationResponse{
+					{
 						UserID:     1,
 						Latitude:   "u0123456789",
 						Longitude:  "u0123456789",
@@ -765,7 +765,7 @@ func TestGetLocationListEndpoint(t *testing.T) {
 						Floor:      "uTestFloor",
 						Door:       "uTestDoor",
 					},
-					courierapi.LocationResponse{
+					{
 						UserID:     2,
 						Latitude:   "u01234567892",
 						Longitude:  "u01234567892",

@@ -70,18 +70,12 @@ func NewUnit(t *testing.T, c *docker.Container, dbName string) (*sql.DB, func())
 		t.Fatalf("Opening database connection: %v", err)
 	}
 
-	t.Log("Migrate and seed database ...")
+	t.Log("Migrate database ...")
 
 	if err := dbschema.Migrate(ctx, db); err != nil {
 		docker.DumpContainerLogs(t, c.ID)
 		t.Fatalf("Migrating error: %s", err)
 	}
-
-	//if err := dbschema.Seed(ctx, db); err != nil {
-	//	docker.DumpContainerLogs(t, c.ID)
-	//	t.Fatalf("Seeding error: %s", err)
-	//}
-
 	t.Log("Ready for testing ...")
 
 	// teardown is the function that should be invoked when the caller is done
