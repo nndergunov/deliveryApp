@@ -1,4 +1,4 @@
-package service
+package consumerservice
 
 import (
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"

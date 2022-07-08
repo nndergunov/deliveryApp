@@ -2,42 +2,47 @@ package deliverystorage_test
 
 import (
 	"fmt"
-	"os"
-	"strings"
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/docker"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/storage/deliverystorage"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db/dbtest"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
-const configFile = "/config.yaml"
+var c *docker.Container
 
-var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
-	" port=" + configreader.GetString("database.test.port") +
-	" user=" + configreader.GetString("database.test.user") +
-	" password=" + configreader.GetString("database.test.password") +
-	" dbname=" + configreader.GetString("database.test.dbName") +
-	" sslmode=" + configreader.GetString("database.test.sslmode"))
+func TestMain(m *testing.M) {
+	var err error
+	c, err = dbtest.StartDB()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer dbtest.StopDB(c)
+
+	m.Run()
+}
 
 func TestAssignOrder(t *testing.T) {
 	tests := []struct {
-		name        string
-		assignOrder domain.AssignOrder
-		response    domain.AssignOrder
+		name string
+		in   domain.AssignOrder
+		out  *domain.AssignOrder
 	}{
 		{
-			name: "TestAssignOrder",
-			assignOrder: domain.AssignOrder{
+			"test_assign_order",
+			domain.AssignOrder{
 				OrderID:   1,
-				CourierID: 1,
+				CourierID: 2,
 			},
-
-			response: domain.AssignOrder{
+			&domain.AssignOrder{
 				OrderID:   1,
-				CourierID: 1,
+				CourierID: 2,
 			},
 		},
 	}
@@ -48,51 +53,16 @@ func TestAssignOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\deliverystorage")
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := deliverystorage.NewDeliveryStorage(deliverystorage.Params{DB: database})
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			resp, err := s.AssignOrder(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
 
-			storage := deliverystorage.NewDeliveryStorage(deliverystorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assignedOrder, err := storage.AssignOrder(test.assignOrder)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if assignedOrder == nil {
-				t.Errorf("assignedOrder: Expected: %s, Got: %s", "not nil", "nil")
-			}
-
-			if assignedOrder.OrderID != test.response.OrderID {
-				t.Errorf("OrderID: Expected: %v, Got: %v", test.assignOrder.OrderID, assignedOrder.OrderID)
-			}
-
-			if assignedOrder.CourierID != test.response.CourierID {
-				t.Errorf("CourierID: Expected: %v, Got: %v", test.assignOrder.CourierID, assignedOrder.CourierID)
-			}
-
-			if err = storage.DeleteAssignedOrder(assignedOrder.OrderID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			assert.Equal(t, resp, test.out)
 		})
 	}
 }

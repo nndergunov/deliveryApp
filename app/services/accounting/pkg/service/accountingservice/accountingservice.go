@@ -59,7 +59,7 @@ func (c Service) InsertNewAccount(account domain.Account) (*domain.Account, erro
 	// check duplicate
 	param := domain.SearchParam{}
 	param["user_id"] = strconv.Itoa(account.UserID)
-	param["user_type"] = account.UserType
+	param["user_type"] = "'" + account.UserType + "'"
 
 	gotAccountList, err := c.storage.GetAccountListByParam(param)
 	if err != nil && err != sql.ErrNoRows {

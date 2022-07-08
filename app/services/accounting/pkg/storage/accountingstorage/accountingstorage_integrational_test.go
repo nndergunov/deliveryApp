@@ -2,29 +2,47 @@ package accountingstorage_test
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+	"github.com/stretchr/testify/require"
 
-	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db/dbtest"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/docker"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"
 )
 
-const configFile = "/config.yaml"
+// equalAccount - function to compare selected fields from struct. Fields which needed
+func equalAccount(t *testing.T, get domain.Account, want domain.Account) {
+	if get.UserID != want.UserID {
+		t.Errorf("UserID: Expected: %v, Got: %v", want.UserID, get.UserID)
+	}
 
-var dbURL = fmt.Sprintf("host=" + configreader.GetString("database.test.host") +
-	" port=" + configreader.GetString("database.test.port") +
-	" user=" + configreader.GetString("database.test.user") +
-	" password=" + configreader.GetString("database.test.password") +
-	" dbname=" + configreader.GetString("database.test.dbName") +
-	" sslmode=" + configreader.GetString("database.test.sslmode"))
+	if get.UserType != want.UserType {
+		t.Errorf("UserType: Expected: %s, Got: %s", want.UserType, get.UserType)
+	}
+
+	if get.Balance != want.Balance {
+		t.Errorf("Balance: Expected: %v, Got: %v", want.Balance, get.Balance)
+	}
+}
+
+// equalTr - function to compare selected fields from struct. Fields which needed
+func equalTr(t *testing.T, get domain.Transaction, want domain.Transaction) {
+	if get.FromAccountID != want.FromAccountID {
+		t.Errorf("FromAccountID: Expected: %v, Got: %v", want.FromAccountID, get.FromAccountID)
+	}
+
+	if get.ToAccountID != want.ToAccountID {
+		t.Errorf("ToAccountID: Expected: %v, Got: %v", want.ToAccountID, get.ToAccountID)
+	}
+
+	if get.Amount != want.Amount {
+		t.Errorf("Amount: Expected: %v, Got: %v", want.Amount, get.Amount)
+	}
+}
 
 var c *docker.Container
 
@@ -41,13 +59,20 @@ func TestMain(m *testing.M) {
 }
 
 func TestInsertAccount(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name    string
-		account domain.Account
+		name string
+		in   domain.Account
+		out  domain.Account
 	}{
 		{
-			name: "Test Insert Courier",
-			account: domain.Account{
+			name: "test_insert_account",
+			in: domain.Account{
+				UserID:   1,
+				UserType: "courier",
+			},
+			out: domain.Account{
 				UserID:   1,
 				UserType: "courier",
 			},
@@ -60,148 +85,95 @@ func TestInsertAccount(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, database, teardown := dbtest.NewUnit(t, c, "test_db")
+			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			//line, err := os.Getwd()
-			//if err != nil {
-			//	t.Fatal(err)
-			//}
-			//confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
-			//
-			//err = configreader.SetConfigFile(confPath + configFile)
-			//if err != nil {
-			//	t.Fatal(err)
-			//}
-			//
-			//database, err := db.OpenDB("postgres", dbURL)
-			//if err != nil {
-			//	t.Fatal(err)
-			//}
-			//
+			s := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 
-			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-
-			resp, err := storage.InsertNewAccount(test.account)
+			resp, err := s.InsertNewAccount(test.in)
 			require.NoError(t, err)
 			require.NotNil(t, resp)
 
-			if resp.ID != test.account.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", test.account.ID, resp.ID)
-			}
-
-			if resp.UserID != test.account.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", test.account.UserID, resp.UserID)
-			}
-
-			if resp.UserType != test.account.UserType {
-				t.Errorf("UserType: Expected: %s, Got: %s", test.account.UserType, resp.UserType)
-			}
-
-			if resp.Balance != test.account.Balance {
-				t.Errorf("Balance: Expected: %v, Got: %v", test.account.Balance, resp.Balance)
-			}
-
-			err = storage.DeleteAccount(resp.ID)
-			require.NoError(t, err)
+			equalAccount(t, *resp, test.out)
 		})
 	}
 }
 
 func TestGetAccountByID(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name    string
-		account domain.Account
+		name string
+		in   domain.Account
+		out  domain.Account
 	}{
 		{
-			name: "GetAccountByID",
-			account: domain.Account{
+			name: "test_get_account",
+			in: domain.Account{
 				UserID:   1,
-				UserType: "transaction",
+				UserType: "courier",
 			},
-		},
-	}
 
-	for _, currentTest := range tests {
-		test := currentTest
-
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
-
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			resp, err := storage.InsertNewAccount(test.account)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp == nil {
-				t.Errorf("createCourier: Expected: %s, Got: %s", "not nil", "nil")
-			}
-			resp2, err := storage.GetAccountByID(resp.ID)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if resp2.ID != test.account.ID {
-				t.Errorf("ID: Expected: %v, Got: %v", test.account.ID, resp2.ID)
-			}
-
-			if resp2.UserID != test.account.UserID {
-				t.Errorf("UserID: Expected: %v, Got: %v", test.account.UserID, resp2.UserID)
-			}
-
-			if resp2.UserType != test.account.UserType {
-				t.Errorf("UserType: Expected: %s, Got: %s", test.account.UserType, resp2.UserType)
-			}
-
-			if resp2.Balance != test.account.Balance {
-				t.Errorf("Balance: Expected: %v, Got: %v", test.account.Balance, resp2.Balance)
-			}
-
-			if err = storage.DeleteAccount(resp.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
-		})
-	}
-}
-
-func TestGetAccountListByParam(t *testing.T) {
-	tests := []struct {
-		name    string
-		account domain.Account
-	}{
-		{
-			name: "TestGetAccountListByParam",
-			account: domain.Account{
+			out: domain.Account{
 				UserID:   1,
 				UserType: "courier",
 			},
 		},
 	}
+	for _, currentTest := range tests {
+		test := currentTest
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
+
+			s := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
+
+			resp, err := s.InsertNewAccount(test.in)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+			respGet, err := s.GetAccountByID(resp.ID)
+			require.NoError(t, err)
+
+			equalAccount(t, *respGet, test.out)
+		})
+	}
+}
+
+func TestGetAccountListByParam(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		in   []domain.Account
+		out  []domain.Account
+	}{
+		{
+			name: "test_get_account_list_by_param",
+			in: []domain.Account{
+				{
+					UserID:   1,
+					UserType: "courier",
+				},
+				{
+					UserID:   2,
+					UserType: "consumer",
+				},
+			},
+			out: []domain.Account{
+				{
+					UserID:   1,
+					UserType: "courier",
+				},
+				{
+					UserID:   2,
+					UserType: "consumer",
+				},
+			},
+		},
+	}
 
 	for _, currentTest := range tests {
 		test := currentTest
@@ -209,82 +181,53 @@ func TestGetAccountListByParam(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			line, err := os.Getwd()
-			if err != nil {
-				t.Fatal(err)
-			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
 
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
+			s := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
 
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			userIds := []string{}
+			userTypes := []string{}
 
-			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
+			for _, in := range test.in {
+				_, err := s.InsertNewAccount(in)
+				require.NoError(t, err)
 
-			insertedAccountResp, err := storage.InsertNewAccount(test.account)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if insertedAccountResp == nil {
-				t.Errorf("createCourier: Expected: %s, Got: %s", "not nil", "nil")
+				userIds = append(userIds, strconv.Itoa(in.UserID))
+				userTypes = append(userTypes, "'"+in.UserType+"'")
 			}
 
 			param := domain.SearchParam{}
-			param["user_id"] = strconv.Itoa(insertedAccountResp.UserID)
-			param["user_type"] = insertedAccountResp.UserType
+			param["user_id"] = strings.Join(userIds, ",")
+			param["user_type"] = strings.Join(userTypes, ",")
 
-			resp2List, err := storage.GetAccountListByParam(param)
-			if err != nil {
-				t.Fatal(err)
-			}
-			for _, gotByParamAccount := range resp2List {
+			respList, err := s.GetAccountListByParam(param)
+			require.NoError(t, err)
+			require.NotNil(t, respList)
 
-				if insertedAccountResp.ID != gotByParamAccount.ID {
-					t.Errorf("ID: Expected: %v, Got: %v", insertedAccountResp.ID, gotByParamAccount.ID)
-				}
-
-				if insertedAccountResp.UserID != gotByParamAccount.UserID {
-					t.Errorf("UserID: Expected: %v, Got: %v", insertedAccountResp.UserID, gotByParamAccount.UserID)
-				}
-
-				if insertedAccountResp.UserType != gotByParamAccount.UserType {
-					t.Errorf("UserType: Expected: %s, Got: %v", insertedAccountResp.UserType, gotByParamAccount.UserID)
-				}
-
-				if insertedAccountResp.Balance != gotByParamAccount.Balance {
-					t.Errorf("Balance: Expected: %v, Got: %v", insertedAccountResp.Balance, gotByParamAccount.Balance)
-				}
-
-				if err = storage.DeleteAccount(insertedAccountResp.ID); err != nil {
-					t.Error(err)
-				}
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
+			for i := 0; i <= len(respList)-1; i++ {
+				equalAccount(t, test.out[i], respList[i])
 			}
 		})
 	}
 }
 
 func TestAddToAccountBalance(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name        string
-		transaction domain.Transaction
+		name string
+		in   domain.Transaction
+		out  domain.Transaction
 	}{
 		{
-			name: "TestAddToAccountBalance",
-			transaction: domain.Transaction{
+			name: "test_add_to_account_balance",
+			in: domain.Transaction{
+				ToAccountID: 2,
+				Amount:      50,
+			},
+
+			out: domain.Transaction{
 				FromAccountID: 0,
 				ToAccountID:   2,
 				Amount:        50,
@@ -298,68 +241,36 @@ func TestAddToAccountBalance(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			line, err := os.Getwd()
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
+
+			s := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
+
+			respData, err := s.AddToAccountBalance(test.in)
 			if err != nil {
 				t.Fatal(err)
 			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
-
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			respData, err := storage.AddToAccountBalance(test.transaction)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if respData == nil {
-				t.Errorf("Transaction: Expected: %s, Got: %s", "not nil", "nil")
-			}
-
-			if respData.FromAccountID != test.transaction.FromAccountID {
-				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transaction.FromAccountID, respData.FromAccountID)
-			}
-
-			if respData.ToAccountID != test.transaction.ToAccountID {
-				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transaction.ToAccountID, respData.ToAccountID)
-			}
-
-			if respData.Amount != test.transaction.Amount {
-				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, respData.Amount)
-			}
-
-			if err = storage.DeleteAccount(respData.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			equalTr(t, *respData, test.out)
 		})
 	}
 }
 
 func TestSubFromAccountBalance(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
-
-		transaction domain.Transaction
+		in   domain.Transaction
+		out  domain.Transaction
 	}{
 		{
-			name: "TestSubFromAccountBalance",
-			transaction: domain.Transaction{
+			name: "test_sub_to_account_balance",
+			in: domain.Transaction{
+				FromAccountID: 1,
+				Amount:        50,
+			},
+
+			out: domain.Transaction{
 				FromAccountID: 1,
 				ToAccountID:   0,
 				Amount:        50,
@@ -373,67 +284,37 @@ func TestSubFromAccountBalance(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			line, err := os.Getwd()
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
+
+			s := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
+
+			respData, err := s.SubFromAccountBalance(test.in)
 			if err != nil {
 				t.Fatal(err)
 			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
-
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			respData, err := storage.SubFromAccountBalance(test.transaction)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if respData == nil {
-				t.Errorf("Transaction: Expected: %s, Got: %s", "not nil", "nil")
-			}
-
-			if respData.FromAccountID != test.transaction.FromAccountID {
-				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transaction.FromAccountID, respData.FromAccountID)
-			}
-
-			if respData.ToAccountID != test.transaction.ToAccountID {
-				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transaction.ToAccountID, respData.ToAccountID)
-			}
-
-			if respData.Amount != test.transaction.Amount {
-				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, respData.Amount)
-			}
-
-			if err = storage.DeleteAccount(respData.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			equalTr(t, *respData, test.out)
 		})
 	}
 }
 
 func TestInsertTransaction(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
-		name        string
-		transaction domain.Transaction
+		name string
+		in   domain.Transaction
+		out  domain.Transaction
 	}{
 		{
-			name: "TestSubFromAccountBalance",
-			transaction: domain.Transaction{
+			name: "test_insert_transaction",
+			in: domain.Transaction{
+				FromAccountID: 1,
+				ToAccountID:   2,
+				Amount:        50,
+			},
+
+			out: domain.Transaction{
 				FromAccountID: 1,
 				ToAccountID:   2,
 				Amount:        50,
@@ -447,54 +328,16 @@ func TestInsertTransaction(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			line, err := os.Getwd()
+			database, teardown := dbtest.NewUnit(t, c, test.name)
+			t.Cleanup(teardown)
+
+			s := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
+
+			respData, err := s.InsertTransaction(test.in)
 			if err != nil {
 				t.Fatal(err)
 			}
-			confPath := strings.TrimSuffix(line, "\\pkg\\storage\\accountingstorage")
-
-			err = configreader.SetConfigFile(confPath + configFile)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			database, err := db.OpenDB("postgres", dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			storage := accountingstorage.NewStorage(accountingstorage.Params{DB: database})
-			if err != nil {
-				t.Fatal(err)
-			}
-			respData, err := storage.InsertTransaction(test.transaction)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if respData == nil {
-				t.Errorf("Transaction: Expected: %s, Got: %s", "not nil", "nil")
-			}
-
-			if respData.FromAccountID != test.transaction.FromAccountID {
-				t.Errorf("FromAccountID: Expected: %v, Got: %v", test.transaction.FromAccountID, respData.FromAccountID)
-			}
-
-			if respData.ToAccountID != test.transaction.ToAccountID {
-				t.Errorf("ToAccountID: Expected: %v, Got: %v", test.transaction.ToAccountID, respData.ToAccountID)
-			}
-
-			if respData.Amount != test.transaction.Amount {
-				t.Errorf("Amount: Expected: %v, Got: %v", test.transaction.Amount, respData.Amount)
-			}
-
-			if err = storage.DeleteAccount(respData.ID); err != nil {
-				t.Error(err)
-			}
-
-			if err := database.Close(); err != nil {
-				t.Error(err)
-			}
+			equalTr(t, *respData, test.out)
 		})
 	}
 }

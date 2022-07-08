@@ -1,4 +1,4 @@
-package service
+package deliveryservice
 
 import "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 
