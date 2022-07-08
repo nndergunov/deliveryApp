@@ -1,32 +1,41 @@
 package deliveryservice_test
 
 import (
-	"bytes"
-	"net/http"
+	"github.com/golang/mock/gomock"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"os"
 	"strconv"
 	"testing"
 
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
+	mock "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
 )
 
-const baseAddr = "http://localhost:8082"
-
-func TestGetEstimateDeliveryEndpoint(t *testing.T) {
+func TestGetEstimateDelivery(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
-		name         string
-		consumerID   string
-		restaurantID string
-		response     deliveryapi.EstimateDeliveryResponse
+		name string
+		in   struct {
+			consumerID   string
+			restaurantID string
+		}
+		out *domain.EstimateDeliveryResponse
 	}{
 		{
-			"GetEstimateDeliveryValues simple test",
-			"1",
-			"1",
-			deliveryapi.EstimateDeliveryResponse{
-				Time: "5h24m50s",
-				Cost: 35.73,
+			"get_estimate_delivery_test",
+			struct {
+				consumerID   string
+				restaurantID string
+			}{consumerID: "1", restaurantID: "1"},
+			&domain.EstimateDeliveryResponse{
+				Time: "4m20s",
+				Cost: 0.48,
 			},
 		},
 	}
@@ -35,50 +44,77 @@ func TestGetEstimateDeliveryEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			estimateDeliveryResp, err := http.Get(baseAddr + "/v1/estimate" + "?consumer_id=" + test.consumerID + "&restaurant_id=" + test.restaurantID)
-			if err != nil {
-				t.Fatal(err)
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mock.NewMockDeliveryStorage(ctl)
+			courierClient := mock.NewMockCourierClient(ctl)
+			consumerClient := mock.NewMockConsumerClient(ctl)
+			restaurantClient := mock.NewMockRestaurantClient(ctl)
+
+			mockConsumerClientOutData := &consumerapi.LocationResponse{
+				UserID:     1,
+				Latitude:   "41.03641945369733",
+				Longitude:  "28.919665086287385",
+				Country:    "TestCountry",
+				City:       "TestCity",
+				Region:     "TestRegion",
+				Street:     "TestStreet",
+				HomeNumber: "TestHomeNumber",
+				Floor:      "TestFloor",
+				Door:       "TestDoor",
 			}
 
-			if estimateDeliveryResp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", estimateDeliveryResp.StatusCode)
+			mockRestaurantClientOutData := &restaurantapi.ReturnRestaurant{
+				ID:              1,
+				Name:            "testRestaurant",
+				AcceptingOrders: true,
+				City:            "TestCity",
+				Address:         "TestAddress",
+				Longitude:       28.868111948612256,
+				Latitude:        41.03630071727614,
 			}
 
-			respData := deliveryapi.EstimateDeliveryResponse{}
-			if err = courierapi.DecodeJSON(estimateDeliveryResp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			mockConsumerClientInData, err := strconv.Atoi(test.in.consumerID)
+			require.NoError(t, err)
 
-			if err := estimateDeliveryResp.Body.Close(); err != nil {
-				t.Error(err)
-			}
+			mockRestaurantClientInData, err := strconv.Atoi(test.in.restaurantID)
+			require.NoError(t, err)
 
-			if respData.Time != test.response.Time {
-				t.Errorf("Time: Expected : %s, Got: %s", test.response.Time, respData.Time)
-			}
+			consumerClient.EXPECT().GetLocation(mockConsumerClientInData).Return(mockConsumerClientOutData, nil)
+			restaurantClient.EXPECT().GetRestaurant(mockRestaurantClientInData).Return(mockRestaurantClientOutData, nil)
 
-			if respData.Cost != test.response.Cost {
-				t.Errorf("Cost: Expected: %v, Got: %v", test.response.Cost, respData.Cost)
-			}
+			service := deliveryservice.NewDeliveryService(deliveryservice.Params{
+				DeliveryStorage:  storage,
+				Logger:           logger.NewLogger(os.Stdout, "service: "),
+				RestaurantClient: restaurantClient,
+				CourierClient:    courierClient,
+				ConsumerClient:   consumerClient,
+			})
+
+			resp, err := service.GetEstimateDelivery(test.in.consumerID, test.in.restaurantID)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.out, resp)
 		})
 	}
 }
 
-func TestAssignOrderEndpoint(t *testing.T) {
+func TestAssignOrder(t *testing.T) {
 	tests := []struct {
-		name            string
-		assignOrderData deliveryapi.AssignOrderRequest
-		orderID         string
-		response        deliveryapi.AssignOrderResponse
+		name   string
+		inID   string
+		inBody *domain.Order
+		out    *domain.AssignOrder
 	}{
 		{
-			"AssignOrder simple test",
-			deliveryapi.AssignOrderRequest{
-				FromUserID:   1,
-				RestaurantID: 1,
-			},
+			"assign_order_test",
 			"1",
-			deliveryapi.AssignOrderResponse{
+			&domain.Order{
+				OrderID:          1,
+				FromUserID:       1,
+				FromRestaurantID: 1,
+			},
+			&domain.AssignOrder{
 				OrderID:   1,
 				CourierID: 1,
 			},
@@ -89,37 +125,71 @@ func TestAssignOrderEndpoint(t *testing.T) {
 		test := currentTest
 
 		t.Run(test.name, func(t *testing.T) {
-			reqBody, err := v1.Encode(test.assignOrderData)
-			if err != nil {
-				t.Fatal(err)
+			t.Parallel()
+			ctl := gomock.NewController(t)
+			storage := mock.NewMockDeliveryStorage(ctl)
+			courierClient := mock.NewMockCourierClient(ctl)
+			consumerClient := mock.NewMockConsumerClient(ctl)
+			restaurantClient := mock.NewMockRestaurantClient(ctl)
+
+			mockRestaurantClientOutData := &restaurantapi.ReturnRestaurant{
+				ID:              1,
+				Name:            "testRestaurant",
+				AcceptingOrders: true,
+				City:            "TestCity",
+				Address:         "TestAddress",
+				Longitude:       28.868111948612256,
+				Latitude:        41.03630071727614,
 			}
 
-			resp, err := http.Post(baseAddr+"/v1/orders/"+test.orderID+"/assign", "application/json", bytes.NewBuffer(reqBody))
-			if err != nil {
-				t.Fatal(err)
+			restaurantClient.EXPECT().GetRestaurant(test.inBody.FromRestaurantID).Return(mockRestaurantClientOutData, nil)
+
+			mockCourierClientOutData := &courierapi.LocationResponseList{
+				[]courierapi.LocationResponse{
+					courierapi.LocationResponse{
+						UserID:     1,
+						Latitude:   "41.03641945369733",
+						Longitude:  "28.919665086287385",
+						Country:    "TestCountry",
+						City:       "TestCity",
+						Region:     "TestRegion",
+						Street:     "TestStreet",
+						HomeNumber: "TestHomeNumber",
+						Floor:      "TestFloor",
+						Door:       "TestDoor",
+					},
+				},
 			}
 
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("Response status: %d", resp.StatusCode)
+			courierClient.EXPECT().GetLocation(mockRestaurantClientOutData.City).Return(mockCourierClientOutData, nil)
+
+			mockStorageInData := domain.AssignOrder{
+				OrderID:   test.out.OrderID,
+				CourierID: test.out.CourierID,
 			}
 
-			respData := deliveryapi.AssignOrderResponse{}
-			if err = deliveryapi.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
+			mockStorageOutData := &domain.AssignOrder{
+				OrderID:   test.out.OrderID,
+				CourierID: test.out.CourierID,
 			}
 
-			orderIDInt, err := strconv.Atoi(test.orderID)
-			if err != nil {
-				t.Fatal(err)
-			}
+			storage.EXPECT().AssignOrder(mockStorageInData).Return(mockStorageOutData, nil)
 
-			if respData.OrderID != orderIDInt {
-				t.Errorf("OrderID: Expected: %v, Got: %v", orderIDInt, respData.OrderID)
-			}
+			courierClient.EXPECT().UpdateCourierAvailable(mockCourierClientOutData.LocationResponseList[0].UserID, "false").Return(&courierapi.CourierResponse{}, nil)
 
-			if respData.CourierID != test.response.CourierID {
-				t.Errorf("CourierID: Expected: %v, Got: %v", test.response.CourierID, respData.CourierID)
-			}
+			service := deliveryservice.NewDeliveryService(deliveryservice.Params{
+				DeliveryStorage:  storage,
+				Logger:           logger.NewLogger(os.Stdout, "service: "),
+				RestaurantClient: restaurantClient,
+				CourierClient:    courierClient,
+				ConsumerClient:   consumerClient,
+			})
+
+			resp, err := service.AssignOrder(test.inID, test.inBody)
+			require.NoError(t, err)
+
+			assert.Equal(t, resp, test.out)
+
 		})
 	}
 }

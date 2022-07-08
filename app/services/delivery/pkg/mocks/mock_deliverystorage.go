@@ -2,7 +2,7 @@
 // Source: pkg/service/deliveryservice/storage.go
 
 // Package mock_deliveryservice is a generated GoMock package.
-package mock_deliveryservice
+package mocks
 
 import (
 	reflect "reflect"

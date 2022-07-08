@@ -12,6 +12,10 @@ genstorage:
 	mockgen -source=pkg/service/deliveryservice/storage.go \
 	-destination=pkg/mocks/mock_deliverystorage.go
 
+genclient:
+	mockgen -source=pkg/service/clients.go \
+	-destination=pkg/mocks/mock_clients.go
+
 go-test-unit:
 	go test api/v1/handler/courierhandler/courierhandler_test.go -v
 	go test pkg/service/courierservice/courierservice_test.go -v
