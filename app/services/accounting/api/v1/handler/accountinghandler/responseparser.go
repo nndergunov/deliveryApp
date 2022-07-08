@@ -1,8 +1,7 @@
 package accountinghandler
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
-
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 )
 

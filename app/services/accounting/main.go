@@ -12,7 +12,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handlers/accountinghandler"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handler/accountinghandler"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/service/accountingservice"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"

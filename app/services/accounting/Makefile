@@ -13,7 +13,7 @@ genstorage:
 	-destination=pkg/mocks/mock_storage.go
 
 go-test-unit:
-	go test api/v1/handlers/accountinghandler/accountinghandler_test.go -v
+	go test api/v1/handler/accountinghandler/accountinghandler_test.go -v
 	go test pkg/service/accountingservice/accountingservice_test.go -v
 
 go-test-integrational:

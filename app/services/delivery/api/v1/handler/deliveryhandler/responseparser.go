@@ -1,8 +1,7 @@
 package deliveryhandler
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
-
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/deliveryapi"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 )
 
