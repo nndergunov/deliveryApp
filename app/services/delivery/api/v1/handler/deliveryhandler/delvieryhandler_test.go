@@ -2,6 +2,9 @@ package deliveryhandler_test
 
 import (
 	"bytes"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,42 +17,31 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	mockservice "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks"
 )
-
-var (
-	MockEstimateDeliveryData = &domain.EstimateDeliveryResponse{
-		Time: "2006-01-02 15:04:05.999999999 -0700 MST",
-		Cost: 100,
-	}
-
-	MockAssignOrderData = &domain.AssignOrder{
-		OrderID:   1,
-		CourierID: 1,
-	}
-)
-
-type MockService struct{}
-
-func (m MockService) GetEstimateDelivery(consumerID, restaurantID string) (*domain.EstimateDeliveryResponse, error) {
-	return MockEstimateDeliveryData, nil
-}
-
-func (m MockService) AssignOrder(orderID string, order *domain.Order) (*domain.AssignOrder, error) {
-	return MockAssignOrderData, nil
-}
 
 func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name         string
-		consumerID   string
-		restaurantID string
+		name string
+		in   struct {
+			consumerID   string
+			restaurantID string
+		}
+		out deliveryapi.EstimateDeliveryResponse
 	}{
 		{
-			"GetEstimateDeliveryValues simple test",
-			"1",
-			"1",
+			"get_estimate_delivery_values_test",
+			struct {
+				consumerID   string
+				restaurantID string
+			}{consumerID: "1", restaurantID: "1"},
+			deliveryapi.EstimateDeliveryResponse{
+				Time: "2006-01-02 15:04:05.999999999 -0700 MST",
+				Cost: 100,
+			},
 		},
 	}
 
@@ -59,16 +51,22 @@ func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockDeliveryService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
+			mockOutData := &domain.EstimateDeliveryResponse{
+				Time: test.out.Time,
+				Cost: test.out.Cost,
+			}
+			service.EXPECT().GetEstimateDelivery(test.in.consumerID, test.in.restaurantID).Return(mockOutData, nil)
+
 			handler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
-				Logger:          log,
-				DeliveryService: mockService,
+				Logger:          logger.NewLogger(os.Stdout, test.name),
+				DeliveryService: service,
 			})
 
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodGet, "/v1/estimate"+"?consumer_id="+test.consumerID+"&restaurant_id="+test.restaurantID, nil)
+			req := httptest.NewRequest(http.MethodGet, "/v1/estimate"+"?consumer_id="+test.in.consumerID+"&restaurant_id="+test.in.restaurantID, nil)
 
 			handler.ServeHTTP(resp, req)
 
@@ -77,17 +75,10 @@ func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 			}
 
 			respData := deliveryapi.EstimateDeliveryResponse{}
-			if err := deliveryapi.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			err := deliveryapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
 
-			if respData.Time != MockEstimateDeliveryData.Time {
-				t.Errorf("Time: Expected: %v, Got: %v", MockEstimateDeliveryData.Time, respData.Time)
-			}
-
-			if respData.Cost != MockEstimateDeliveryData.Cost {
-				t.Errorf("Cost: Expected: %v, Got: %v", MockEstimateDeliveryData.Cost, respData.Cost)
-			}
+			assert.Equal(t, respData, test.out)
 		})
 	}
 }
@@ -96,17 +87,22 @@ func TestAssignOrderEndpoint(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name            string
-		assignOrderData deliveryapi.AssignOrderRequest
-		orderID         string
+		name   string
+		InID   string
+		inBody deliveryapi.AssignOrderRequest
+		out    deliveryapi.AssignOrderResponse
 	}{
 		{
-			"AssignOrder simple test",
+			"assign_order_test",
+			"1",
 			deliveryapi.AssignOrderRequest{
 				FromUserID:   1,
 				RestaurantID: 1,
 			},
-			"1",
+			deliveryapi.AssignOrderResponse{
+				OrderID:   1,
+				CourierID: 2,
+			},
 		},
 	}
 
@@ -116,21 +112,30 @@ func TestAssignOrderEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			mockService := new(MockService)
+			ctl := gomock.NewController(t)
+			service := mockservice.NewMockDeliveryService(ctl)
 
-			log := logger.NewLogger(os.Stdout, test.name)
-			handler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
-				Logger:          log,
-				DeliveryService: mockService,
-			})
-
-			reqBody, err := v1.Encode(test.assignOrderData)
-			if err != nil {
-				t.Fatal(err)
+			mockInData := &domain.Order{
+				FromUserID:       test.inBody.FromUserID,
+				FromRestaurantID: test.inBody.RestaurantID,
 			}
 
+			mockOutData := &domain.AssignOrder{
+				OrderID:   test.out.OrderID,
+				CourierID: test.out.CourierID,
+			}
+			service.EXPECT().AssignOrder(test.InID, mockInData).Return(mockOutData, nil)
+
+			handler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
+				Logger:          logger.NewLogger(os.Stdout, test.name),
+				DeliveryService: service,
+			})
+
+			reqBody, err := v1.Encode(test.inBody)
+			require.NoError(t, err)
+
 			resp := httptest.NewRecorder()
-			req := httptest.NewRequest(http.MethodPost, "/v1/orders/"+test.orderID+"/assign", bytes.NewBuffer(reqBody))
+			req := httptest.NewRequest(http.MethodPost, "/v1/orders/"+test.InID+"/assign", bytes.NewBuffer(reqBody))
 
 			handler.ServeHTTP(resp, req)
 
@@ -139,17 +144,10 @@ func TestAssignOrderEndpoint(t *testing.T) {
 			}
 
 			respData := deliveryapi.AssignOrderResponse{}
-			if err = deliveryapi.DecodeJSON(resp.Body, &respData); err != nil {
-				t.Fatal(err)
-			}
+			err = deliveryapi.DecodeJSON(resp.Body, &respData)
+			require.NoError(t, err)
 
-			if respData.OrderID != MockAssignOrderData.OrderID {
-				t.Errorf("OrderID: Expected: %v, Got: %v", MockAssignOrderData.OrderID, respData.OrderID)
-			}
-
-			if respData.CourierID != MockAssignOrderData.CourierID {
-				t.Errorf("CourierID: Expected: %v, Got: %v", MockAssignOrderData.CourierID, respData.CourierID)
-			}
+			assert.Equal(t, respData, test.out)
 		})
 	}
 }
