@@ -1,7 +1,0 @@
-database:
-  host: "localhost"
-  port: 5435
-  user: "order_db"
-  password: "order_db_pass"
-  dbName: "order_db"
-  sslmode: "disable"
