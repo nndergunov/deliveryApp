@@ -7,11 +7,10 @@ import (
 
 	// Postgres drivers.
 	_ "github.com/lib/pq"
-	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db/internal/models"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type Database struct {
@@ -27,6 +26,10 @@ func NewDatabase(dbURL string) (*Database, error) {
 	return &Database{
 		db: database,
 	}, nil
+}
+
+func NewDatabaseFromSource(db *sql.DB) *Database {
+	return &Database{db: db}
 }
 
 func (d Database) getRestaurantID(restaurant domain.Restaurant) (int, error) {

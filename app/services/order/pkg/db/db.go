@@ -28,6 +28,10 @@ func NewDatabase(dbURL string) (*Database, error) {
 	}, nil
 }
 
+func NewDatabaseFromSource(db *sql.DB) *Database {
+	return &Database{db: db}
+}
+
 func (d Database) getOrderID(order domain.Order) (int, error) {
 	dbOrder, err := models.Orders(qm.Where("customer_id=? and restaurant_id=? and order_items=? and status=?",
 		order.FromUserID, order.RestaurantID, intArrToInt64Arr(order.OrderItems), order.Status.Status)).One(d.db)

@@ -5,9 +5,14 @@ package db_test
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"sort"
 	"testing"
 
+	"github.com/adrianbrad/psqldocker"
+	"github.com/adrianbrad/psqltest"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
@@ -15,6 +20,66 @@ import (
 
 func numToPointer(num int) *int {
 	return &num
+}
+
+func TestMain(m *testing.M) {
+	err := configreader.SetConfigFile("../../config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var (
+		usr           = configreader.GetString("database.user")
+		password      = configreader.GetString("database.password")
+		dbName        = configreader.GetString("database.dbName")
+		containerName = "order_docker_test"
+	)
+
+	sqlFile, err := ioutil.ReadFile("order_test.sql")
+	if ioErr != nil {
+		log.Fatal(err)
+	}
+
+	sql := string(sqlFile)
+
+	c, err := psqldocker.NewContainer(
+		usr,
+		password,
+		dbName,
+		psqldocker.WithContainerName(containerName),
+		psqldocker.WithSql(sql),
+	)
+	if err != nil {
+		log.Fatalf("err while creating new psql container: %s", err)
+	}
+
+	var ret int
+
+	defer func() {
+		err = c.Close()
+		if err != nil {
+			log.Fatalf("err while tearing down db container: %s", err)
+		}
+
+		os.Exit(ret)
+	}()
+
+	dsn := fmt.Sprintf(
+		"user=%s "+
+			"password=%s "+
+			"dbname=%s "+
+			"host=localhost "+
+			"port=%s "+
+			"sslmode=disable",
+		usr,
+		password,
+		dbName,
+		c.Port(),
+	)
+
+	psqltest.Register(dsn)
+
+	ret = m.Run()
 }
 
 func TestGetAllOrders(t *testing.T) {
@@ -45,22 +110,8 @@ func TestGetAllOrders(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, _ := database.InsertOrder(test.order)
 
@@ -104,8 +155,6 @@ func TestGetAllOrders(t *testing.T) {
 						i, test.order.OrderItems[i], order.OrderItems[i])
 				}
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -157,22 +206,8 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, _ := database.InsertOrder(test.incompleteOrder)
 			complOrderID, _ := database.InsertOrder(test.completeOrder)
@@ -223,8 +258,6 @@ func TestGetAllIncompleteOrdersFromRestaurant(t *testing.T) {
 						i, test.incompleteOrder.OrderItems[i], order.OrderItems[i])
 				}
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -257,29 +290,13 @@ func TestInsertOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, err := database.InsertOrder(test.order)
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -312,22 +329,8 @@ func TestGetOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, _ := database.InsertOrder(test.order)
 
@@ -353,8 +356,6 @@ func TestGetOrder(t *testing.T) {
 						i, test.order.OrderItems[i], order.OrderItems[i])
 				}
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -398,33 +399,17 @@ func TestUpdateOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, _ := database.InsertOrder(test.initialOrder)
 
 			test.updatedOrder.OrderID = orderID
 
-			err = database.UpdateOrder(test.updatedOrder)
+			err := database.UpdateOrder(test.updatedOrder)
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }
@@ -457,26 +442,12 @@ func TestDeleteOrder(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, _ := database.InsertOrder(test.order)
 
-			err = database.DeleteOrder(orderID)
+			err := database.DeleteOrder(orderID)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -514,31 +485,15 @@ func TestUpdateOrderStatus(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			orderID, _ := database.InsertOrder(test.order)
 
-			err = database.UpdateOrderStatus(orderID, test.newStatus)
+			err := database.UpdateOrderStatus(orderID, test.newStatus)
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteOrder(orderID)
 		})
 	}
 }

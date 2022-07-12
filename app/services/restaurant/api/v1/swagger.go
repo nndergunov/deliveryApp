@@ -1,7 +1,9 @@
-// API specification of the order service
+// Package v1 Restaurant Service API V1.
+//
+// API specification of the restaurant service
 //
 //     Schemes: http
-//     Host: localhost:8085
+//     Host: localhost:8086
 //     BasePath: /v1
 //     Version: 0.0.1
 //
@@ -12,4 +14,4 @@
 //     - application/json
 //
 // swagger:meta
-package handlers
+package v1

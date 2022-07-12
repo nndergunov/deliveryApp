@@ -5,12 +5,77 @@ package db_test
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 
+	"github.com/adrianbrad/psqldocker"
+	"github.com/adrianbrad/psqltest"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
+
+func TestMain(m *testing.M) {
+	err := configreader.SetConfigFile("../../config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var (
+		usr           = configreader.GetString("database.user")
+		password      = configreader.GetString("database.password")
+		dbName        = configreader.GetString("database.dbName")
+		containerName = "restaurant_docker_test"
+	)
+
+	sqlFile, err := ioutil.ReadFile("restaurant_test.sql")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sql := string(sqlFile)
+
+	c, err := psqldocker.NewContainer(
+		usr,
+		password,
+		dbName,
+		psqldocker.WithContainerName(containerName),
+		psqldocker.WithSql(sql),
+	)
+	if err != nil {
+		log.Fatalf("err while creating new psql container: %s", err)
+	}
+
+	var ret int
+
+	defer func() {
+		err = c.Close()
+		if err != nil {
+			log.Fatalf("err while tearing down db container: %s", err)
+		}
+
+		os.Exit(ret)
+	}()
+
+	dsn := fmt.Sprintf(
+		"user=%s "+
+			"password=%s "+
+			"dbname=%s "+
+			"host=localhost "+
+			"port=%s "+
+			"sslmode=disable",
+		usr,
+		password,
+		dbName,
+		c.Port(),
+	)
+
+	psqltest.Register(dsn)
+
+	ret = m.Run()
+}
 
 func TestGetAllRestaurants(t *testing.T) {
 	t.Parallel()
@@ -39,22 +104,8 @@ func TestGetAllRestaurants(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			id, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -105,8 +156,6 @@ func TestGetAllRestaurants(t *testing.T) {
 			if test.restaurantData.Latitude != restaurant.Latitude {
 				t.Errorf("Latitude: Expected: %f, Got: %f", test.restaurantData.Latitude, restaurant.Latitude)
 			}
-
-			_ = database.DeleteRestaurant(id)
 		})
 	}
 }
@@ -138,29 +187,10 @@ func TestInsertRestaurant(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			id, err := database.InsertRestaurant(test.restaurantData)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			err = database.DeleteRestaurant(id)
+			_, err := database.InsertRestaurant(test.restaurantData)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -195,22 +225,8 @@ func TestGetRestaurant(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			id, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -243,8 +259,6 @@ func TestGetRestaurant(t *testing.T) {
 			if test.restaurantData.Latitude != restaurant.Latitude {
 				t.Errorf("Latitude: Expected: %f, Got: %f", test.restaurantData.Latitude, restaurant.Latitude)
 			}
-
-			_ = database.DeleteRestaurant(id)
 		})
 	}
 }
@@ -286,22 +300,8 @@ func TestUpdateRestaurant(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			id, err := database.InsertRestaurant(test.initialRestaurantData)
 
@@ -311,8 +311,6 @@ func TestUpdateRestaurant(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(id)
 		})
 	}
 }
@@ -344,26 +342,12 @@ func TestDeleteRestaurant(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			id, _ := database.InsertRestaurant(test.restaurantData)
 
-			err = database.DeleteRestaurant(id)
+			err := database.DeleteRestaurant(id)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -402,34 +386,18 @@ func TestInsertMenu(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
-			_, _, err = database.InsertMenu(domain.Menu{
+			_, _, err := database.InsertMenu(domain.Menu{
 				RestaurantID: restaurantID,
 				Items:        []domain.MenuItem{test.menuItemData},
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -465,22 +433,8 @@ func TestGetMenu(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -503,8 +457,6 @@ func TestGetMenu(t *testing.T) {
 			if test.menuItemData.Course != menuItem.Course {
 				t.Errorf("Course: Expected: %s, Got: %s", test.menuItemData.Course, menuItem.Course)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -547,22 +499,8 @@ func TestUpdateMenu(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -581,8 +519,6 @@ func TestUpdateMenu(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -618,26 +554,12 @@ func TestDeleteMenu(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
-			_, _, err = database.InsertMenu(domain.Menu{
+			_, _, err := database.InsertMenu(domain.Menu{
 				RestaurantID: restaurantID,
 				Items:        []domain.MenuItem{test.menuItemData},
 			})
@@ -646,8 +568,6 @@ func TestDeleteMenu(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -683,22 +603,8 @@ func TestAddMenuItem(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -709,12 +615,10 @@ func TestAddMenuItem(t *testing.T) {
 
 			test.menuItemData.MenuID = menuID
 
-			_, err = database.InsertMenuItem(restaurantID, test.menuItemData)
+			_, err := database.InsertMenuItem(restaurantID, test.menuItemData)
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -750,22 +654,8 @@ func TestGetMenuItem(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -776,7 +666,7 @@ func TestGetMenuItem(t *testing.T) {
 
 			test.menuItemData.MenuID = menuID
 
-			itemID, _ := database.InsertMenuItem(restaurantID, test.menuItemData)
+			itemID, err := database.InsertMenuItem(restaurantID, test.menuItemData)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -793,8 +683,6 @@ func TestGetMenuItem(t *testing.T) {
 			if test.menuItemData.Course != menuItem.Course {
 				t.Errorf("Course: Expected: %s, Got: %s", test.menuItemData.Course, menuItem.Course)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -837,22 +725,8 @@ func TestUpdateMenuItem(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -868,12 +742,10 @@ func TestUpdateMenuItem(t *testing.T) {
 			test.updatedMenuItemData.MenuID = menuID
 			test.updatedMenuItemData.ID = itemID
 
-			err = database.UpdateMenuItem(test.updatedMenuItemData)
+			err := database.UpdateMenuItem(test.updatedMenuItemData)
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }
@@ -909,22 +781,8 @@ func TestDeleteMenuItem(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := configreader.SetConfigFile("config.yaml")
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
-				" port=" + configreader.GetString("database.port") +
-				" user=" + configreader.GetString("database.user") +
-				" password=" + configreader.GetString("database.password") +
-				" dbname=" + configreader.GetString("database.dbName") +
-				" sslmode=" + configreader.GetString("database.sslmode"))
-
-			database, err := db.NewDatabase(dbURL)
-			if err != nil {
-				t.Fatal(err)
-			}
+			sqlDB := psqltest.NewTransactionTestingDB(t)
+			database := db.NewDatabaseFromSource(sqlDB)
 
 			restaurantID, _ := database.InsertRestaurant(test.restaurantData)
 
@@ -937,12 +795,10 @@ func TestDeleteMenuItem(t *testing.T) {
 
 			itemID, _ := database.InsertMenuItem(restaurantID, test.menuItemData)
 
-			err = database.DeleteMenuItem(itemID)
+			err := database.DeleteMenuItem(itemID)
 			if err != nil {
 				t.Fatal(err)
 			}
-
-			_ = database.DeleteRestaurant(restaurantID)
 		})
 	}
 }

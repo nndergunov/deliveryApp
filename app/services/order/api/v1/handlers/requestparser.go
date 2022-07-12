@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
+	v1 "github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
@@ -26,7 +26,7 @@ func getIDFromEndpoint(code string, r *http.Request) (int, error) {
 	return id, nil
 }
 
-func parseParameters(params orderapi.OrderFilters) domain.SearchParameters {
+func parseParameters(params v1.OrderFilters) domain.SearchParameters {
 	return domain.SearchParameters{
 		FromRestaurantID: params.FromRestaurantID,
 		Statuses:         params.Statuses,
@@ -34,7 +34,7 @@ func parseParameters(params orderapi.OrderFilters) domain.SearchParameters {
 	}
 }
 
-func requestToOrder(orderData orderapi.OrderData) domain.Order {
+func requestToOrder(orderData v1.OrderData) domain.Order {
 	return domain.Order{
 		OrderID:      0,
 		FromUserID:   orderData.FromUserID,
@@ -47,7 +47,7 @@ func requestToOrder(orderData orderapi.OrderData) domain.Order {
 	}
 }
 
-func requestToStatus(statusData orderapi.OrderStatusData) domain.OrderStatus {
+func requestToStatus(statusData v1.OrderStatusData) domain.OrderStatus {
 	return domain.OrderStatus{
 		OrderID: 0,
 		Status:  statusData.Status,

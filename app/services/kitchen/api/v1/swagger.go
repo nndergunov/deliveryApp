@@ -1,3 +1,5 @@
+// Package v1 Kitchen Service API V1.
+//
 // API specification of the kitchen service
 //
 //     Schemes: http
@@ -12,4 +14,4 @@
 //     - application/json
 //
 // swagger:meta
-package handlers
+package v1

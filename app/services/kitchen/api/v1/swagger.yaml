@@ -1,9 +1,17 @@
 basePath: /v1
 consumes:
 - application/json
+definitions:
+  Tasks:
+    properties:
+      Tasks: {}
+    title: Tasks contains information about what number of what dishes must be prepared.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/kitchen/api/v1/communication
 host: localhost:8084
 info:
   description: API specification of the kitchen service
+  title: Kitchen Service API V1.
   version: 0.0.1
 paths:
   /tasks/{id}:
@@ -15,6 +23,8 @@ paths:
       responses:
         "200":
           description: requested data
+          schema:
+            $ref: '#/definitions/Tasks'
 produces:
 - application/json
 schemes:

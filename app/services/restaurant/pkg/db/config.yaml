@@ -1,7 +1,0 @@
-database:
-  host: "localhost"
-  port: 5436
-  user: "restaurant_db"
-  password: "restaurant_db_pass"
-  dbName: "restaurant_db"
-  sslmode: "disable"

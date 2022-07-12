@@ -41,6 +41,10 @@ func (c OrdersClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, er
 		return nil, fmt.Errorf("sending HTTP request: %w", err)
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: http status: %d", ErrOrderServiceFailed, resp.StatusCode)
+	}
+
 	orders := new(orderapi.ReturnOrderList)
 
 	err = v1.DecodeResponse(resp, orders)
