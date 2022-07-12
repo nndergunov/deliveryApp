@@ -1,0 +1,262 @@
+basePath: /v1
+consumes:
+- application/json
+definitions:
+  MenuData:
+    properties:
+      MenuItems:
+        items:
+          $ref: '#/definitions/MenuItemData'
+        type: array
+    required:
+    - MenuItems
+    title: MenuData contains information about the menu.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+  MenuItemData:
+    properties:
+      Course:
+        description: Photo []byte
+        type: string
+      ID:
+        format: int64
+        type: integer
+      Name:
+        type: string
+      Price:
+        format: double
+        type: number
+    required:
+    - ID
+    - Name
+    - Price
+    - Course
+    title: MenuItemData contains information about the menu item.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+  RestaurantData:
+    properties:
+      AcceptingOrders:
+        type: boolean
+      Address:
+        type: string
+      City:
+        type: string
+      Latitude:
+        format: double
+        type: number
+      Longitude:
+        format: double
+        type: number
+      Name:
+        type: string
+    required:
+    - Name
+    - City
+    - AcceptingOrders
+    - Address
+    - Longitude
+    - Latitude
+    title: RestaurantData contains information about the restaurant.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+  ReturnMenu:
+    properties:
+      MenuItems:
+        items:
+          $ref: '#/definitions/ReturnMenuItem'
+        type: array
+      RestaurantID:
+        format: int64
+        type: integer
+    title: ReturnMenu contains information about the menu from requested restaurant.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+  ReturnMenuItem:
+    properties:
+      Course:
+        type: string
+      ID:
+        format: int64
+        type: integer
+      Name:
+        type: string
+      Price:
+        format: double
+        type: number
+    title: ReturnMenuItem contains information about requested menu item.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+  ReturnRestaurant:
+    properties:
+      AcceptingOrders:
+        type: boolean
+      Address:
+        type: string
+      City:
+        type: string
+      ID:
+        format: int64
+        type: integer
+      Latitude:
+        format: double
+        type: number
+      Longitude:
+        format: double
+        type: number
+      Name:
+        type: string
+    title: ReturnRestaurant contains information about the requested restaurant.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+  ReturnRestaurantList:
+    properties:
+      List:
+        items:
+          $ref: '#/definitions/ReturnRestaurant'
+        type: array
+    title: ReturnRestaurantList contains data about all the requested restaurants.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication
+host: localhost:8086
+info:
+  description: API specification of the restaurant service
+  title: Restaurant Service API V1.
+  version: 0.0.1
+paths:
+  /restaurants:
+    get:
+      description: Returns restaurant list
+      operationId: returnRestaurantList
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: restaurant list
+          schema:
+            $ref: '#/definitions/ReturnRestaurantList'
+    post:
+      description: Returns menu of the requested restaurant
+      operationId: createRestaurant
+      parameters:
+      - description: restaurant data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/RestaurantData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created restaurant
+          schema:
+            $ref: '#/definitions/ReturnRestaurant'
+  /restaurants/{id}:
+    delete:
+      description: Deletes restaurant data
+      operationId: deleteRestaurant
+      responses:
+        "200":
+          description: ""
+    get:
+      description: Returns requested restaurant restaurant
+      operationId: returnRestaurant
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: requested restaurtant
+          schema:
+            $ref: '#/definitions/ReturnRestaurant'
+    put:
+      description: Updates restaurant data
+      operationId: updateRestaurant
+      parameters:
+      - description: updated restaurant data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/RestaurantData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated restaurant data
+          schema:
+            $ref: '#/definitions/ReturnRestaurant'
+  /restaurants/{id}/menu:
+    get:
+      description: Returns menu of the requested restaurant
+      operationId: returnMenu
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: menu of the requested restaurant
+          schema:
+            $ref: '#/definitions/ReturnMenu'
+    post:
+      description: Creates menu in the restaurant
+      operationId: createMenu
+      parameters:
+      - description: menu data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/MenuData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created menu
+          schema:
+            $ref: '#/definitions/ReturnMenu'
+    put:
+      description: Adds new menu item in the restaurant
+      operationId: addMenuItem
+      parameters:
+      - description: menu item data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/MenuItemData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created menu item
+          schema:
+            $ref: '#/definitions/ReturnMenuItem'
+  /restaurants/{id}/menu/{itemid}:
+    delete:
+      description: Deletes menu item in the restaurant
+      operationId: deleteMenuItem
+      responses:
+        "200":
+          description: ""
+    patch:
+      description: Updates menu item in the restaurant
+      operationId: updateMenuItem
+      parameters:
+      - description: updated menu item data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/MenuItemData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: updated menu item
+          schema:
+            $ref: '#/definitions/ReturnMenuItem'
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

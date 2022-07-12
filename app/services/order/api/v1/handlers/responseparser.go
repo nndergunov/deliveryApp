@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
+	v1 "github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
-func orderToResponse(order domain.Order) orderapi.ReturnOrder {
-	return orderapi.ReturnOrder{
+func orderToResponse(order domain.Order) v1.ReturnOrder {
+	return v1.ReturnOrder{
 		OrderID:      order.OrderID,
 		FromUserID:   order.FromUserID,
 		RestaurantID: order.RestaurantID,
@@ -15,14 +15,14 @@ func orderToResponse(order domain.Order) orderapi.ReturnOrder {
 	}
 }
 
-func orderListToResponse(orderList []domain.Order) orderapi.ReturnOrderList {
-	returnOrderList := make([]orderapi.ReturnOrder, 0, len(orderList))
+func orderListToResponse(orderList []domain.Order) v1.ReturnOrderList {
+	returnOrderList := make([]v1.ReturnOrder, 0, len(orderList))
 
 	for _, el := range orderList {
 		returnOrderList = append(returnOrderList, orderToResponse(el))
 	}
 
-	return orderapi.ReturnOrderList{
+	return v1.ReturnOrderList{
 		Orders: returnOrderList,
 	}
 }

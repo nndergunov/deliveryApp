@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
-func restaurantToResponse(restaurant domain.Restaurant) restaurantapi.ReturnRestaurant {
-	return restaurantapi.ReturnRestaurant{
+func restaurantToResponse(restaurant domain.Restaurant) communication.ReturnRestaurant {
+	return communication.ReturnRestaurant{
 		ID:              restaurant.ID,
 		Name:            restaurant.Name,
 		AcceptingOrders: restaurant.AcceptingOrders,
@@ -17,8 +17,8 @@ func restaurantToResponse(restaurant domain.Restaurant) restaurantapi.ReturnRest
 	}
 }
 
-func restaurantListToResponse(restaurants []domain.Restaurant) restaurantapi.ReturnRestaurantList {
-	list := make([]restaurantapi.ReturnRestaurant, 0, len(restaurants))
+func restaurantListToResponse(restaurants []domain.Restaurant) communication.ReturnRestaurantList {
+	list := make([]communication.ReturnRestaurant, 0, len(restaurants))
 
 	for _, restaurant := range restaurants {
 		currElement := restaurantToResponse(restaurant)
@@ -26,26 +26,26 @@ func restaurantListToResponse(restaurants []domain.Restaurant) restaurantapi.Ret
 		list = append(list, currElement)
 	}
 
-	return restaurantapi.ReturnRestaurantList{
+	return communication.ReturnRestaurantList{
 		List: list,
 	}
 }
 
-func menuToResponse(menu domain.Menu) restaurantapi.ReturnMenu {
-	items := make([]restaurantapi.ReturnMenuItem, 0, len(menu.Items))
+func menuToResponse(menu domain.Menu) communication.ReturnMenu {
+	items := make([]communication.ReturnMenuItem, 0, len(menu.Items))
 
 	for _, menuItem := range menu.Items {
 		items = append(items, menuItemToResponse(menuItem))
 	}
 
-	return restaurantapi.ReturnMenu{
+	return communication.ReturnMenu{
 		RestaurantID: menu.RestaurantID,
 		MenuItems:    items,
 	}
 }
 
-func menuItemToResponse(menuItem domain.MenuItem) restaurantapi.ReturnMenuItem {
-	return restaurantapi.ReturnMenuItem{
+func menuItemToResponse(menuItem domain.MenuItem) communication.ReturnMenuItem {
+	return communication.ReturnMenuItem{
 		ID:     menuItem.ID,
 		Name:   menuItem.Name,
 		Price:  menuItem.Price,

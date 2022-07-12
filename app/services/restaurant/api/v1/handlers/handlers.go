@@ -7,8 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/service"
 )
 
@@ -100,6 +100,8 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 	// responses:
 	//   '200':
 	//     description: restaurant list
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurantList"
 	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
 		e.handleError(err, w)
@@ -126,6 +128,8 @@ func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request
 	// responses:
 	//   '200':
 	//     description: requested restaurtant
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurant"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -158,7 +162,9 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	// - application/json
 	// responses:
 	//   '200':
-	//     description: menu of the requested restaurtant
+	//     description: menu of the requested restaurant
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenu"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -190,13 +196,17 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: restaurant data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: restaurant data
+	//   schema:
+	//     $ref: "#/definitions/RestaurantData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created restaurant
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurant"
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.handleError(err, w)
@@ -204,7 +214,7 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	restaurantData := new(restaurantapi.RestaurantData)
+	restaurantData := new(communication.RestaurantData)
 
 	err = v1.Decode(req, restaurantData)
 	if err != nil {
@@ -239,13 +249,17 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: updated restaurant data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: updated restaurant data
+	//   schema:
+	//     $ref: "#/definitions/RestaurantData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated restaurant data
+	//     schema:
+	//       $ref: "#/definitions/ReturnRestaurant"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -260,7 +274,7 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	restaurantData := new(restaurantapi.RestaurantData)
+	restaurantData := new(communication.RestaurantData)
 
 	err = v1.Decode(req, restaurantData)
 	if err != nil {
@@ -292,8 +306,6 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 	// Deletes restaurant data
 	//
 	// ---
-	// produces:
-	// - application/json
 	// responses:
 	//   '200':
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
@@ -325,13 +337,17 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: menu data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: menu data
+	//   schema:
+	//     $ref: "#/definitions/MenuData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created menu
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenu"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -346,7 +362,7 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menuData := new(restaurantapi.MenuData)
+	menuData := new(communication.MenuData)
 
 	err = v1.Decode(req, menuData)
 	if err != nil {
@@ -381,13 +397,17 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: menu item data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: menu item data
+	//   schema:
+	//     $ref: "#/definitions/MenuItemData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created menu item
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenuItem"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -402,7 +422,7 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menuItemData := new(restaurantapi.MenuItemData)
+	menuItemData := new(communication.MenuItemData)
 
 	err = v1.Decode(req, menuItemData)
 	if err != nil {
@@ -437,13 +457,17 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: updated menu item data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: updated menu item data
+	//   schema:
+	//     $ref: "#/definitions/MenuItemData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated menu item
+	//     schema:
+	//       $ref: "#/definitions/ReturnMenuItem"
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -465,7 +489,7 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	menuItemData := new(restaurantapi.MenuItemData)
+	menuItemData := new(communication.MenuItemData)
 
 	err = v1.Decode(req, menuItemData)
 	if err != nil {
@@ -497,8 +521,6 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 	// Deletes menu item in the restaurant
 	//
 	// ---
-	// produces:
-	// - application/json
 	// responses:
 	//   '200':
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)

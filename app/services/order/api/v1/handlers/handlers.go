@@ -7,8 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/service"
 )
@@ -77,13 +77,17 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: search parameters
-	//     required: false
+	// - name: Body
+	//   in: body
+	//   description: order search filters
+	//   schema:
+	//     $ref: "#/definitions/OrderFilters"
+	//   required: false
 	// responses:
 	//   '200':
-	//     description: order lisr response
+	//     description: order list response
+	//     schema:
+	//       $ref: "#/definitions/ReturnOrderList"
 	parameters := domain.SearchParameters{
 		FromRestaurantID: nil,
 		Statuses:         nil,
@@ -97,7 +101,7 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 		return
 	}
 
-	searchParams := new(orderapi.OrderFilters)
+	searchParams := new(communication.OrderFilters)
 
 	// if request body is empty we do not need to parse searchParams as it would result in err
 	if len(req) != 0 {
@@ -137,13 +141,17 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: order data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: order data
+	//   schema:
+	//     $ref: "#/definitions/OrderData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: created order data
+	//     schema:
+	//       $ref: "#/definitions/ReturnOrder"
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -151,7 +159,7 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	orderData := new(orderapi.OrderData)
+	orderData := new(communication.OrderData)
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
@@ -190,6 +198,8 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 	// responses:
 	//   '200':
 	//     description: requested order data
+	//     schema:
+	//       $ref: "#/definitions/ReturnOrder"
 	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -223,13 +233,17 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: order data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: order data
+	//   schema:
+	//     $ref: "#/definitions/OrderData"
+	//   required: true
 	// responses:
 	//   '200':
 	//     description: updated order data
+	//     schema:
+	//       $ref: "#/definitions/ReturnOrder"
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -244,7 +258,7 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 		return
 	}
 
-	orderData := new(orderapi.OrderData)
+	orderData := new(communication.OrderData)
 
 	err = v1.Decode(req, orderData)
 	if err != nil {
@@ -283,13 +297,14 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	// produces:
 	// - application/json
 	// parameters:
-	//   - name: Body
-	//     in: body
-	//     description: order status data
-	//     required: true
+	// - name: Body
+	//   in: body
+	//   description: order status data
+	//   schema:
+	//     $ref: "#/definitions/OrderStatusData"
+	//   required: true
 	// responses:
 	//   '200':
-	//     description: updated order status data
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -304,7 +319,7 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 		return
 	}
 
-	statusData := new(orderapi.OrderStatusData)
+	statusData := new(communication.OrderStatusData)
 
 	err = v1.Decode(req, statusData)
 	if err != nil {

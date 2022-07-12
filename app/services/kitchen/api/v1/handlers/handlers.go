@@ -79,6 +79,8 @@ func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request
 	// responses:
 	//   '200':
 	//     description: requested data
+	//     schema:
+	//       $ref: "#/definitions/Tasks"
 	kitchenID, err := getIDFromEndpoint(kitchenIDKey, request)
 	if err != nil {
 		e.log.Println(err)
