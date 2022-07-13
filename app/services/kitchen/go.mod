@@ -4,11 +4,11 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220712110314-a22b313a1d9c
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220712110314-a22b313a1d9c
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220712110314-a22b313a1d9c
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220712110314-a22b313a1d9c
-	github.com/nndergunov/deliveryApp/app/services/order v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220713113414-48789244bb41
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220713113414-48789244bb41
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220713113414-48789244bb41
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220713113414-48789244bb41
+	github.com/nndergunov/deliveryApp/app/services/order v0.0.0-20220713113414-48789244bb41
 	github.com/stretchr/testify v1.8.0
 )
 

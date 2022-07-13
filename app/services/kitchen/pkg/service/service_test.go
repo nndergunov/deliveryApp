@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/service"
-	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi"
 )
 
-var mockOrderList = communication.ReturnOrderList{
-	Orders: []communication.ReturnOrder{
+var mockOrderList = orderapi.ReturnOrderList{
+	Orders: []orderapi.ReturnOrder{
 		{
 			OrderID:      0,
 			FromUserID:   0,
@@ -21,7 +21,7 @@ var mockOrderList = communication.ReturnOrderList{
 
 type mockCommunicator struct{}
 
-func (m mockCommunicator) GetIncompleteOrders(_ int) (*communication.ReturnOrderList, error) {
+func (m mockCommunicator) GetIncompleteOrders(_ int) (*orderapi.ReturnOrderList, error) {
 	return &mockOrderList, nil
 }
 
