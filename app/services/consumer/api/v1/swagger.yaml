@@ -1,0 +1,394 @@
+basePath: /v1
+consumes:
+- application/json
+definitions:
+  ConsumerResponse:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      firstname:
+        type: string
+        x-go-name: Firstname
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+      lastname:
+        type: string
+        x-go-name: Lastname
+      phone:
+        type: string
+        x-go-name: Phone
+    title: ConsumerResponse  contains information about the consumer.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+  LocationResponse:
+    properties:
+      city:
+        type: string
+        x-go-name: City
+      country:
+        type: string
+        x-go-name: Country
+      door:
+        type: string
+        x-go-name: Door
+      floor:
+        type: string
+        x-go-name: Floor
+      home_number:
+        type: string
+        x-go-name: HomeNumber
+      latitude:
+        type: string
+        x-go-name: Latitude
+      longitude:
+        type: string
+        x-go-name: Longitude
+      region:
+        type: string
+        x-go-name: Region
+      street:
+        type: string
+        x-go-name: Street
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+    title: LocationResponse  contains information about the location response.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+  NewConsumerRequest:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      firstname:
+        type: string
+        x-go-name: Firstname
+      lastname:
+        type: string
+        x-go-name: Lastname
+      phone:
+        type: string
+        x-go-name: Phone
+    required:
+    - firstname
+    - email
+    - phone
+    title: NewConsumerRequest contains information about the consumer.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+  NewLocationRequest:
+    properties:
+      city:
+        type: string
+        x-go-name: City
+      country:
+        type: string
+        x-go-name: Country
+      door:
+        type: string
+        x-go-name: Door
+      floor:
+        type: string
+        x-go-name: Floor
+      home_number:
+        type: string
+        x-go-name: HomeNumber
+      latitude:
+        type: string
+        x-go-name: Latitude
+      longitude:
+        type: string
+        x-go-name: Longitude
+      region:
+        type: string
+        x-go-name: Region
+      street:
+        type: string
+        x-go-name: Street
+    title: NewLocationRequest contains information about the location.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+  ReturnConsumerResponseList:
+    properties:
+      ConsumerResponseList:
+        items:
+          $ref: '#/definitions/ConsumerResponse'
+        type: array
+    title: ReturnConsumerResponseList  contains information about the consumer list.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+  UpdateConsumerRequest:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      firstname:
+        type: string
+        x-go-name: Firstname
+      lastname:
+        type: string
+        x-go-name: Lastname
+      phone:
+        type: string
+        x-go-name: Phone
+    title: UpdateConsumerRequest contains information about the consumer.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+  UpdateLocationRequest:
+    properties:
+      city:
+        type: string
+        x-go-name: City
+      country:
+        type: string
+        x-go-name: Country
+      door:
+        type: string
+        x-go-name: Door
+      floor:
+        type: string
+        x-go-name: Floor
+      home_number:
+        type: string
+        x-go-name: HomeNumber
+      latitude:
+        type: string
+        x-go-name: Latitude
+      longitude:
+        type: string
+        x-go-name: Longitude
+      region:
+        type: string
+        x-go-name: Region
+      street:
+        type: string
+        x-go-name: Street
+    title: UpdateLocationRequest contains information about the location.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi
+host: localhost:8081
+info:
+  description: API specification of the consumer service
+  title: Consumer Service API V1.
+  version: 0.0.1
+paths:
+  /consumers:
+    get:
+      description: Returns get all consumer
+      operationId: getAllConsumer
+      parameters:
+      - description: costumer list data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateConsumerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: consumer update
+          schema:
+            $ref: '#/definitions/ReturnConsumerResponseList'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    post:
+      description: Returns created consumer
+      operationId: insertNewConsumer
+      parameters:
+      - description: cosnumer data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/NewConsumerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created consumer
+          schema:
+            $ref: '#/definitions/ConsumerResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    put:
+      description: Returns update consumer
+      operationId: updateConsumer
+      parameters:
+      - description: cosnumer data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateConsumerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: consumer update
+          schema:
+            $ref: '#/definitions/ConsumerResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /consumers/{consumer_id}:
+    delete:
+      operationId: DeleteAccount
+      parameters:
+      - description: consumer_id
+        in: path
+        name: consumer_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: consumer deleted
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Returns "consumer deleted"
+    get:
+      operationId: getConsumer
+      parameters:
+      - description: consumer_id
+        in: path
+        name: consumer_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: consumer
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Returns "consumer"
+  /locations/{consumer_id}:
+    get:
+      description: Returns consumer location
+      operationId: getConsumerLocation
+      parameters:
+      - description: consumer_id
+        in: path
+        name: consumer_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created consumer
+          schema:
+            $ref: '#/definitions/ConsumerResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    post:
+      description: Returns consumer location
+      operationId: insertNewConsumerLocation
+      parameters:
+      - description: consumer_id
+        in: path
+        name: consumer_id
+        required: true
+        schema:
+          type: integer
+      - description: cosnumer data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/NewConsumerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created consumer
+          schema:
+            $ref: '#/definitions/ConsumerResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    put:
+      description: Returns consumer location
+      operationId: updateConsumerLocation
+      parameters:
+      - description: consumer_id
+        in: path
+        name: consumer_id
+        required: true
+        schema:
+          type: integer
+      - description: cosnumer data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created consumer
+          schema:
+            $ref: '#/definitions/ConsumerResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"
