@@ -156,7 +156,7 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 
 // swagger:operation DELETE /couriers/{courier_id} DeleteAccount
 //
-// Returns "consumer deleted"
+// Returns "courier deleted"
 //
 // ---
 // produces:
@@ -211,7 +211,7 @@ func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// swagger:operation PUT /couriers{courier_id} updateConsumer
+// swagger:operation PUT /couriers{courier_id} updateCourier
 //
 // Returns update courier
 //
@@ -377,7 +377,7 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 //   in: body
 //   description: courier list data
 //   schema:
-//     $ref: "#/definitions/UpdateConsumerRequest"
+//     $ref: "#/definitions/UpdateCourierRequest"
 //   required: true
 // - name: available
 //   in: query
@@ -435,9 +435,9 @@ func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request)
 	}
 }
 
-// swagger:operation GET /consumers/{courier_id} getCourier
+// swagger:operation GET /couriers/{courier_id} getCourier
 //
-// Returns "consumer"
+// Returns "courier"
 //
 // ---
 // produces:
@@ -494,9 +494,9 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:operation POST /locations/{courier_id} insertNewConsumerLocation
+// swagger:operation POST /locations/{courier_id} insertNewCourierLocation
 //
-// Returns consumer location
+// Returns courier location
 //
 // ---
 // produces:
@@ -516,7 +516,7 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 //   required: true
 // responses:
 //   '200':
-//     description: created consumer
+//     description: created courier
 //     schema:
 //       $ref: "#/definitions/LocationResponse"
 //   '500':
@@ -574,7 +574,7 @@ func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Reque
 
 // swagger:operation PUT /locations/{courier_id} updateLocation
 //
-// Returns consumer location
+// Returns courier location
 //
 // ---
 // produces:
@@ -652,7 +652,7 @@ func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request)
 
 // swagger:operation GET /locations/{courier_id} getLocation
 //
-// Returns consumer location
+// Returns courier location
 //
 // ---
 // produces:
@@ -711,7 +711,7 @@ func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 
 // swagger:operation GET /locations/{courier_id} getLocationList
 //
-// Returns consumer location
+// Returns courier location
 //
 // ---
 // produces:

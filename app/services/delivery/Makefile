@@ -64,3 +64,6 @@ download-gomod:
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
+
+swagger:
+	swagger generate spec -o ./api/v1/swagger.yaml --scan-models
