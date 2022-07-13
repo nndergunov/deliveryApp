@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/kitchenapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/api/v1/handlers"
+	"github.com/nndergunov/deliveryApp/app/services/kitchen/api/v1/kitchenapi"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/service/mockservice"
 	"github.com/stretchr/testify/mock"

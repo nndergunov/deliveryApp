@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
 )
 
 type OrdersClient struct {
@@ -17,11 +17,11 @@ func NewOrdersClient(orderServiceBaseURL string) *OrdersClient {
 	return &OrdersClient{orderServiceBaseURL: orderServiceBaseURL}
 }
 
-func (c OrdersClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, error) {
-	filters := orderapi.OrderFilters{
+func (c OrdersClient) GetIncompleteOrders(id int) (*communication.ReturnOrderList, error) {
+	filters := communication.OrderFilters{
 		FromRestaurantID: &id,
 		Statuses:         nil,
-		ExcludeStatuses:  []string{orderapi.Complete},
+		ExcludeStatuses:  []string{communication.Complete},
 	}
 
 	requestData, err := v1.Encode(filters)
@@ -45,7 +45,7 @@ func (c OrdersClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, er
 		return nil, fmt.Errorf("%w: http status: %d", ErrOrderServiceFailed, resp.StatusCode)
 	}
 
-	orders := new(orderapi.ReturnOrderList)
+	orders := new(communication.ReturnOrderList)
 
 	err = v1.DecodeResponse(resp, orders)
 	if err != nil {

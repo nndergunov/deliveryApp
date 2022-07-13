@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/clients/ordersclient"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
 )
 
 func TestGetIncompleteOrders(t *testing.T) {
@@ -15,12 +15,12 @@ func TestGetIncompleteOrders(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		orderList orderapi.ReturnOrderList
+		orderList communication.ReturnOrderList
 	}{
 		{
 			name: "get incomplete orders",
-			orderList: orderapi.ReturnOrderList{
-				Orders: []orderapi.ReturnOrder{
+			orderList: communication.ReturnOrderList{
+				Orders: []communication.ReturnOrder{
 					{
 						OrderID:      1,
 						FromUserID:   1,

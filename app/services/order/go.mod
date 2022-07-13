@@ -8,11 +8,11 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220704103046-40bd7e9ee247
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220704103046-40bd7e9ee247
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220704103046-40bd7e9ee247
-	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220704103046-40bd7e9ee247
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220704103046-40bd7e9ee247
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220712110314-a22b313a1d9c
 	github.com/stretchr/testify v1.8.0
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
@@ -21,6 +21,9 @@ require (
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/DATA-DOG/go-txdb v0.1.5 // indirect
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/semver/v3 v3.1.1 // indirect
+	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
@@ -38,14 +41,19 @@ require (
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
@@ -59,9 +67,11 @@ require (
 	github.com/rabbitmq/amqp091-go v1.3.4 // indirect
 	github.com/romanyx/jwalk v1.0.0 // indirect
 	github.com/romanyx/polluter v1.2.2 // indirect
+	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
+	github.com/spf13/cobra v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0 // indirect
@@ -74,8 +84,8 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
-	golang.org/x/net v0.0.0-20220706163947-c90051bbdb60 // indirect
-	golang.org/x/sys v0.0.0-20220704084225-05e143d24a9e // indirect
+	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
+	golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect

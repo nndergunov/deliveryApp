@@ -1,4 +1,4 @@
-package communication
+package kitchenapi
 
 // Tasks contains information about what number of what dishes must be prepared.
 // swagger:model
