@@ -1,5 +1,7 @@
 package courierapi
 
+// CourierResponse contains information about the courier.
+// swagger:model
 type CourierResponse struct {
 	ID        int    `json:"id,omitempty" yaml:"id,omitempty"`
 	Username  string `json:"username,omitempty" yaml:"username,omitempty"`
@@ -10,10 +12,14 @@ type CourierResponse struct {
 	Available bool   `json:"available" yaml:"available"`
 }
 
+// CourierResponseList contains information about the courier.
+// swagger:model
 type CourierResponseList struct {
 	CourierResponseList []CourierResponse
 }
 
+// LocationResponse contains information about the location.
+// swagger:model
 type LocationResponse struct {
 	UserID     int    `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Latitude   string `json:"latitude,omitempty" yaml:"latitude,omitempty"`
@@ -27,6 +33,8 @@ type LocationResponse struct {
 	Door       string `json:"door,omitempty" yaml:"door,omitempty"`
 }
 
+// LocationResponseList contains information about the location list.
+// swagger:model
 type LocationResponseList struct {
 	LocationResponseList []LocationResponse
 }

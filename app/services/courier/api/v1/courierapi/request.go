@@ -1,14 +1,23 @@
 package courierapi
 
+// NewCourierRequest contains information about the courier.
+// swagger:model
 type NewCourierRequest struct {
-	Username  string `json:"username,omitempty" yaml:"username,omitempty"`
-	Password  string `json:"password,omitempty" yaml:"password,omitempty"`
+	// required: true
+	Username string `json:"username,omitempty" yaml:"username,omitempty"`
+	// required: true
+	Password string `json:"password,omitempty" yaml:"password,omitempty"`
+	// required: true
 	Firstname string `json:"firstname,omitempty" yaml:"firstname,omitempty"`
 	Lastname  string `json:"lastname,omitempty" yaml:"lastname,omitempty"`
-	Email     string `json:"email,omitempty" yaml:"email,omitempty"`
-	Phone     string `json:"phone,omitempty" yaml:"phone,omitempty"`
+	// required: true
+	Email string `json:"email,omitempty" yaml:"email,omitempty"`
+	// required: true
+	Phone string `json:"phone,omitempty" yaml:"phone,omitempty"`
 }
 
+// UpdateCourierRequest contains information about the courier.
+// swagger:model
 type UpdateCourierRequest struct {
 	Username  string `json:"username,omitempty" yaml:"username,omitempty"`
 	Firstname string `json:"firstname,omitempty" yaml:"firstname,omitempty"`
@@ -16,6 +25,9 @@ type UpdateCourierRequest struct {
 	Email     string `json:"email,omitempty" yaml:"email,omitempty"`
 	Phone     string `json:"phone,omitempty" yaml:"phone,omitempty"`
 }
+
+// NewLocationRequest contains information about the location.
+// swagger:model
 type NewLocationRequest struct {
 	Latitude   string `json:"latitude" yaml:"latitude"`
 	Longitude  string `json:"longitude" yaml:"longitude"`
@@ -27,6 +39,9 @@ type NewLocationRequest struct {
 	Floor      string `json:"floor" yaml:"floor"`
 	Door       string `json:"door" yaml:"door"`
 }
+
+// UpdateLocationRequest contains information about the location.
+// swagger:model
 type UpdateLocationRequest struct {
 	Latitude   string `json:"latitude" yaml:"latitude"`
 	Longitude  string `json:"longitude" yaml:"longitude"`

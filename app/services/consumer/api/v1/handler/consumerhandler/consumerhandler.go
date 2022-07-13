@@ -412,15 +412,15 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 //   required: true
 // - name: Body
 //   in: body
-//   description: cosnumer data
+//   description: location data
 //   schema:
-//     $ref: "#/definitions/NewConsumerRequest"
+//     $ref: "#/definitions/NewLocationRequest"
 //   required: true
 // responses:
 //   '200':
-//     description: created consumer
+//     description: location created
 //     schema:
-//       $ref: "#/definitions/ConsumerResponse"
+//       $ref: "#/definitions/LocationResponse"
 //   '500':
 //     description: internal server error
 //     schema:
@@ -490,15 +490,15 @@ func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *h
 //   required: true
 // - name: Body
 //   in: body
-//   description: cosnumer data
+//   description: location data
 //   schema:
 //     $ref: "#/definitions/UpdateLocationRequest"
 //   required: true
 // responses:
 //   '200':
-//     description: created consumer
+//     description: location updated
 //     schema:
-//       $ref: "#/definitions/ConsumerResponse"
+//       $ref: "#/definitions/LocationResponse"
 //   '500':
 //     description: internal server error
 //     schema:
@@ -569,9 +569,9 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 //   required: true
 // responses:
 //   '200':
-//     description: created consumer
+//     description: created location
 //     schema:
-//       $ref: "#/definitions/ConsumerResponse"
+//       $ref: "#/definitions/LocationResponse"
 //   '500':
 //     description: internal server error
 //     schema:
