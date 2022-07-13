@@ -4,11 +4,12 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220621145645-038a54ec385b
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220621145645-038a54ec385b
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220621145645-038a54ec385b
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220621145645-038a54ec385b
-	github.com/stretchr/testify v1.7.4
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220712110314-a22b313a1d9c
+	github.com/nndergunov/deliveryApp/app/services/order v0.0.0-20220712110314-a22b313a1d9c
+	github.com/stretchr/testify v1.8.0
 )
 
 require (
@@ -27,9 +28,8 @@ require (
 	github.com/spf13/viper v1.12.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
-	golang.org/x/sys v0.0.0-20220622161953-175b2fd9d664 // indirect
+	golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

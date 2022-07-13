@@ -1,4 +1,4 @@
-package communication
+package restaurantapi
 
 // ReturnRestaurant contains information about the requested restaurant.
 // swagger:model

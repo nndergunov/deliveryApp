@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/domain"
 )
 
@@ -26,7 +26,7 @@ func getIDFromEndpoint(code string, r *http.Request) (int, error) {
 	return id, nil
 }
 
-func requestToRestaurant(restID int, req *communication.RestaurantData) domain.Restaurant {
+func requestToRestaurant(restID int, req *restaurantapi.RestaurantData) domain.Restaurant {
 	return domain.Restaurant{
 		ID:              restID,
 		Name:            req.Name,
@@ -38,7 +38,7 @@ func requestToRestaurant(restID int, req *communication.RestaurantData) domain.R
 	}
 }
 
-func requestToMenu(restaurantID int, req *communication.MenuData) domain.Menu {
+func requestToMenu(restaurantID int, req *restaurantapi.MenuData) domain.Menu {
 	menuItems := make([]domain.MenuItem, 0, len(req.MenuItems))
 
 	for _, item := range req.MenuItems {
@@ -59,7 +59,7 @@ func requestToMenu(restaurantID int, req *communication.MenuData) domain.Menu {
 	}
 }
 
-func requestToMenuItem(itemID int, req *communication.MenuItemData) domain.MenuItem {
+func requestToMenuItem(itemID int, req *restaurantapi.MenuItemData) domain.MenuItem {
 	return domain.MenuItem{
 		ID:     itemID,
 		MenuID: 0,

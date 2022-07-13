@@ -1,4 +1,4 @@
-package communication
+package restaurantapi
 
 // RestaurantData contains information about the restaurant.
 // swagger:model

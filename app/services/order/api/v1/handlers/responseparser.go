@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	v1 "github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication"
+	v1 "github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 

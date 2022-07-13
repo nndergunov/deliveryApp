@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/communication"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/service"
 )
 
@@ -214,7 +214,7 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	restaurantData := new(communication.RestaurantData)
+	restaurantData := new(restaurantapi.RestaurantData)
 
 	err = v1.Decode(req, restaurantData)
 	if err != nil {
@@ -274,7 +274,7 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	restaurantData := new(communication.RestaurantData)
+	restaurantData := new(restaurantapi.RestaurantData)
 
 	err = v1.Decode(req, restaurantData)
 	if err != nil {
@@ -362,7 +362,7 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menuData := new(communication.MenuData)
+	menuData := new(restaurantapi.MenuData)
 
 	err = v1.Decode(req, menuData)
 	if err != nil {
@@ -422,7 +422,7 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	menuItemData := new(communication.MenuItemData)
+	menuItemData := new(restaurantapi.MenuItemData)
 
 	err = v1.Decode(req, menuItemData)
 	if err != nil {
@@ -489,7 +489,7 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	menuItemData := new(communication.MenuItemData)
+	menuItemData := new(restaurantapi.MenuItemData)
 
 	err = v1.Decode(req, menuItemData)
 	if err != nil {
