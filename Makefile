@@ -1,13 +1,13 @@
 docker-build-all:
 	docker network create delivery_app_net
 	make -C app/pkg/messagebroker docker-build
-	make -C accounting docker-build
-	make -C consumer docker-build
-	make -C courier docker-build
-	make -C delivery docker-build
-	make -C kitchen docker-build
-	make -C order docker-build
-	make -C restaurant docker-build
+	make -C app/services/accounting docker-build
+	make -C app/services/consumer docker-build
+	make -C app/services/courier docker-build
+	make -C app/services/delivery docker-build
+	make -C app/services/kitchen docker-build
+	make -C app/services/order docker-build
+	make -C app/services/restaurant docker-build
 
 docker-delete-all:
 	make -C app/pkg/messagebroker docker-delete
