@@ -74,6 +74,11 @@ func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request
 	// Returns tasks for the specified restaurant
 	//
 	// ---
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// produces:
 	// - application/json
 	// responses:

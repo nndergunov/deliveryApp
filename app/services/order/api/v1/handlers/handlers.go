@@ -193,6 +193,11 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 	// Returns specified order data
 	//
 	// ---
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// produces:
 	// - application/json
 	// responses:
@@ -233,6 +238,10 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	// produces:
 	// - application/json
 	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// - name: Body
 	//   in: body
 	//   description: order data
@@ -297,6 +306,10 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	// produces:
 	// - application/json
 	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// - name: Body
 	//   in: body
 	//   description: order status data
