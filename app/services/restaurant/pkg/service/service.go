@@ -45,7 +45,7 @@ func (s Service) ReturnRestaurant(restaurantID int) (*domain.Restaurant, error) 
 		return nil, fmt.Errorf("getting restaurant from storage: %w", err)
 	}
 
-	return restaurant, err
+	return restaurant, nil
 }
 
 func (s Service) CreateNewRestaurant(restaurant domain.Restaurant) (*domain.Restaurant, error) {
