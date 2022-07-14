@@ -17,6 +17,10 @@ const (
 	menuIDKey       = "menuID"
 )
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 type endpointHandler struct {
 	service  service.AppService
 	serveMux *mux.Router
@@ -102,6 +106,9 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 	//     description: restaurant list
 	//     schema:
 	//       $ref: "#/definitions/ReturnRestaurantList"
+
+	enableCors(&w)
+
 	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
 		e.handleError(err, w)
@@ -135,6 +142,9 @@ func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request
 	//     description: requested restaurtant
 	//     schema:
 	//       $ref: "#/definitions/ReturnRestaurant"
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -175,6 +185,9 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	//     description: menu of the requested restaurant
 	//     schema:
 	//       $ref: "#/definitions/ReturnMenu"
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -217,6 +230,9 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	//     description: created restaurant
 	//     schema:
 	//       $ref: "#/definitions/ReturnRestaurant"
+
+	enableCors(&w)
+
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.handleError(err, w)
@@ -274,6 +290,9 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 	//     description: updated restaurant data
 	//     schema:
 	//       $ref: "#/definitions/ReturnRestaurant"
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -327,6 +346,9 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 	//   required: true
 	// responses:
 	//   '200':
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -371,6 +393,9 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	//     description: created menu
 	//     schema:
 	//       $ref: "#/definitions/ReturnMenu"
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -435,6 +460,9 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	//     description: created menu item
 	//     schema:
 	//       $ref: "#/definitions/ReturnMenuItem"
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -503,6 +531,9 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 	//     description: updated menu item
 	//     schema:
 	//       $ref: "#/definitions/ReturnMenuItem"
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -567,6 +598,9 @@ func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request)
 	//   required: true
 	// responses:
 	//   '200':
+
+	enableCors(&w)
+
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)

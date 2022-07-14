@@ -15,6 +15,10 @@ import (
 
 const orderID = "orderID"
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 type endpointHandler struct {
 	serviceInstance service.AppService
 	serveMux        *mux.Router
@@ -88,6 +92,9 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 	//     description: order list response
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrderList"
+
+	enableCors(&responseWriter)
+
 	parameters := domain.SearchParameters{
 		FromRestaurantID: nil,
 		Statuses:         nil,
@@ -152,6 +159,9 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 	//     description: created order data
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrder"
+
+	enableCors(&responseWriter)
+
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -205,6 +215,9 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 	//     description: requested order data
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrder"
+
+	enableCors(&responseWriter)
+
 	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -253,6 +266,9 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	//     description: updated order data
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrder"
+
+	enableCors(&responseWriter)
+
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -318,6 +334,9 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	//   required: true
 	// responses:
 	//   '200':
+
+	enableCors(&responseWriter)
+
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
