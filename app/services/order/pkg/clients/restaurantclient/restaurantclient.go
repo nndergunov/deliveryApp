@@ -1,3 +1,4 @@
+// Package restaurantclient implements communication with restaurant service.
 package restaurantclient
 
 import (
@@ -10,14 +11,17 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
 )
 
+// RestaurantClient is responsible for communicating with restaurant service.
 type RestaurantClient struct {
 	restaurantURL string
 }
 
+// NewRestaurantClient returns new RestaurantClient instance.
 func NewRestaurantClient(url string) *RestaurantClient {
 	return &RestaurantClient{restaurantURL: url}
 }
 
+// CheckIfAvailable returns whether the restaurant can accept orders.
 func (r RestaurantClient) CheckIfAvailable(restaurantID int) (bool, error) {
 	resp, err := http.Get(r.restaurantURL + "/v1/restaurants/" + strconv.Itoa(restaurantID))
 	if err != nil {
@@ -38,6 +42,7 @@ func (r RestaurantClient) CheckIfAvailable(restaurantID int) (bool, error) {
 	return restaurant.AcceptingOrders, nil
 }
 
+// CalculateOrderPrice returns the price of the order.
 func (r RestaurantClient) CalculateOrderPrice(order domain.Order) (float64, error) {
 	resp, err := http.Get(r.restaurantURL + "/v1/restaurants/" + strconv.Itoa(order.RestaurantID) + "/menu")
 	if err != nil {
