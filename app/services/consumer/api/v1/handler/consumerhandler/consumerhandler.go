@@ -87,6 +87,33 @@ func (c *consumerHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 	c.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation POST /consumers insertNewConsumer
+//
+// Returns created consumer
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: cosnumer data
+//   schema:
+//     $ref: "#/definitions/NewConsumerRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: created consumer
+//     schema:
+//       $ref: "#/definitions/ConsumerResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
 	var consumerRequest consumerapi.NewConsumerRequest
 
@@ -125,6 +152,32 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 	}
 }
 
+// swagger:operation DELETE /consumers/{consumer_id} DeleteAccount
+//
+// Returns "consumer deleted"
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: consumer_id
+//   in: path
+//   description: consumer_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: consumer deleted
+//     type: string
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
@@ -157,6 +210,33 @@ func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request
 	}
 }
 
+// swagger:operation PUT /consumers updateConsumer
+//
+// Returns update consumer
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: cosnumer data
+//   schema:
+//     $ref: "#/definitions/UpdateConsumerRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: consumer update
+//     schema:
+//       $ref: "#/definitions/ConsumerResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
@@ -203,6 +283,33 @@ func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request
 	}
 }
 
+// swagger:operation GET /consumers getAllConsumer
+//
+// Returns get all consumer
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: costumer list data
+//   schema:
+//     $ref: "#/definitions/UpdateConsumerRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: consumer update
+//     schema:
+//       $ref: "#/definitions/ReturnConsumerResponseList"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request) {
 	data, err := c.consumerService.GetAllConsumer()
 	if err != nil {
@@ -229,6 +336,32 @@ func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request
 	}
 }
 
+// swagger:operation GET /consumers/{consumer_id} getConsumer
+//
+// Returns "consumer"
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: consumer_id
+//   in: path
+//   description: consumer_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: consumer
+//     type: string
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
@@ -263,6 +396,39 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /locations/{consumer_id} insertNewConsumerLocation
+//
+// Returns consumer location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: consumer_id
+//   in: path
+//   description: consumer_id
+//   schema:
+//     type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: location data
+//   schema:
+//     $ref: "#/definitions/NewLocationRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: location created
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	consumerID, ok := vars[consumerIDKey]
@@ -308,6 +474,39 @@ func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *h
 	}
 }
 
+// swagger:operation PUT /locations/{consumer_id} updateConsumerLocation
+//
+// Returns consumer location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: consumer_id
+//   in: path
+//   description: consumer_id
+//   schema:
+//     type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: location data
+//   schema:
+//     $ref: "#/definitions/UpdateLocationRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: location updated
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	consumerID, ok := vars[consumerIDKey]
@@ -354,6 +553,33 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 	}
 }
 
+// swagger:operation GET /locations/{consumer_id} getConsumerLocation
+//
+// Returns consumer location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: consumer_id
+//   in: path
+//   description: consumer_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: created location
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *consumerHandler) getConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]

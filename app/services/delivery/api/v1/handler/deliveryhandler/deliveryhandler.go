@@ -81,6 +81,38 @@ func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 	c.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation GET /estimate getEstimateDeliveryValues
+//
+// Returns estimate values
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: consumer_id
+//   in: query
+//   description: consumer_id
+//   schema:
+//     type: int
+//   required: true
+// - name: restaurant_id
+//   in: query
+//   description: restaurant_id
+//   schema:
+//     type: int
+//   required: true
+// responses:
+//   '200':
+//     description: estimate values response
+//     schema:
+//       $ref: "#/definitions/EstimateDeliveryResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
 func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 
@@ -134,6 +166,38 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 	}
 }
 
+// swagger:operation POST /orders/{orderIDKey}/assign assignOrder
+//
+// Returns assigned order
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: orderIDKey
+//   in: path
+//   description: AssignOrderRequest
+//   schema:
+//     type: int
+//   required: true
+// - name: Body
+//   in: body
+//   description:
+//   schema:
+//      $ref: "#/definitions/AssignOrderRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: assigned order response
+//     schema:
+//       $ref: "#/definitions/AssignOrderResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
 func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	orderID, ok := vars[orderIDKey]

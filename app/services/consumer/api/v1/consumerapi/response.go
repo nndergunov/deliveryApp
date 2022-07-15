@@ -1,5 +1,7 @@
 package consumerapi
 
+// ConsumerResponse  contains information about the consumer.
+// swagger:model
 type ConsumerResponse struct {
 	ID        int    `json:"id,omitempty" yaml:"id,omitempty"`
 	Firstname string `json:"firstname,omitempty" yaml:"firstname,omitempty"`
@@ -8,10 +10,14 @@ type ConsumerResponse struct {
 	Phone     string `json:"phone,omitempty" yaml:"phone,omitempty"`
 }
 
+// ReturnConsumerResponseList  contains information about the consumer list.
+// swagger:model
 type ReturnConsumerResponseList struct {
 	ConsumerResponseList []ConsumerResponse
 }
 
+// LocationResponse  contains information about the location response.
+// swagger:model
 type LocationResponse struct {
 	UserID     int    `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Latitude   string `json:"latitude,omitempty" yaml:"latitude,omitempty"`

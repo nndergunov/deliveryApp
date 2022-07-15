@@ -1,0 +1,450 @@
+basePath: /v1
+consumes:
+- application/json
+definitions:
+  CourierResponse:
+    properties:
+      available:
+        type: boolean
+        x-go-name: Available
+      email:
+        type: string
+        x-go-name: Email
+      firstname:
+        type: string
+        x-go-name: Firstname
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+      lastname:
+        type: string
+        x-go-name: Lastname
+      phone:
+        type: string
+        x-go-name: Phone
+      username:
+        type: string
+        x-go-name: Username
+    title: CourierResponse contains information about the courier.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  CourierResponseList:
+    properties:
+      CourierResponseList:
+        items:
+          $ref: '#/definitions/CourierResponse'
+        type: array
+    title: CourierResponseList contains information about the courier.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  LocationResponse:
+    properties:
+      city:
+        type: string
+        x-go-name: City
+      country:
+        type: string
+        x-go-name: Country
+      door:
+        type: string
+        x-go-name: Door
+      floor:
+        type: string
+        x-go-name: Floor
+      home_number:
+        type: string
+        x-go-name: HomeNumber
+      latitude:
+        type: string
+        x-go-name: Latitude
+      longitude:
+        type: string
+        x-go-name: Longitude
+      region:
+        type: string
+        x-go-name: Region
+      street:
+        type: string
+        x-go-name: Street
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+    title: LocationResponse contains information about the location.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  LocationResponseList:
+    properties:
+      LocationResponseList:
+        items:
+          $ref: '#/definitions/LocationResponse'
+        type: array
+    title: LocationResponseList contains information about the location list.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  NewCourierRequest:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      firstname:
+        type: string
+        x-go-name: Firstname
+      lastname:
+        type: string
+        x-go-name: Lastname
+      password:
+        type: string
+        x-go-name: Password
+      phone:
+        type: string
+        x-go-name: Phone
+      username:
+        type: string
+        x-go-name: Username
+    required:
+    - username
+    - password
+    - firstname
+    - email
+    - phone
+    title: NewCourierRequest contains information about the courier.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  NewLocationRequest:
+    properties:
+      city:
+        type: string
+        x-go-name: City
+      country:
+        type: string
+        x-go-name: Country
+      door:
+        type: string
+        x-go-name: Door
+      floor:
+        type: string
+        x-go-name: Floor
+      home_number:
+        type: string
+        x-go-name: HomeNumber
+      latitude:
+        type: string
+        x-go-name: Latitude
+      longitude:
+        type: string
+        x-go-name: Longitude
+      region:
+        type: string
+        x-go-name: Region
+      street:
+        type: string
+        x-go-name: Street
+    title: NewLocationRequest contains information about the location.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  UpdateCourierRequest:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      firstname:
+        type: string
+        x-go-name: Firstname
+      lastname:
+        type: string
+        x-go-name: Lastname
+      phone:
+        type: string
+        x-go-name: Phone
+      username:
+        type: string
+        x-go-name: Username
+    title: UpdateCourierRequest contains information about the courier.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+  UpdateLocationRequest:
+    properties:
+      city:
+        type: string
+        x-go-name: City
+      country:
+        type: string
+        x-go-name: Country
+      door:
+        type: string
+        x-go-name: Door
+      floor:
+        type: string
+        x-go-name: Floor
+      home_number:
+        type: string
+        x-go-name: HomeNumber
+      latitude:
+        type: string
+        x-go-name: Latitude
+      longitude:
+        type: string
+        x-go-name: Longitude
+      region:
+        type: string
+        x-go-name: Region
+      street:
+        type: string
+        x-go-name: Street
+    title: UpdateLocationRequest contains information about the location.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/courier/api/v1/courierapi
+host: localhost:80812
+info:
+  description: API specification of the courier service
+  title: Courier Service API V1.
+  version: 0.0.1
+paths:
+  /consumers/{courier_id}:
+    get:
+      operationId: getCourier
+      parameters:
+      - description: courier_id
+        in: path
+        name: courier_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: courier
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Returns "consumer"
+  /couriers:
+    get:
+      description: Returns get all couriers
+      operationId: getCourierList
+      parameters:
+      - description: courier list data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateConsumerRequest'
+      - description: courier data
+        in: query
+        name: available
+        required: true
+        schema:
+          type: bool
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: courier update
+          schema:
+            $ref: '#/definitions/CourierResponseList'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    post:
+      description: Returns created courier
+      operationId: insertNewCourier
+      parameters:
+      - description: courier data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/NewCourierRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created courier
+          schema:
+            $ref: '#/definitions/CourierResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /couriers-available/{courier_id}:
+    put:
+      description: Returns update courier
+      operationId: updateCourierAvailable
+      parameters:
+      - description: courier data
+        in: query
+        name: available
+        required: true
+        schema:
+          type: bool
+      - description: courier_id
+        in: path
+        name: courier_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: courier update
+          schema:
+            $ref: '#/definitions/CourierResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /couriers/{courier_id}:
+    delete:
+      operationId: DeleteAccount
+      parameters:
+      - description: courier_id
+        in: path
+        name: courier_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: courier deleted
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Returns "consumer deleted"
+  /couriers{courier_id}:
+    put:
+      description: Returns update courier
+      operationId: updateConsumer
+      parameters:
+      - description: courier data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateCourierRequest'
+      - description: courier_id
+        in: path
+        name: courier_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+  /locations/{courier_id}:
+    get:
+      description: Returns consumer location
+      operationId: getLocationList
+      parameters:
+      - description: city
+        in: query
+        name: city
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created location
+          schema:
+            $ref: '#/definitions/LocationResponse'
+        "400":
+          description: bad request
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    post:
+      description: Returns consumer location
+      operationId: insertNewConsumerLocation
+      parameters:
+      - description: courier_id
+        in: path
+        name: courier_id
+        required: true
+        schema:
+          type: integer
+      - description: location data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/NewLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created consumer
+          schema:
+            $ref: '#/definitions/LocationResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    put:
+      description: Returns consumer location
+      operationId: updateLocation
+      parameters:
+      - description: courier_id
+        in: path
+        name: courier_id
+        required: true
+        schema:
+          type: integer
+      - description: location data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: location updated
+          schema:
+            $ref: '#/definitions/LocationResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

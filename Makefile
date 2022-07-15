@@ -1,57 +1,57 @@
 docker-build-all:
 	docker network create delivery_app_net
 	make -C app/pkg/messagebroker docker-build
-	make -C accounting docker-build
-	make -C consumer docker-build
-	make -C courier docker-build
-	make -C delivery docker-build
-	make -C kitchen docker-build
-	make -C order docker-build
-	make -C restaurant docker-build
+	make -C app/services/accounting docker-build
+	make -C app/services/consumer docker-build
+	make -C app/services/courier docker-build
+	make -C app/services/delivery docker-build
+	make -C app/services/kitchen docker-build
+	make -C app/services/order docker-build
+	make -C app/services/restaurant docker-build
 
 docker-delete-all:
 	make -C app/pkg/messagebroker docker-delete
-	make -C accounting docker-delete
-	make -C consumer docker-delete
-	make -C courier docker-delete
-	make -C delivery docker-delete
-	make -C kitchen docker-delete
-	make -C order docker-delete
-	make -C restaurant docker-delete
+	make -C app/services/accounting docker-delete
+	make -C app/services/consumer docker-delete
+	make -C app/services/courier docker-delete
+	make -C app/services/delivery docker-delete
+	make -C app/services/kitchen docker-delete
+	make -C app/services/order docker-delete
+	make -C app/services/restaurant docker-delete
 	docker network rm delivery_app_net
 
 
 docker-rebuild-all:
 	make -C app/pkg/messagebroker docker-rebuild
-	make -C accounting docker-rebuild
-	make -C consumer docker-rebuild
-	make -C courier docker-rebuild
-	make -C delivery docker-rebuild
-	make -C kitchen docker-rebuild
-	make -C order docker-rebuild
-	make -C restaurant docker-rebuild
+	make -C app/services/accounting docker-rebuild
+	make -C app/services/consumer docker-rebuild
+	make -C app/services/courier docker-rebuild
+	make -C app/services/delivery docker-rebuild
+	make -C app/services/kitchen docker-rebuild
+	make -C app/services/order docker-rebuild
+	make -C app/services/restaurant docker-rebuild
 
 
 docker-start-all:
 	make -C app/pkg/messagebroker docker-start
-	make -C accounting docker-start
-	make -C consumer docker-start
-	make -C courier docker-start
-	make -C delivery docker-start
-	make -C kitchen docker-start
-	make -C order docker-start
-	make -C restaurant docker-start
+	make -C app/services/accounting docker-start
+	make -C app/services/consumer docker-start
+	make -C app/services/courier docker-start
+	make -C app/services/delivery docker-start
+	make -C app/services/kitchen docker-start
+	make -C app/services/order docker-start
+	make -C app/services/restaurant docker-start
 
 
 docker-stop-all:
 	make -C app/pkg/messagebroker docker-stop
-	make -C accounting docker-stop
-	make -C consumer docker-stop
-	make -C courier docker-stop
-	make -C delivery docker-stop
-	make -C kitchen docker-stop
-	make -C order docker-stop
-	make -C restaurant docker-stop
+	make -C app/services/accounting docker-stop
+	make -C app/services/consumer docker-stop
+	make -C app/services/courier docker-stop
+	make -C app/services/delivery docker-stop
+	make -C app/services/kitchen docker-stop
+	make -C app/services/order docker-stop
+	make -C app/services/restaurant docker-stop
 
 go-test-unit:
 	make -C app/services/accounting go-test-unit
