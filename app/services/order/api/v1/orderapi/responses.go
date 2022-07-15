@@ -1,4 +1,4 @@
-package communication
+package orderapi
 
 // ReturnOrderList contains information about all the requested orders.
 // swagger:model

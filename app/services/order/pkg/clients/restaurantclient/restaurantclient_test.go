@@ -6,10 +6,9 @@ import (
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
-
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/restaurantclient"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
 )
 
 func TestCheckIfAvailable(t *testing.T) {

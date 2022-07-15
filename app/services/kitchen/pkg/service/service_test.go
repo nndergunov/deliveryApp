@@ -3,8 +3,8 @@ package service_test
 import (
 	"testing"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/service"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi"
 )
 
 var mockOrderList = orderapi.ReturnOrderList{

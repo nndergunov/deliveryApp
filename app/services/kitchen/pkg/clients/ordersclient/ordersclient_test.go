@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/orderapi"
 	"github.com/nndergunov/deliveryApp/app/services/kitchen/pkg/clients/ordersclient"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi"
 )
 
 func TestGetIncompleteOrders(t *testing.T) {
