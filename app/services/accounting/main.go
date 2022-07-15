@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
 	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handler/accountinghandler"
@@ -74,11 +74,27 @@ func run(log *logger.Logger) error {
 	serverLogger := logger.NewLogger(os.Stdout, "server: ")
 	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
 
-	serviceServer := server.NewServer(serverConfig)
+	// serviceServer := server.NewServer(serverConfig)
 
 	serverErrors := make(chan interface{})
 
-	serviceServer.StartListening(serverErrors)
+	// serviceServer.StartListening(serverErrors)
+
+	// Where ORIGIN_ALLOWED is like `scheme://dns[:port]`, or `*` (insecure)
+	headersOK := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	originsOK := handlers.AllowedOrigins([]string{"*"})
+	methodsOK := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "DELETE", "PUT"})
+
+	// start server listen
+	// with error handling
+
+	go func() {
+		if err := http.ListenAndServe(serverConfig.Address, handlers.CORS(headersOK, originsOK, methodsOK)(handler)); err != nil {
+			log.Panicln(err)
+		}
+
+		close(serverErrors)
+	}()
 
 	<-serverErrors
 
