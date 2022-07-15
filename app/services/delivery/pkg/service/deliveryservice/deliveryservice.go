@@ -201,7 +201,7 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 		return nil, systemErr
 	}
 
-	if courierLocationList == nil {
+	if courierLocationList == nil || len(courierLocationList.LocationResponseList) == 0 {
 		return nil, errors.New("no courier available")
 	}
 	courierLocation := courierLocationList.LocationResponseList[0]
