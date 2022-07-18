@@ -6,4 +6,5 @@ server:
   readerHeaderTime: "5s"
 
 orderService:
-  URL: "http://localhost:8085"
+  URL: "http://order-service:8085"
+  # URL: "http://localhost:8085"

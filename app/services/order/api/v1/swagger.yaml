@@ -21,7 +21,7 @@ definitions:
     - OrderItems
     title: OrderData contains information about created order.
     type: object
-    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
   OrderFilters:
     properties:
       ExcludeStatuses:
@@ -37,7 +37,7 @@ definitions:
         type: array
     title: OrderFilters struct lets user determine which orders they want to see.
     type: object
-    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
   OrderStatusData:
     properties:
       Status:
@@ -46,7 +46,7 @@ definitions:
     - Status
     title: OrderStatusData is used by admins to update current order status.
     type: object
-    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
   ReturnOrder:
     properties:
       FromUserID:
@@ -67,7 +67,7 @@ definitions:
         type: string
     title: ReturnOrder contains order information.
     type: object
-    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
   ReturnOrderList:
     properties:
       Orders:
@@ -77,7 +77,7 @@ definitions:
         type: array
     title: ReturnOrderList contains information about all the requested orders.
     type: object
-    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/communication
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
 host: localhost:8085
 info:
   description: API specification of the order service
@@ -89,6 +89,10 @@ paths:
       description: Updates status of the specified order
       operationId: updateOrderStatus
       parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
       - description: order status data
         in: body
         name: Body
@@ -138,6 +142,11 @@ paths:
     get:
       description: Returns specified order data
       operationId: returnOrder
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -149,6 +158,10 @@ paths:
       description: Updates data of the specified order
       operationId: updateOrder
       parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
       - description: order data
         in: body
         name: Body
