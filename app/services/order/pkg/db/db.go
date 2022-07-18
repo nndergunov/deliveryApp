@@ -1,3 +1,4 @@
+// Package db contains the database layer of the application.
 package db
 
 import (
@@ -13,10 +14,12 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
+// Database is used to make calls to the service db.
 type Database struct {
 	db *sql.DB
 }
 
+// NewDatabase returns a new instance of the Database connected to the URL address.
 func NewDatabase(dbURL string) (*Database, error) {
 	database, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -28,6 +31,7 @@ func NewDatabase(dbURL string) (*Database, error) {
 	}, nil
 }
 
+// NewDatabaseFromSource returns a new instance of the Database using the driver directly.
 func NewDatabaseFromSource(db *sql.DB) *Database {
 	return &Database{db: db}
 }
@@ -51,6 +55,7 @@ func (d Database) getOrderByID(orderID int) (*models.Order, error) {
 	return dbOrder, nil
 }
 
+// GetAllOrders returns all the orders from database that satisfy SearchParameters.
 func (d Database) GetAllOrders(params *domain.SearchParameters) ([]domain.Order, error) {
 	var mods []qm.QueryMod
 
@@ -103,6 +108,7 @@ func (d Database) GetAllOrders(params *domain.SearchParameters) ([]domain.Order,
 	return orders, nil
 }
 
+// InsertOrder creates new order in the database.
 func (d Database) InsertOrder(order domain.Order) (int, error) {
 	order.Status.Status = "initialOrder created"
 
@@ -135,6 +141,7 @@ func (d Database) InsertOrder(order domain.Order) (int, error) {
 	return orderID, nil
 }
 
+// GetOrder returns order with the specified ID from the database.
 func (d Database) GetOrder(orderID int) (*domain.Order, error) {
 	dbOrder, err := d.getOrderByID(orderID)
 	if err != nil {
@@ -153,6 +160,7 @@ func (d Database) GetOrder(orderID int) (*domain.Order, error) {
 	}, nil
 }
 
+// UpdateOrder changes data in the order entry in the database.
 func (d Database) UpdateOrder(order domain.Order) error {
 	dbOrder, err := d.getOrderByID(order.OrderID)
 	if err != nil {
@@ -171,6 +179,7 @@ func (d Database) UpdateOrder(order domain.Order) error {
 	return nil
 }
 
+// DeleteOrder removes order entry from the database.
 func (d Database) DeleteOrder(orderID int) error {
 	dbOrder, err := d.getOrderByID(orderID)
 	if err != nil {
@@ -185,6 +194,7 @@ func (d Database) DeleteOrder(orderID int) error {
 	return nil
 }
 
+// UpdateOrderStatus changes the status in the order entry in the database.
 func (d Database) UpdateOrderStatus(orderID int, status string) error {
 	dbOrder, err := d.getOrderByID(orderID)
 	if err != nil {

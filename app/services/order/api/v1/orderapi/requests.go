@@ -1,3 +1,4 @@
+// Package orderapi is used to store communication information for order service.
 package orderapi
 
 // OrderFilters struct lets user determine which orders they want to see.

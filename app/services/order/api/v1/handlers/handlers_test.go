@@ -45,14 +45,14 @@ func TestReturnAllOrders(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := &mockservice.App{}
+			var repo mockservice.App
 
 			repo.On("ReturnOrderList", mock.AnythingOfType("domain.SearchParameters")).
 				Return(test.defaultOrders, nil).
 				Once()
 
 			handler := handlers.NewEndpointHandler(
-				repo,
+				&repo,
 				logger.NewLogger(os.Stdout, t.Name()),
 			)
 
@@ -85,9 +85,14 @@ func TestCreateOrderEndpoint(t *testing.T) {
 		{
 			"Simple create order",
 			domain.Order{
+				OrderID:      0,
 				FromUserID:   0,
 				RestaurantID: 0,
 				OrderItems:   []int{1, 2, 3},
+				Status: domain.OrderStatus{
+					OrderID: 0,
+					Status:  "",
+				},
 			},
 		},
 	}
@@ -98,13 +103,13 @@ func TestCreateOrderEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := &mockservice.App{}
+			var repo mockservice.App
 
 			repo.On("CreateOrder", mock.AnythingOfType("domain.Order"), mock.AnythingOfType("int")).
 				Return(&test.orderData, nil).
 				Once()
 
-			handler := handlers.NewEndpointHandler(repo, logger.NewLogger(os.Stdout, test.name))
+			handler := handlers.NewEndpointHandler(&repo, logger.NewLogger(os.Stdout, test.name))
 
 			reqBody, err := v1.Encode(test.orderData)
 			if err != nil {
@@ -150,9 +155,14 @@ func TestReturnOrderEndpoint(t *testing.T) {
 		{
 			name: "Simple return order",
 			orderData: domain.Order{
+				OrderID:      0,
 				FromUserID:   0,
 				RestaurantID: 0,
 				OrderItems:   []int{1, 2, 3},
+				Status: domain.OrderStatus{
+					OrderID: 0,
+					Status:  "",
+				},
 			},
 		},
 	}
@@ -163,13 +173,13 @@ func TestReturnOrderEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := &mockservice.App{}
+			var repo mockservice.App
 
 			repo.On("ReturnOrder", mock.AnythingOfType("int")).
 				Return(&test.orderData, nil).
 				Once()
 
-			handler := handlers.NewEndpointHandler(repo, logger.NewLogger(os.Stdout, t.Name()))
+			handler := handlers.NewEndpointHandler(&repo, logger.NewLogger(os.Stdout, t.Name()))
 
 			resp := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodGet, "/v1/orders/0", nil)
@@ -209,9 +219,14 @@ func TestUpdateOrderEndpoint(t *testing.T) {
 		{
 			"Simple update order",
 			domain.Order{
+				OrderID:      0,
 				FromUserID:   0,
 				RestaurantID: 0,
 				OrderItems:   []int{1, 2, 3},
+				Status: domain.OrderStatus{
+					OrderID: 0,
+					Status:  "",
+				},
 			},
 		},
 	}
@@ -222,13 +237,13 @@ func TestUpdateOrderEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := &mockservice.App{}
+			var repo mockservice.App
 
 			repo.On("UpdateOrder", mock.AnythingOfType("domain.Order")).
 				Return(&test.orderData, nil).
 				Once()
 
-			handler := handlers.NewEndpointHandler(repo, logger.NewLogger(os.Stdout, test.name))
+			handler := handlers.NewEndpointHandler(&repo, logger.NewLogger(os.Stdout, test.name))
 
 			reqBody, err := v1.Encode(test.orderData)
 			if err != nil {
@@ -273,7 +288,8 @@ func TestUpdateOrderStatusEndpoint(t *testing.T) {
 		{
 			"Simple update order status",
 			domain.OrderStatus{
-				Status: "incomplete",
+				OrderID: 0,
+				Status:  "incomplete",
 			},
 		},
 	}
@@ -284,13 +300,13 @@ func TestUpdateOrderStatusEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := &mockservice.App{}
+			var repo mockservice.App
 
 			repo.On("UpdateStatus", mock.AnythingOfType("domain.OrderStatus")).
 				Return(&test.newStatus, nil).
 				Once()
 
-			handler := handlers.NewEndpointHandler(repo, logger.NewLogger(os.Stdout, test.name))
+			handler := handlers.NewEndpointHandler(&repo, logger.NewLogger(os.Stdout, test.name))
 
 			reqBody, err := v1.Encode(test.newStatus)
 			if err != nil {

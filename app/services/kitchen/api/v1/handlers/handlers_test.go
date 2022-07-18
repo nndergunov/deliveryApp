@@ -37,7 +37,7 @@ func TestReturnTasksEndpoint(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := mockservice.AppService{}
+			var repo mockservice.AppService
 
 			repo.On("GetTasks", mock.AnythingOfType("int")).Return(test.tasks, nil).Once()
 

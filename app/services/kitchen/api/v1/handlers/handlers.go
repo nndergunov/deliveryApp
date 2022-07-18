@@ -1,3 +1,4 @@
+// Package handlers is used as an api endpoint layer
 package handlers
 
 import (

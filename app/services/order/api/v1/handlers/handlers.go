@@ -1,3 +1,4 @@
+// Package handlers contains endpoint api layer of the application.
 package handlers
 
 import (
@@ -103,7 +104,6 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 
 	searchParams := new(orderapi.OrderFilters)
 
-	// if request body is empty we do not need to parse searchParams as it would result in err
 	if len(req) != 0 {
 		err = v1.Decode(req, searchParams)
 		if err != nil {
@@ -113,7 +113,7 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 		}
 
 		parameters = parseParameters(*searchParams)
-	}
+	} // if request body is empty we do not need to parse searchParams as it would result in err
 
 	orders, err := e.serviceInstance.ReturnOrderList(parameters)
 	if err != nil {

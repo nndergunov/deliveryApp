@@ -119,7 +119,10 @@ func TestCalculateOrderPrice(t *testing.T) {
 				FromUserID:   0,
 				RestaurantID: 0,
 				OrderItems:   []int{1, 2, 3, 3},
-				Status:       domain.OrderStatus{},
+				Status: domain.OrderStatus{
+					OrderID: 0,
+					Status:  "",
+				},
 			},
 			expectedPrice: 13,
 		},
