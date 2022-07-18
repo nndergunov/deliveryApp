@@ -1,0 +1,131 @@
+basePath: /v1
+consumes:
+- application/json
+definitions:
+  AssignOrderRequest:
+    properties:
+      from_user_id:
+        format: int64
+        type: integer
+        x-go-name: FromUserID
+      restaurant_id:
+        format: int64
+        type: integer
+        x-go-name: RestaurantID
+    required:
+    - from_user_id
+    - restaurant_id
+    title: AssignOrderRequest contains information about assign order.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/deliveryapi
+  AssignOrderResponse:
+    properties:
+      courier_id:
+        format: int64
+        type: integer
+        x-go-name: CourierID
+      order_id:
+        format: int64
+        type: integer
+        x-go-name: OrderID
+    title: AssignOrderResponse contains information about assign order.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/deliveryapi
+  EstimateDeliveryRequest:
+    properties:
+      consumer_id:
+        format: int64
+        type: integer
+        x-go-name: ConsumerID
+      restaurant_id:
+        format: int64
+        type: integer
+        x-go-name: RestaurantID
+    required:
+    - consumer_id
+    - restaurant_id
+    title: EstimateDeliveryRequest contains information about the estimate values.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/deliveryapi
+  EstimateDeliveryResponse:
+    properties:
+      cost:
+        format: double
+        type: number
+        x-go-name: Cost
+      time:
+        type: string
+        x-go-name: Time
+    title: EstimateDeliveryResponse contains information about the estimate values.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/deliveryapi
+host: localhost:8083
+info:
+  description: API specification of the delivery service
+  title: Delivery Service API V1.
+  version: 0.0.1
+paths:
+  /estimate:
+    get:
+      description: Returns estimate values
+      operationId: getEstimateDeliveryValues
+      parameters:
+      - description: consumer_id
+        in: query
+        name: consumer_id
+        required: true
+        schema:
+          type: int
+      - description: restaurant_id
+        in: query
+        name: restaurant_id
+        required: true
+        schema:
+          type: int
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: estimate values response
+          schema:
+            $ref: '#/definitions/EstimateDeliveryResponse'
+        "400":
+          description: bad request
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /orders/{orderIDKey}/assign:
+    post:
+      description: Returns assigned order
+      operationId: assignOrder
+      parameters:
+      - description: AssignOrderRequest
+        in: path
+        name: orderIDKey
+        required: true
+        schema:
+          type: int
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/AssignOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: assigned order response
+          schema:
+            $ref: '#/definitions/AssignOrderResponse'
+        "400":
+          description: bad request
+        "500":
+          description: internal server error
+          schema:
+            type: string
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

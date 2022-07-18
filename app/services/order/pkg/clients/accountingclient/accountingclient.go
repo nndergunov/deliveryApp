@@ -1,3 +1,4 @@
+// Package accountingclient is responsible for communication with accounting service.
 package accountingclient
 
 import (
@@ -9,14 +10,17 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi"
 )
 
+// AccountingClient communicates with accounting service.
 type AccountingClient struct {
 	accountingURL string
 }
 
+// NewAccountingClient returns new AccountingClient instance.
 func NewAccountingClient(url string) *AccountingClient {
 	return &AccountingClient{accountingURL: url}
 }
 
+// CreateTransaction sends transaction data to the accounting service.
 func (a AccountingClient) CreateTransaction(accountID, restaurantID int, orderPrice float64) (bool, error) {
 	transactionDetails, err := v1.Encode(accountingapi.TransactionRequest{
 		FromAccountID: accountID,

@@ -1,3 +1,5 @@
+// Package ordersclient implements client that is used to send requests to the
+// order service.
 package ordersclient
 
 import (
@@ -9,14 +11,17 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi"
 )
 
+// OrdersClient is used to comunicate with the order service.
 type OrdersClient struct {
 	orderServiceBaseURL string
 }
 
+// NewOrdersClient creates new OrdersClient instance.
 func NewOrdersClient(orderServiceBaseURL string) *OrdersClient {
 	return &OrdersClient{orderServiceBaseURL: orderServiceBaseURL}
 }
 
+// GetIncompleteOrders returns all orders that are not marked as complete.
 func (c OrdersClient) GetIncompleteOrders(id int) (*orderapi.ReturnOrderList, error) {
 	filters := orderapi.OrderFilters{
 		FromRestaurantID: &id,

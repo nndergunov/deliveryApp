@@ -33,7 +33,6 @@ type MenuItemData struct {
 	Name string
 	// required: true
 	Price float64
-	// Photo []byte
 	// required: true
 	Course string // first/main/salad etc.
 }

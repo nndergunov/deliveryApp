@@ -94,6 +94,33 @@ func (a handler) StatusHandler(responseWriter http.ResponseWriter, _ *http.Reque
 	a.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation POST /accounts InsertNewAccount
+//
+// Returns created account
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: account data
+//   schema:
+//     $ref: "#/definitions/NewAccountRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: created account
+//     schema:
+//       $ref: "#/definitions/AccountResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (a handler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
 	var newAccountRequest accountingapi.NewAccountRequest
 
@@ -131,6 +158,33 @@ func (a handler) InsertNewAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation GET /accounts/{account_id} GetAccount
+//
+// Returns account
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: account_id
+//   in: path
+//   description: account_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: created account
+//     schema:
+//       $ref: "#/definitions/AccountResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (a handler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
@@ -172,6 +226,32 @@ func (a handler) GetAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation DELETE /accounts/{account_id} DeleteAccount
+//
+// Returns account
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: account_id
+//   in: path
+//   description: account_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: account deleted
+//     type: string
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (a handler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[accountIDKey]
@@ -205,6 +285,33 @@ func (a handler) DeleteAccount(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /transactions InsertTransaction
+//
+// Returns account
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: transaction data
+//   schema:
+//     $ref: "#/definitions/NewAccountRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: successfully transaction
+//     schema:
+//       $ref: "#/definitions/TransactionResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (a handler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
 	var transactionRequest accountingapi.TransactionRequest
 
@@ -243,6 +350,37 @@ func (a handler) InsertTransaction(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation GET /transactions GetAccountList
+//
+// Returns account
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - type: string
+//   description: user_id
+//   name: user_id
+//   in: query
+//   required: true
+// - type: string
+//   description: user_id
+//   name: user_id
+//   in: query
+//   required: true
+// responses:
+//   '200':
+//     description:   account list data
+//     schema:
+//       $ref: "#/definitions/AccountListResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (a handler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
 	searchParam := domain.SearchParam{}
 
@@ -290,6 +428,33 @@ func (a handler) GetAccountList(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation DELETE /transactions/{transaction_id} DeleteTransaction
+//
+// Returns "transaction deleted"
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: account_id
+//   in: path
+//   description: account_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: "transaction deleted"
+//     schema:
+//       type: string
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (a handler) DeleteTransaction(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[trIDKey]

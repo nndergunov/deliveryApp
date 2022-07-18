@@ -32,5 +32,4 @@ type ReturnMenuItem struct {
 	Name   string
 	Price  float64
 	Course string
-	// Photo []byte
 }

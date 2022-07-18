@@ -1,3 +1,4 @@
+// Package handlers contains endpoint api layer of the application.
 package handlers
 
 import (
@@ -14,6 +15,10 @@ import (
 )
 
 const orderID = "orderID"
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
 
 type endpointHandler struct {
 	serviceInstance service.AppService
@@ -88,6 +93,9 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 	//     description: order list response
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrderList"
+
+	enableCors(&responseWriter)
+
 	parameters := domain.SearchParameters{
 		FromRestaurantID: nil,
 		Statuses:         nil,
@@ -103,7 +111,6 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 
 	searchParams := new(orderapi.OrderFilters)
 
-	// if request body is empty we do not need to parse searchParams as it would result in err
 	if len(req) != 0 {
 		err = v1.Decode(req, searchParams)
 		if err != nil {
@@ -113,7 +120,7 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 		}
 
 		parameters = parseParameters(*searchParams)
-	}
+	} // if request body is empty we do not need to parse searchParams as it would result in err
 
 	orders, err := e.serviceInstance.ReturnOrderList(parameters)
 	if err != nil {
@@ -152,6 +159,9 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 	//     description: created order data
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrder"
+
+	enableCors(&responseWriter)
+
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -193,6 +203,11 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 	// Returns specified order data
 	//
 	// ---
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// produces:
 	// - application/json
 	// responses:
@@ -200,6 +215,9 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 	//     description: requested order data
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrder"
+
+	enableCors(&responseWriter)
+
 	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -233,6 +251,10 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	// produces:
 	// - application/json
 	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// - name: Body
 	//   in: body
 	//   description: order data
@@ -244,6 +266,9 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	//     description: updated order data
 	//     schema:
 	//       $ref: "#/definitions/ReturnOrder"
+
+	enableCors(&responseWriter)
+
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -297,6 +322,10 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	// produces:
 	// - application/json
 	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// - name: Body
 	//   in: body
 	//   description: order status data
@@ -305,6 +334,9 @@ func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, 
 	//   required: true
 	// responses:
 	//   '200':
+
+	enableCors(&responseWriter)
+
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)

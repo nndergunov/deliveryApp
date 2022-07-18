@@ -1,3 +1,4 @@
+// Package handlers is used as an api endpoint layer
 package handlers
 
 import (
@@ -11,6 +12,10 @@ import (
 )
 
 const kitchenIDKey = "kitchenID"
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
 
 type endpointHandler struct {
 	service  service.AppService
@@ -74,6 +79,11 @@ func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request
 	// Returns tasks for the specified restaurant
 	//
 	// ---
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: integer
+	//   required: true
 	// produces:
 	// - application/json
 	// responses:
@@ -81,6 +91,9 @@ func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request
 	//     description: requested data
 	//     schema:
 	//       $ref: "#/definitions/Tasks"
+
+	enableCors(&responseWriter)
+
 	kitchenID, err := getIDFromEndpoint(kitchenIDKey, request)
 	if err != nil {
 		e.log.Println(err)

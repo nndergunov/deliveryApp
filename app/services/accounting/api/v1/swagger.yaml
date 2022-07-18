@@ -1,0 +1,274 @@
+basePath: /v1
+consumes:
+- application/json
+definitions:
+  AccountListResponse:
+    properties:
+      AccountList:
+        items:
+          $ref: '#/definitions/AccountResponse'
+        type: array
+    title: AccountListResponse contains information about the accounts.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi
+  AccountResponse:
+    properties:
+      balance:
+        format: double
+        type: number
+        x-go-name: Balance
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+      user_type:
+        type: string
+        x-go-name: UserType
+    title: AccountResponse contains information about the account.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi
+  NewAccountRequest:
+    properties:
+      user_id:
+        format: int64
+        type: integer
+        x-go-name: UserID
+      user_type:
+        type: string
+        x-go-name: UserType
+    required:
+    - user_id
+    - user_type
+    title: NewAccountRequest contains information about the account.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi
+  TransactionRequest:
+    properties:
+      amount:
+        format: double
+        type: number
+        x-go-name: Amount
+      from_account_id:
+        format: int64
+        type: integer
+        x-go-name: FromAccountID
+      to_account_id:
+        format: int64
+        type: integer
+        x-go-name: ToAccountID
+    required:
+    - amount
+    title: TransactionRequest contains information about the transaction.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi
+  TransactionResponse:
+    properties:
+      amount:
+        format: double
+        type: number
+        x-go-name: Amount
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      from_account_id:
+        format: int64
+        type: integer
+        x-go-name: FromAccountID
+      id:
+        format: int64
+        type: integer
+        x-go-name: ID
+      to_account_id:
+        format: int64
+        type: integer
+        x-go-name: ToAccountID
+      updatedAt:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      valid:
+        type: boolean
+        x-go-name: Valid
+    title: TransactionResponse contains information about the transaction.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi
+host: localhost:8080
+info:
+  description: API specification of the accounting service
+  title: Accounting Service API V1.
+  version: 0.0.1
+paths:
+  /accounts:
+    post:
+      description: Returns created account
+      operationId: InsertNewAccount
+      parameters:
+      - description: account data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/NewAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created account
+          schema:
+            $ref: '#/definitions/AccountResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /accounts/{account_id}:
+    delete:
+      description: Returns account
+      operationId: DeleteAccount
+      parameters:
+      - description: account_id
+        in: path
+        name: account_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account deleted
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    get:
+      description: Returns account
+      operationId: GetAccount
+      parameters:
+      - description: account_id
+        in: path
+        name: account_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: created account
+          schema:
+            $ref: '#/definitions/AccountResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /transactions:
+    get:
+      description: Returns account
+      operationId: GetAccountList
+      parameters:
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: user_id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: account list data
+          schema:
+            $ref: '#/definitions/AccountListResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+    post:
+      description: Returns account
+      operationId: InsertTransaction
+      parameters:
+      - description: transaction data
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/NewAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successfully transaction
+          schema:
+            $ref: '#/definitions/TransactionResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+  /transactions/{transaction_id}:
+    delete:
+      operationId: DeleteTransaction
+      parameters:
+      - description: account_id
+        in: path
+        name: account_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: transaction deleted
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Returns "transaction deleted"
+produces:
+- application/json
+schemes:
+- http
+swagger: "2.0"

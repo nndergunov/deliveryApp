@@ -749,10 +749,10 @@ func TestGetLocationListEndpoint(t *testing.T) {
 		out  courierapi.LocationResponseList
 	}{
 		{
-			"get location test",
-			"testCity",
-			courierapi.LocationResponseList{
-				[]courierapi.LocationResponse{
+			name: "get location test",
+			in:   "testCity",
+			out: courierapi.LocationResponseList{
+				LocationResponseList: []courierapi.LocationResponse{
 					{
 						UserID:     1,
 						Latitude:   "u0123456789",

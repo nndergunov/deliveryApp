@@ -1,3 +1,4 @@
+// Package service implements order service logic.
 package service
 
 import (
@@ -11,6 +12,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/domain"
 )
 
+// AppService interface shows signature of the Service layer.
 type AppService interface {
 	ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error)
 	CreateOrder(order domain.Order, accountID int) (*domain.Order, error)
@@ -19,6 +21,7 @@ type AppService interface {
 	UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error)
 }
 
+// Service is a main service logic.
 type Service struct {
 	storage          Storage
 	notificator      publisher.Publisher
@@ -26,6 +29,7 @@ type Service struct {
 	restaurantClient RestaurantClient
 }
 
+// NewService returns new Service instance.
 func NewService(storage Storage, notificator publisher.Publisher,
 	accountingClient AccountingClient, restaurantClient RestaurantClient,
 ) *Service {
@@ -37,6 +41,7 @@ func NewService(storage Storage, notificator publisher.Publisher,
 	}
 }
 
+// ReturnOrderList returns list of orders with specified parameters.
 func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order, error) {
 	orders, err := s.storage.GetAllOrders(&params)
 	if err != nil {
@@ -46,6 +51,7 @@ func (s Service) ReturnOrderList(params domain.SearchParameters) ([]domain.Order
 	return orders, nil
 }
 
+// CreateOrder adds order to the database and returns it.
 func (s Service) CreateOrder(order domain.Order, accountID int) (*domain.Order, error) {
 	restaurantOpen, err := s.restaurantClient.CheckIfAvailable(order.RestaurantID)
 	if err != nil {
@@ -87,6 +93,7 @@ func (s Service) CreateOrder(order domain.Order, accountID int) (*domain.Order, 
 	return &order, nil
 }
 
+// ReturnOrder gives order with the specified ID back.
 func (s Service) ReturnOrder(orderID int) (*domain.Order, error) {
 	order, err := s.storage.GetOrder(orderID)
 	if err != nil {
@@ -96,6 +103,7 @@ func (s Service) ReturnOrder(orderID int) (*domain.Order, error) {
 	return order, nil
 }
 
+// UpdateOrder modificates order information.
 func (s Service) UpdateOrder(order domain.Order) (*domain.Order, error) {
 	err := s.storage.UpdateOrder(order)
 	if err != nil {
@@ -112,6 +120,7 @@ func (s Service) UpdateOrder(order domain.Order) (*domain.Order, error) {
 	return &order, nil
 }
 
+// UpdateStatus cjanges the status of the order.
 func (s Service) UpdateStatus(status domain.OrderStatus) (*domain.OrderStatus, error) {
 	err := s.storage.UpdateOrderStatus(status.OrderID, status.Status)
 	if err != nil {

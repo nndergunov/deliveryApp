@@ -91,6 +91,33 @@ func (c *courierHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	c.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation POST /couriers insertNewCourier
+//
+// Returns created courier
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: courier data
+//   schema:
+//     $ref: "#/definitions/NewCourierRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: created courier
+//     schema:
+//       $ref: "#/definitions/CourierResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Request) {
 	var courierRequest courierapi.NewCourierRequest
 
@@ -127,6 +154,32 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 	}
 }
 
+// swagger:operation DELETE /couriers/{courier_id} DeleteAccount
+//
+// Returns "courier deleted"
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: courier deleted
+//     type: string
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
@@ -158,6 +211,40 @@ func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// swagger:operation PUT /couriers{courier_id} updateCourier
+//
+// Returns update courier
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: courier data
+//   schema:
+//     $ref: "#/definitions/UpdateCourierRequest"
+//   required: true
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+
+// responses:
+//   '200':
+//     description: courier update
+//     schema:
+//       $ref: "#/definitions/CourierResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
@@ -203,6 +290,39 @@ func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// swagger:operation PUT /couriers-available/{courier_id} updateCourierAvailable
+//
+// Returns update courier
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: available
+//   in: query
+//   description: courier data
+//   schema:
+//     type: bool
+//   required: true
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: courier update
+//     schema:
+//       $ref: "#/definitions/CourierResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
@@ -245,6 +365,39 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 	}
 }
 
+// swagger:operation GET /couriers getCourierList
+//
+// Returns get all couriers
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: courier list data
+//   schema:
+//     $ref: "#/definitions/UpdateCourierRequest"
+//   required: true
+// - name: available
+//   in: query
+//   description: courier data
+//   schema:
+//     type: bool
+//   required: true
+// responses:
+//   '200':
+//     description: courier update
+//     schema:
+//       $ref: "#/definitions/CourierResponseList"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request) {
 	param := domain.SearchParam{}
 
@@ -282,6 +435,32 @@ func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request)
 	}
 }
 
+// swagger:operation GET /couriers/{courier_id} getCourier
+//
+// Returns "courier"
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: courier
+//     type: string
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
@@ -315,6 +494,39 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /locations/{courier_id} insertNewCourierLocation
+//
+// Returns courier location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: location data
+//   schema:
+//     $ref: "#/definitions/NewLocationRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: created courier
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	courierID, ok := vars[courierIDKey]
@@ -360,6 +572,39 @@ func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Reque
 	}
 }
 
+// swagger:operation PUT /locations/{courier_id} updateLocation
+//
+// Returns courier location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: location data
+//   schema:
+//     $ref: "#/definitions/UpdateLocationRequest"
+//   required: true
+// responses:
+//   '200':
+//     description: location updated
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
+//       type: string
 func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	courierID, ok := vars[courierIDKey]
@@ -405,6 +650,32 @@ func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request)
 	}
 }
 
+// swagger:operation GET /locations/{courier_id} getLocation
+//
+// Returns courier location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: courier_id
+//   in: path
+//   description: courier_id
+//   schema:
+//     type: integer
+//   required: true
+// responses:
+//   '200':
+//     description: created location
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
 func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, ok := vars[courierIDKey]
@@ -438,6 +709,32 @@ func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation GET /locations/{courier_id} getLocationList
+//
+// Returns courier location
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: city
+//   in: query
+//   description: city
+//   schema:
+//     type: string
+//   required: false
+// responses:
+//   '200':
+//     description: created location
+//     schema:
+//       $ref: "#/definitions/LocationResponse"
+//   '500':
+//     description: internal server error
+//     schema:
+//       type: string
+//   '400':
+//     description: bad request
+//     schema:
 func (c *courierHandler) getLocationList(rw http.ResponseWriter, r *http.Request) {
 	param := domain.SearchParam{}
 	queryParams := r.URL.Query()
