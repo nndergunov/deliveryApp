@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package domain;
+
+message Account {
+  int64  ID = 1;
+  string UserType = 2;
+  int32 Balance = 3;
+}
