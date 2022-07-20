@@ -16,10 +16,6 @@ import (
 
 const orderID = "orderID"
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
-
 type endpointHandler struct {
 	serviceInstance service.AppService
 	serveMux        *mux.Router
@@ -73,29 +69,26 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation GET /orders returnAllOrders
+//
+// Returns all orders from the order service
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: order search filters
+//   schema:
+//     $ref: "#/definitions/OrderFilters"
+//   required: false
+// responses:
+//   '200':
+//     description: order list response
+//     schema:
+//       $ref: "#/definitions/ReturnOrderList"
 func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, request *http.Request) {
-	// swagger:operation GET /orders returnAllOrders
-	//
-	// Returns all orders from the order service
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: Body
-	//   in: body
-	//   description: order search filters
-	//   schema:
-	//     $ref: "#/definitions/OrderFilters"
-	//   required: false
-	// responses:
-	//   '200':
-	//     description: order list response
-	//     schema:
-	//       $ref: "#/definitions/ReturnOrderList"
-
-	enableCors(&responseWriter)
-
 	parameters := domain.SearchParameters{
 		FromRestaurantID: nil,
 		Statuses:         nil,
@@ -139,29 +132,26 @@ func (e endpointHandler) returnAllOrders(responseWriter http.ResponseWriter, req
 	}
 }
 
+// swagger:operation POST /orders createOrder
+//
+// Creates new order in the order service
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: order data
+//   schema:
+//     $ref: "#/definitions/OrderData"
+//   required: true
+// responses:
+//   '200':
+//     description: created order data
+//     schema:
+//       $ref: "#/definitions/ReturnOrder"
 func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request *http.Request) {
-	// swagger:operation POST /orders createOrder
-	//
-	// Creates new order in the order service
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: Body
-	//   in: body
-	//   description: order data
-	//   schema:
-	//     $ref: "#/definitions/OrderData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: created order data
-	//     schema:
-	//       $ref: "#/definitions/ReturnOrder"
-
-	enableCors(&responseWriter)
-
 	req, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -197,27 +187,24 @@ func (e endpointHandler) createOrder(responseWriter http.ResponseWriter, request
 	}
 }
 
+// swagger:operation GET /orders/{id} returnOrder
+//
+// Returns specified order data
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: requested order data
+//     schema:
+//       $ref: "#/definitions/ReturnOrder"
 func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request *http.Request) {
-	// swagger:operation GET /orders/{id} returnOrder
-	//
-	// Returns specified order data
-	//
-	// ---
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// produces:
-	// - application/json
-	// responses:
-	//   '200':
-	//     description: requested order data
-	//     schema:
-	//       $ref: "#/definitions/ReturnOrder"
-
-	enableCors(&responseWriter)
-
 	returnOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -242,33 +229,30 @@ func (e endpointHandler) returnOrder(responseWriter http.ResponseWriter, request
 	}
 }
 
+// swagger:operation PUT /orders/{id} updateOrder
+//
+// Updates data of the specified order
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: order data
+//   schema:
+//     $ref: "#/definitions/OrderData"
+//   required: true
+// responses:
+//   '200':
+//     description: updated order data
+//     schema:
+//       $ref: "#/definitions/ReturnOrder"
 func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request *http.Request) {
-	// swagger:operation PUT /orders/{id} updateOrder
-	//
-	// Updates data of the specified order
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: Body
-	//   in: body
-	//   description: order data
-	//   schema:
-	//     $ref: "#/definitions/OrderData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: updated order data
-	//     schema:
-	//       $ref: "#/definitions/ReturnOrder"
-
-	enableCors(&responseWriter)
-
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
@@ -313,30 +297,27 @@ func (e endpointHandler) updateOrder(responseWriter http.ResponseWriter, request
 	}
 }
 
+// swagger:operation PUT /admin/orders/{id}/status updateOrderStatus
+//
+// Updates status of the specified order
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: order status data
+//   schema:
+//     $ref: "#/definitions/OrderStatusData"
+//   required: true
+// responses:
+//   '200':
 func (e *endpointHandler) updateOrderStatus(responseWriter http.ResponseWriter, request *http.Request) {
-	// swagger:operation PUT /admin/orders/{id}/status updateOrderStatus
-	//
-	// Updates status of the specified order
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: Body
-	//   in: body
-	//   description: order status data
-	//   schema:
-	//     $ref: "#/definitions/OrderStatusData"
-	//   required: true
-	// responses:
-	//   '200':
-
-	enableCors(&responseWriter)
-
 	updateOrderID, err := getIDFromEndpoint(orderID, request)
 	if err != nil {
 		e.handleError(err, responseWriter)
