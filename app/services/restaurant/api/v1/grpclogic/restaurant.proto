@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option go_package = "/pb";
+
+package grpc;
+
+service RestaurantService {
+    rpc GetRestaurant(Request) returns (RestaurantResponse) {}
+    rpc GetMenu(Request) returns (MenuResponse) {}
+}
+
+message Request {
+    int32 ID = 1;
+}
+
+message RestaurantResponse {
+    int32 ID = 1;
+    string Name = 2;
+    bool AcceptingOrders = 3;
+    string City = 4;
+    string Address = 5;
+    float Longitude = 6;
+    float Latitude = 7;
+}
+
+message MenuResponse {
+    int32 RestaurantID = 1;
+    repeated ReturnMenuItem MenuItems = 2;
+}
+
+message ReturnMenuItem {
+    int32 ID = 1;
+    string Name = 2;
+    float Price = 3;
+    string Course = 4;
+}
