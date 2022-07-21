@@ -9,14 +9,14 @@ grpcServer:
   address: ":445"
 
 services:
-  accounting: http://localhost:8080 # local run
-  restaurant: http://localhost:8086 # local run
-  # accounting: http://accounting-service:8080 # docker run
-  # restaurant: http://restaurant-service:8086 # docker run
+  # accounting: http://localhost:8080 # local run
+  # restaurant: http://localhost:8086 # local run
+  accounting: http://accounting-service:8080 # docker run
+  restaurant: http://restaurant-service:8086 # docker run
 
 database:
-  host: localhost # local run
-  # host: "host.docker.internal" # docker run
+  # host: localhost # local run
+  host: "host.docker.internal" # docker run
   port: 5435
   user: "order_db"
   password: "order_db_pass"
@@ -24,5 +24,5 @@ database:
   sslmode: "disable"
 
 publisher:
-  url: amqp://guest:guest@localhost:5672 # local run
-  # url: amqp://guest:guest@host.docker.internal:5672 # docker run
+  # url: amqp://guest:guest@localhost:5672 # local run
+  url: amqp://guest:guest@host.docker.internal:5672 # docker run
