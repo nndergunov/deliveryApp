@@ -8,16 +8,19 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220713113414-48789244bb41
-	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220713113414-48789244bb41
-	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220713113414-48789244bb41
-	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220713113414-48789244bb41
-	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220713113414-48789244bb41
-	github.com/nndergunov/deliveryApp/app/services/accounting v0.0.0-20220713113414-48789244bb41
-	github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220713113414-48789244bb41
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-00010101000000-000000000000
+	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/services/accounting v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220719145029-84b20cae8739
 	github.com/stretchr/testify v1.8.0
 	github.com/volatiletech/sqlboiler/v4 v4.11.0
 	github.com/volatiletech/strmangle v0.0.4
+	google.golang.org/grpc v1.48.0
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -39,6 +42,7 @@ require (
 	github.com/goccy/go-yaml v1.9.5 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
@@ -61,8 +65,8 @@ require (
 	github.com/rabbitmq/amqp091-go v1.3.4 // indirect
 	github.com/romanyx/jwalk v1.0.0 // indirect
 	github.com/romanyx/polluter v1.2.2 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/spf13/afero v1.8.2 // indirect
+	github.com/sirupsen/logrus v1.9.0 // indirect
+	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -76,9 +80,10 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
-	golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e // indirect
+	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
+	google.golang.org/genproto v0.0.0-20220720214146-176da50484ac // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

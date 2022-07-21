@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "/pb";
+
+service RestaurantService {
+    rpc GetOrder(Request) returns (OrderResponse) {}
+}
+
+message Request {
+    int32 ID = 1;
+}
+
+message OrderResponse {
+    int32 OrderID = 1;
+    int32 FromUserID = 2;
+    int32 RestaurantID = 3;
+    repeated int32 OrderItems = 4;
+    string Status = 5;
+}

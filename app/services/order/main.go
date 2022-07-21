@@ -5,13 +5,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
+	"github.com/nndergunov/deliveryApp/app/pkg/grpcserver"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/messagebroker/publisher"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/grpclogic"
 	"github.com/nndergunov/deliveryApp/app/services/order/api/v1/handlers"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/accountingclient"
 	"github.com/nndergunov/deliveryApp/app/services/order/pkg/clients/restaurantclient"
@@ -36,25 +39,49 @@ func main() {
 		" dbname=" + configreader.GetString("database.dbName") +
 		" sslmode=" + configreader.GetString("database.sslmode"))
 
-	database, err := db.NewDatabase(dbURL)
-	if err != nil {
-		mainLogger.Fatalln(err)
-	}
-
 	publisherURL := configreader.GetString("publisher.url")
 
-	notificationer, err := publisher.NewEventPublisher(publisherURL)
+	services := configreader.GetMap("services")
+
+	grpcDatabase, err := db.NewDatabase(dbURL)
 	if err != nil {
 		mainLogger.Fatalln(err)
 	}
 
-	services := configreader.GetMap("services")
-	accountingClient := accountingclient.NewAccountingClient(services["accounting"])
-	restaurantClient := restaurantclient.NewRestaurantClient(services["restaurant"])
+	grpcNotificationer, err := publisher.NewEventPublisher(publisherURL)
+	if err != nil {
+		mainLogger.Fatalln(err)
+	}
 
-	serviceInstance := service.NewService(database, notificationer, accountingClient, restaurantClient)
+	grpcAccountingClient := accountingclient.NewAccountingClient(services["accounting"])
+	grpcRestaurantClient := restaurantclient.NewRestaurantClient(services["restaurant"])
+
+	grpcServiceInstance := service.NewService(grpcDatabase, grpcNotificationer, grpcAccountingClient, grpcRestaurantClient)
+
+	grpcLogger := logger.NewLogger(os.Stdout, "grpc")
+	grpcRawServer := grpclogic.NewOrderRawGRPCServer(grpcServiceInstance)
+	grpcServer := grpcserver.NewGRPCServer(grpcRawServer, grpcLogger)
+
+	grpcServerStopChan := make(chan interface{})
+
+	grpcServer.StartListening(configreader.GetString("grpcserver.address"), grpcServerStopChan)
+
+	restDatabase, err := db.NewDatabase(dbURL)
+	if err != nil {
+		mainLogger.Fatalln(err)
+	}
+
+	restNotificationer, err := publisher.NewEventPublisher(publisherURL)
+	if err != nil {
+		mainLogger.Fatalln(err)
+	}
+
+	restAccountingClient := accountingclient.NewAccountingClient(services["accounting"])
+	restRestaurantClient := restaurantclient.NewRestaurantClient(services["restaurant"])
+
+	restServiceInstance := service.NewService(restDatabase, restNotificationer, restAccountingClient, restRestaurantClient)
 	handlerLogger := logger.NewLogger(os.Stdout, "endpoint")
-	endpointHandler := handlers.NewEndpointHandler(serviceInstance, handlerLogger)
+	endpointHandler := handlers.NewEndpointHandler(restServiceInstance, handlerLogger)
 
 	apiLogger := logger.NewLogger(os.Stdout, "api")
 	serverAPI := api.NewAPI(endpointHandler, apiLogger)
@@ -71,7 +98,24 @@ func main() {
 
 	serviceServer.StartListening(serverStopChan)
 
-	<-serverStopChan
+	serverWG := new(sync.WaitGroup)
+	numberOfServersRunning := 2
+
+	serverWG.Add(numberOfServersRunning)
+
+	go func(wg *sync.WaitGroup) {
+		<-grpcServerStopChan
+
+		wg.Done()
+	}(serverWG)
+
+	go func(wg *sync.WaitGroup) {
+		<-serverStopChan
+
+		wg.Done()
+	}(serverWG)
+
+	serverWG.Wait()
 }
 
 func getServerConfig(handler http.Handler, errorLog *log.Logger, serverLogger *logger.Logger) (*config.Config, error) {
