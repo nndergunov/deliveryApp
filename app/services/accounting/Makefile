@@ -69,4 +69,4 @@ swagger:
 	swagger generate spec -o ./api/v1/swagger.yaml --scan-models
 
 grpc:
-	 cd api/v1/grpc protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=sour ce_relative proto/accounting.proto
+	 cd api/v1/grpc protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/accounting.proto

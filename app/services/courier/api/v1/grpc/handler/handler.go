@@ -2,8 +2,9 @@ package handler
 
 import (
 	"context"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 
@@ -194,7 +195,6 @@ func (h *handler) UpdateCourierLocation(ctx context.Context, in *pb.Location) (*
 }
 
 func (h *handler) GetCourierLocation(ctx context.Context, in *pb.UserID) (*pb.Location, error) {
-
 	resp, err := h.service.GetLocation(strconv.FormatInt(in.UserID, 10))
 	if err != nil {
 		return nil, err
