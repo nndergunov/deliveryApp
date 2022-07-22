@@ -1,10 +1,12 @@
 server:
-  address: ":8082"
-  readTime: "5s"
-  writeTime: "5s"
-  idleTime: "5m"
-  readerHeaderTime: "5s"
-
+  rest:
+    address: ":8082"
+    readTime: "5s"
+    writeTime: "5s"
+    idleTime: "5m"
+    readerHeaderTime: "5s"
+  grpc:
+    address: ":7072"
 database:
   host: "host.docker.internal"
   port: 5432
