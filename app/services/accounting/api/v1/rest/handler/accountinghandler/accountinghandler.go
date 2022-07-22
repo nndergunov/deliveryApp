@@ -10,8 +10,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/accountingapi"
-
+	accountingapi "github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/rest/accountingapi"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/service/accountingservice"
 )

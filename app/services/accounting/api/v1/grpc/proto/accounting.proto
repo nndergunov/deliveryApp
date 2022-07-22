@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package accounting_proto;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "proto/accounting.proto";
+
+// The Accounting service definition.
+service Accounting {
+  // Sends a greeting
+  rpc InsertNewAccount (NewAccountRequest) returns (AccountResponse) {}
+
+  rpc GetAccountList (SearchParam) returns (AccountListResponse){}
+
+  rpc GetAccount (AccountID) returns (AccountListResponse){}
+
+  rpc DeleteAccount (AccountID) returns (AccountDeleteResponse){}
+
+  rpc InsertTransaction (TransactionRequest) returns (TransactionResponse){}
+
+  rpc DeleteTransaction (TransactionID) returns (TransactionDeleteResponse){}
+
+}
+
+// The request message containing the user's data.
+message NewAccountRequest {
+  int64 UserID = 1;
+  string UserType = 2;
+}
+
+// The response message containing the greetings
+message AccountResponse {
+  int64 ID = 1;
+  int64  UserID = 2;
+  string UserType = 3;
+  double Balance = 4;
+  google.protobuf.Timestamp CreatedAt = 5;
+  google.protobuf.Timestamp UpdatedAt = 6;
+}
+
+message AccountListResponse {
+  repeated AccountResponse AccountList = 1;
+}
+
+message SearchParam {
+  optional int64 UserID = 1;
+  optional string UserType = 2;
+}
+
+message AccountID {
+  int64 AccountID = 1;
+}
+
+message AccountDeleteResponse {
+  string AccountDeleteResponse = 1;
+}
+
+message TransactionRequest {
+  int64 FromAccountID = 1;
+  int64 ToAccountID = 2;
+  double Amount = 3;
+}
+
+message TransactionResponse {
+  int64 ID = 1;
+  int64 FromAccountID = 2;
+  int64 ToAccountID = 3;
+  double Amount = 4;
+  google.protobuf.Timestamp CreatedAt = 5;
+  google.protobuf.Timestamp UpdatedAt = 6;
+  bool Valid = 7;
+}
+
+message TransactionID {
+  int64 TransactionID = 1;
+}
+
+message TransactionDeleteResponse {
+  string TransactionDeleteResponse = 1;
+}

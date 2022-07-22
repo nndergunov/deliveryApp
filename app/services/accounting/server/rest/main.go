@@ -12,7 +12,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/handler/accountinghandler"
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/rest/handler/accountinghandler"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/service/accountingservice"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/storage/accountingstorage"
@@ -22,10 +22,10 @@ const configFile = "/config.yaml"
 
 func main() {
 	// Construct the application logger.
-	log := logger.NewLogger(os.Stdout, "main: ")
+	l := logger.NewLogger(os.Stdout, "main: ")
 
 	// Perform the startup and shutdown sequence.
-	if err := run(log); err != nil {
+	if err := run(l); err != nil {
 		log.Fatal("startup", "ERROR", err)
 	}
 }
@@ -103,11 +103,11 @@ func run(log *logger.Logger) error {
 
 func getServerConfig(handler http.Handler, errorLog *log.Logger, serverLogger *logger.Logger) *config.Config {
 	var (
-		address          = configreader.GetString("server.address")
-		readTime         = configreader.GetDuration("server.readTime")
-		writeTime        = configreader.GetDuration("server.writeTime")
-		idleTime         = configreader.GetDuration("server.idleTime")
-		readerHeaderTime = configreader.GetDuration("server.readerHeaderTime")
+		address          = configreader.GetString("server.rest.address")
+		readTime         = configreader.GetDuration("server.rest.readTime")
+		writeTime        = configreader.GetDuration("server.rest.writeTime")
+		idleTime         = configreader.GetDuration("server.rest.idleTime")
+		readerHeaderTime = configreader.GetDuration("server.rest.readerHeaderTime")
 	)
 
 	return &config.Config{

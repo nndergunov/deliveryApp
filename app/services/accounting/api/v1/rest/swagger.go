@@ -1,4 +1,4 @@
-// Package v1 Accounting Service API V1.
+// Package rest Accounting Service API V1.
 //
 // API specification of the accounting service
 //
@@ -14,4 +14,4 @@
 //     - application/json
 //
 // swagger:meta
-package v1
+package rest
