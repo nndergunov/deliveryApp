@@ -13,7 +13,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/handler/courierhandler"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/service/courierservice"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/storage/courierstorage"

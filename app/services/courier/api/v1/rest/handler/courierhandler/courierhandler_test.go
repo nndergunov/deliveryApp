@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/handler/courierhandler"
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/handler/courierhandler"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 	mockservice "github.com/nndergunov/deliveryApp/app/services/courier/pkg/mocks"
 
