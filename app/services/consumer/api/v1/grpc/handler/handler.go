@@ -172,7 +172,7 @@ func (h *handler) UpdateConsumerLocation(ctx context.Context, in *pb.Location) (
 		Door:       *in.Door,
 	}
 
-	resp, err := h.service.UpdateLocation(location, strconv.Itoa(location.UserID)))
+	resp, err := h.service.UpdateLocation(location, strconv.Itoa(location.UserID))
 	if err != nil {
 		return nil, err
 	}
