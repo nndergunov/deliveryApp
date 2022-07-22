@@ -1,4 +1,4 @@
-// Package v1 Delivery Service API V1.
+// Package rest Package v1 Delivery Service API V1.
 //
 // API specification of the delivery service
 //
@@ -14,4 +14,4 @@
 //     - application/json
 //
 // swagger:meta
-package v1
+package rest

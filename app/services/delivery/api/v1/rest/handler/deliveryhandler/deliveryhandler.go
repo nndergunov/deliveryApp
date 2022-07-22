@@ -9,8 +9,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/deliveryapi"
-
+	deliveryapi2 "github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/deliveryapi"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
 )
 
@@ -120,7 +119,7 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 	restaurantIDList := queryParams["restaurant_id"]
 
 	if consumerIDList == nil || restaurantIDList == nil {
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, "consumer_id or restaurant_id param not found"); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, "consumer_id or restaurant_id param not found"); err != nil {
 			c.log.Println(err)
 			return
 		}
@@ -128,7 +127,7 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 
 	consumerID := consumerIDList[0]
 	if consumerID == "" {
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, "wrong consumer_id"); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, "wrong consumer_id"); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -136,7 +135,7 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 
 	restaurantID := consumerIDList[0]
 	if restaurantID == "" {
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, "wrong restaurant_id"); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, "wrong restaurant_id"); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -146,13 +145,13 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
-			if err := deliveryapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := deliveryapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -160,7 +159,7 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 
 	response := estimateDeliveryToResponse(data)
 
-	if err := deliveryapi.Respond(rw, http.StatusOK, response); err != nil {
+	if err := deliveryapi2.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -202,16 +201,16 @@ func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	orderID, ok := vars[orderIDKey]
 	if !ok {
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, errNoOrderIDParam); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, errNoOrderIDParam); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var assignOrderRequest deliveryapi.AssignOrderRequest
+	var assignOrderRequest deliveryapi2.AssignOrderRequest
 
-	if err := deliveryapi.BindJson(r, &assignOrderRequest); err != nil {
+	if err := deliveryapi2.BindJson(r, &assignOrderRequest); err != nil {
 		c.log.Println(err)
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -223,13 +222,13 @@ func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
-			if err := deliveryapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := deliveryapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 
-		if err := deliveryapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := deliveryapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -237,7 +236,7 @@ func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 
 	response := assignOrderResponse(data)
 
-	if err := deliveryapi.Respond(rw, http.StatusOK, response); err != nil {
+	if err := deliveryapi2.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}

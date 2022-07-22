@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/handlers"
 
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/consumerclient"
@@ -17,7 +18,6 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/courierclient"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"

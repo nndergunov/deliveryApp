@@ -13,7 +13,7 @@ import (
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
 
-	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/handler/deliveryhandler"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
