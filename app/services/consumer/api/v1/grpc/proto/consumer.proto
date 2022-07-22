@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package consumer_proto;
+
+
+option go_package = "proto/consumer.proto";
+
+// The Accounting service definition.
+service Consumer {
+  // Sends a greeting
+  rpc insertNewConsumer (NewConsumerRequest) returns (ConsumerResponse) {}
+
+  rpc getAllConsumer (SearchParam) returns (ConsumerListResponse){}
+
+  rpc deleteConsumer (ConsumerID) returns (ConsumerDeleteResponse){}
+
+  rpc updateConsumer (UpdateConsumerRequest) returns (ConsumerResponse){}
+
+  rpc getConsumer (ConsumerID) returns (ConsumerResponse){}
+
+  rpc insertNewConsumerLocation (Location) returns (Location){}
+
+  rpc updateConsumerLocation (Location) returns (Location){}
+
+  rpc getConsumerLocation (userID) returns (Location){}
+
+}
+
+// The request message containing the user's data.
+message NewConsumerRequest {
+  string Firstname = 1;
+  string Lastname = 2;
+  string Email = 3;
+  string Phone = 4;
+}
+
+// The request message containing the user's data.
+message UpdateConsumerRequest {
+  int64  ID = 1;
+  string Firstname = 2;
+  string Lastname = 3;
+  string Email = 4;
+  string Phone = 5;
+}
+
+// The response message containing the greetings
+message ConsumerResponse {
+  int64 ID = 1;
+  string Firstname = 2;
+  string Lastname = 3;
+  string Email = 4;
+  string Phone = 5;
+}
+
+message ConsumerListResponse {
+  repeated ConsumerResponse ConsumerListResponse = 1;
+}
+
+message SearchParam {
+  optional int64 UserID = 1;
+  optional string UserType = 2;
+}
+
+message ConsumerID {
+  int64 ConsumerID = 1;
+}
+
+message ConsumerDeleteResponse {
+  string ConsumerDeleteResponse = 1;
+}
+
+message Location {
+  int64 UserID = 1;
+  optional string Latitude = 2;
+  optional string Longitude = 3;
+  optional string Country = 4;
+  optional string City = 5;
+  optional string Region = 6;
+  optional string Street = 7;
+  optional string HomeNumber = 8;
+  optional string Floor = 9;
+  optional string Door = 10;
+}
+message userID {
+  int64 userID = 1;
+}

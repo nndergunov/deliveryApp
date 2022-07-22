@@ -56,7 +56,9 @@ download-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	go get -u github.com/gorilla/mux
-	go get -u github.com/lib/pq
+	go get -u github.com/lib/pq7
+	go get -u google.golang.org/grpc
+	go get -u google.golang.org/protobuf
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18

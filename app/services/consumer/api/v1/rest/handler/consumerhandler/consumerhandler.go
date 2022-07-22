@@ -9,8 +9,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/consumerapi"
-
+	consumerapi "github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
 )
 
@@ -45,7 +44,7 @@ const consumerIDKey = "consumer_id"
 
 // NewConsumerHandler creates an consumerHandler value that handle a set of routes for the application.
 func (c *consumerHandler) handlerInit() {
-	c.serveMux.HandleFunc("/status", c.insertNewConsumer).Methods(http.MethodPost)
+	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
 	c.serveMux.HandleFunc("/v1/consumers", c.insertNewConsumer).Methods(http.MethodPost)
 	c.serveMux.HandleFunc("/v1/consumers", c.getAllConsumer).Methods(http.MethodGet)

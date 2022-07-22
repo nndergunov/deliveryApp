@@ -14,7 +14,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
-	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/handler/consumerhandler"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/handler/consumerhandler"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/storage/consumerstorage"
@@ -104,11 +104,11 @@ func run(log *logger.Logger) error {
 
 func getServerConfig(handler http.Handler, errorLog *log.Logger, serverLogger *logger.Logger) *config.Config {
 	var (
-		address          = configreader.GetString("server.address")
-		readTime         = configreader.GetDuration("server.readTime")
-		writeTime        = configreader.GetDuration("server.writeTime")
-		idleTime         = configreader.GetDuration("server.idleTime")
-		readerHeaderTime = configreader.GetDuration("server.readerHeaderTime")
+		address          = configreader.GetString("server.rest.address")
+		readTime         = configreader.GetDuration("server.rest.readTime")
+		writeTime        = configreader.GetDuration("server.rest.writeTime")
+		idleTime         = configreader.GetDuration("server.rest.idleTime")
+		readerHeaderTime = configreader.GetDuration("server.rest.readerHeaderTime")
 	)
 
 	return &config.Config{

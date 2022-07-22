@@ -14,4 +14,4 @@
 //     - application/json
 //
 // swagger:meta
-package v1
+package rest
