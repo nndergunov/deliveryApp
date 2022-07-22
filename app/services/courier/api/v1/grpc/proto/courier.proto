@@ -57,8 +57,7 @@ message CourierListResponse {
 }
 
 message SearchParam {
-  optional int64 UserID = 1;
-  optional string UserType = 2;
+  optional string available = 1;
 }
 
 message CourierID {
