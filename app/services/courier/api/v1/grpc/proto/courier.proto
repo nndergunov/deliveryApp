@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package courier;
+
+
+option go_package = "proto/courier.proto";
+
+// The Accounting service definition.
+service Courier {
+  // Sends a greeting
+  rpc insertNewCourier (NewCourierRequest) returns (CourierResponse) {}
+
+  rpc getAllCourier (SearchParam) returns (CourierListResponse){}
+
+  rpc deleteCourier (CourierID) returns (CourierDeleteResponse){}
+
+  rpc updateCourier (UpdateCourierRequest) returns (CourierResponse){}
+
+  rpc getCourier (CourierID) returns (CourierResponse){}
+
+  rpc insertNewCourierLocation (Location) returns (Location){}
+
+  rpc updateCourierLocation (Location) returns (Location){}
+
+  rpc getCourierLocation (userID) returns (Location){}
+
+}
+
+// The request message containing the user's data.
+message NewCourierRequest {
+  string Firstname = 1;
+  string Lastname = 2;
+  string Email = 3;
+  string Phone = 4;
+}
+
+// The request message containing the user's data.
+message UpdateCourierRequest {
+  int64  ID = 1;
+  string Firstname = 2;
+  string Lastname = 3;
+  string Email = 4;
+  string Phone = 5;
+}
+
+// The response message containing the greetings
+message CourierResponse {
+  int64 ID = 1;
+  string Firstname = 2;
+  string Lastname = 3;
+  string Email = 4;
+  string Phone = 5;
+}
+
+message CourierListResponse {
+  repeated CourierResponse CourierListResponse = 1;
+}
+
+message SearchParam {
+  optional string available = 1;
+}
+
+message CourierID {
+  int64 CourierID = 1;
+}
+
+message CourierDeleteResponse {
+  string CourierDeleteResponse = 1;
+}
+
+message Location {
+  int64 UserID = 1;
+  optional string Latitude = 2;
+  optional string Longitude = 3;
+  optional string Country = 4;
+  optional string City = 5;
+  optional string Region = 6;
+  optional string Street = 7;
+  optional string HomeNumber = 8;
+  optional string Floor = 9;
+  optional string Door = 10;
+}
+message userID {
+  int64 userID = 1;
+}

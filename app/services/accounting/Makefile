@@ -58,9 +58,15 @@ download-gomod:
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 	go get -u github.com/gorilla/mux
 	go get -u github.com/lib/pq
+	go get -u google.golang.org/grpc
+	go get -u google.golang.org/protobuf
+
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
 
 swagger:
 	swagger generate spec -o ./api/v1/swagger.yaml --scan-models
+
+grpc:
+	 cd api/v1/grpc protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/accounting.proto
