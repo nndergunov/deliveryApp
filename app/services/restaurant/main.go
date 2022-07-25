@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/grpcserver"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"

@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/grpcserver"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
@@ -88,7 +89,7 @@ func main() {
 
 	serverLogger := logger.NewLogger(os.Stdout, "server")
 
-	serverConfig, err := getServerConfig(serverAPI, nil, serverLogger)
+	serverConfig, err := getServerConfig(v1.EnableCORS(serverAPI), nil, serverLogger)
 	if err != nil {
 		mainLogger.Println(err)
 	}

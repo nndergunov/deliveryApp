@@ -2,6 +2,38 @@ basePath: /v1
 consumes:
 - application/json
 definitions:
+  MenuData:
+    properties:
+      MenuItems:
+        items:
+          $ref: '#/definitions/MenuItemData'
+        type: array
+    required:
+    - MenuItems
+    title: MenuData contains information about the menu.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
+  MenuItemData:
+    properties:
+      Course:
+        description: Photo []byte
+        type: string
+      ID:
+        format: int64
+        type: integer
+      Name:
+        type: string
+      Price:
+        format: double
+        type: number
+    required:
+    - ID
+    - Name
+    - Price
+    - Course
+    title: MenuItemData contains information about the menu item.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
   OrderData:
     properties:
       FromUserID:
@@ -47,6 +79,59 @@ definitions:
     title: OrderStatusData is used by admins to update current order status.
     type: object
     x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
+  RestaurantData:
+    properties:
+      AcceptingOrders:
+        type: boolean
+      Address:
+        type: string
+      City:
+        type: string
+      Latitude:
+        format: double
+        type: number
+      Longitude:
+        format: double
+        type: number
+      Name:
+        type: string
+    required:
+    - Name
+    - City
+    - AcceptingOrders
+    - Address
+    - Longitude
+    - Latitude
+    title: RestaurantData contains information about the restaurant.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
+  ReturnMenu:
+    properties:
+      MenuItems:
+        items:
+          $ref: '#/definitions/ReturnMenuItem'
+        type: array
+      RestaurantID:
+        format: int64
+        type: integer
+    title: ReturnMenu contains information about the menu from requested restaurant.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
+  ReturnMenuItem:
+    properties:
+      Course:
+        type: string
+      ID:
+        format: int64
+        type: integer
+      Name:
+        type: string
+      Price:
+        format: double
+        type: number
+    title: ReturnMenuItem contains information about requested menu item.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
   ReturnOrder:
     properties:
       FromUserID:
@@ -78,6 +163,37 @@ definitions:
     title: ReturnOrderList contains information about all the requested orders.
     type: object
     x-go-package: github.com/nndergunov/deliveryApp/app/services/order/api/v1/orderapi
+  ReturnRestaurant:
+    properties:
+      AcceptingOrders:
+        type: boolean
+      Address:
+        type: string
+      City:
+        type: string
+      ID:
+        format: int64
+        type: integer
+      Latitude:
+        format: double
+        type: number
+      Longitude:
+        format: double
+        type: number
+      Name:
+        type: string
+    title: ReturnRestaurant contains information about the requested restaurant.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
+  ReturnRestaurantList:
+    properties:
+      List:
+        items:
+          $ref: '#/definitions/ReturnRestaurant'
+        type: array
+    title: ReturnRestaurantList contains data about all the requested restaurants.
+    type: object
+    x-go-package: github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi
 host: localhost:8085
 info:
   description: API specification of the order service

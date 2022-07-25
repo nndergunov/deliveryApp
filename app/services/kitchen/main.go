@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
@@ -36,7 +37,7 @@ func main() {
 	serverAPI := api.NewAPI(endpointHandler, apiLogger)
 
 	serverLogger := logger.NewLogger(os.Stdout, "server")
-	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
+	serverConfig := getServerConfig(v1.EnableCORS(serverAPI), nil, serverLogger)
 	serviceServer := server.NewServer(serverConfig)
 
 	serverStopChan := make(chan interface{})

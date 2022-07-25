@@ -1,3 +1,6 @@
+swagger-generate:
+	swagger generate spec --scan-models --output=./api/v1/swagger.yaml
+
 golangci-lint:
 	golangci-lint run
 
