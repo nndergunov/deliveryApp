@@ -17,10 +17,6 @@ const (
 	menuIDKey       = "menuID"
 )
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
-
 type endpointHandler struct {
 	service  service.AppService
 	serveMux *mux.Router
@@ -93,22 +89,19 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation GET /restaurants returnRestaurantList
+//
+// Returns restaurant list
+//
+// ---
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: restaurant list
+//     schema:
+//       $ref: "#/definitions/ReturnRestaurantList"
 func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Request) {
-	// swagger:operation GET /restaurants returnRestaurantList
-	//
-	// Returns restaurant list
-	//
-	// ---
-	// produces:
-	// - application/json
-	// responses:
-	//   '200':
-	//     description: restaurant list
-	//     schema:
-	//       $ref: "#/definitions/ReturnRestaurantList"
-
-	enableCors(&w)
-
 	restaurants, err := e.service.ReturnAllRestaurants()
 	if err != nil {
 		e.handleError(err, w)
@@ -124,27 +117,24 @@ func (e endpointHandler) returnRestaurantList(w http.ResponseWriter, _ *http.Req
 	}
 }
 
+// swagger:operation GET /restaurants/{id} returnRestaurant
+//
+// Returns requested restaurant
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: requested restaurtant
+//     schema:
+//       $ref: "#/definitions/ReturnRestaurant"
 func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation GET /restaurants/{id} returnRestaurant
-	//
-	// Returns requested restaurant
-	//
-	// ---
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// produces:
-	// - application/json
-	// responses:
-	//   '200':
-	//     description: requested restaurtant
-	//     schema:
-	//       $ref: "#/definitions/ReturnRestaurant"
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -167,27 +157,24 @@ func (e endpointHandler) returnRestaurant(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// swagger:operation GET /restaurants/{id}/menu returnMenu
+//
+// Returns menu of the requested restaurant
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: menu of the requested restaurant
+//     schema:
+//       $ref: "#/definitions/ReturnMenu"
 func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation GET /restaurants/{id}/menu returnMenu
-	//
-	// Returns menu of the requested restaurant
-	//
-	// ---
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// produces:
-	// - application/json
-	// responses:
-	//   '200':
-	//     description: menu of the requested restaurant
-	//     schema:
-	//       $ref: "#/definitions/ReturnMenu"
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -210,29 +197,26 @@ func (e endpointHandler) returnMenu(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /admin/restaurants createRestaurant
+//
+// Returns menu of the requested restaurant
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: Body
+//   in: body
+//   description: restaurant data
+//   schema:
+//     $ref: "#/definitions/RestaurantData"
+//   required: true
+// responses:
+//   '200':
+//     description: created restaurant
+//     schema:
+//       $ref: "#/definitions/ReturnRestaurant"
 func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation POST /admin/restaurants createRestaurant
-	//
-	// Returns menu of the requested restaurant
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: Body
-	//   in: body
-	//   description: restaurant data
-	//   schema:
-	//     $ref: "#/definitions/RestaurantData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: created restaurant
-	//     schema:
-	//       $ref: "#/definitions/ReturnRestaurant"
-
-	enableCors(&w)
-
 	req, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		e.handleError(err, w)
@@ -266,33 +250,30 @@ func (e *endpointHandler) createRestaurant(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// swagger:operation PUT /admin/restaurants/{id} updateRestaurant
+//
+// Updates restaurant data
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: updated restaurant data
+//   schema:
+//     $ref: "#/definitions/RestaurantData"
+//   required: true
+// responses:
+//   '200':
+//     description: updated restaurant data
+//     schema:
+//       $ref: "#/definitions/ReturnRestaurant"
 func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation PUT /admin/restaurants/{id} updateRestaurant
-	//
-	// Updates restaurant data
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: Body
-	//   in: body
-	//   description: updated restaurant data
-	//   schema:
-	//     $ref: "#/definitions/RestaurantData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: updated restaurant data
-	//     schema:
-	//       $ref: "#/definitions/ReturnRestaurant"
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -333,22 +314,19 @@ func (e *endpointHandler) updateRestaurant(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// swagger:operation DELETE /admin/restaurants/{id} deleteRestaurant
+//
+// Deletes restaurant data
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// responses:
+//   '200':
 func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation DELETE /admin/restaurants/{id} deleteRestaurant
-	//
-	// Deletes restaurant data
-	//
-	// ---
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// responses:
-	//   '200':
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -369,33 +347,30 @@ func (e *endpointHandler) deleteRestaurant(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// swagger:operation POST /admin/restaurants/{id}/menu createMenu
+//
+// Creates menu in the restaurant
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: menu data
+//   schema:
+//     $ref: "#/definitions/MenuData"
+//   required: true
+// responses:
+//   '200':
+//     description: created menu
+//     schema:
+//       $ref: "#/definitions/ReturnMenu"
 func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation POST /admin/restaurants/{id}/menu createMenu
-	//
-	// Creates menu in the restaurant
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: Body
-	//   in: body
-	//   description: menu data
-	//   schema:
-	//     $ref: "#/definitions/MenuData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: created menu
-	//     schema:
-	//       $ref: "#/definitions/ReturnMenu"
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -436,33 +411,30 @@ func (e *endpointHandler) createMenu(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation PUT /admin/restaurants/{id}/menu addMenuItem
+//
+// Adds new menu item in the restaurant
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: menu item data
+//   schema:
+//     $ref: "#/definitions/MenuItemData"
+//   required: true
+// responses:
+//   '200':
+//     description: created menu item
+//     schema:
+//       $ref: "#/definitions/ReturnMenuItem"
 func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation PUT /admin/restaurants/{id}/menu addMenuItem
-	//
-	// Adds new menu item in the restaurant
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: Body
-	//   in: body
-	//   description: menu item data
-	//   schema:
-	//     $ref: "#/definitions/MenuItemData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: created menu item
-	//     schema:
-	//       $ref: "#/definitions/ReturnMenuItem"
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -503,37 +475,34 @@ func (e *endpointHandler) addMenuItem(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation PATCH /admin/restaurants/{id}/menu/{itemid} updateMenuItem
+//
+// Updates menu item in the restaurant
+//
+// ---
+// produces:
+// - application/json
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: itemid
+//   in: path
+//   type: integer
+//   required: true
+// - name: Body
+//   in: body
+//   description: updated menu item data
+//   schema:
+//     $ref: "#/definitions/MenuItemData"
+//   required: true
+// responses:
+//   '200':
+//     description: updated menu item
+//     schema:
+//       $ref: "#/definitions/ReturnMenuItem"
 func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation PATCH /admin/restaurants/{id}/menu/{itemid} updateMenuItem
-	//
-	// Updates menu item in the restaurant
-	//
-	// ---
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: itemid
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: Body
-	//   in: body
-	//   description: updated menu item data
-	//   schema:
-	//     $ref: "#/definitions/MenuItemData"
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: updated menu item
-	//     schema:
-	//       $ref: "#/definitions/ReturnMenuItem"
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)
@@ -581,26 +550,23 @@ func (e *endpointHandler) updateMenuItem(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+// swagger:operation DELETE /admin/restaurants/{id}/menu/{itemid} deleteMenuItem
+//
+// Deletes menu item in the restaurant
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// - name: itemid
+//   in: path
+//   type: integer
+//   required: true
+// responses:
+//   '200':
 func (e *endpointHandler) deleteMenuItem(w http.ResponseWriter, r *http.Request) {
-	// swagger:operation DELETE /admin/restaurants/{id}/menu/{itemid} deleteMenuItem
-	//
-	// Deletes menu item in the restaurant
-	//
-	// ---
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// - name: itemid
-	//   in: path
-	//   type: integer
-	//   required: true
-	// responses:
-	//   '200':
-
-	enableCors(&w)
-
 	restaurantID, err := getIDFromEndpoint(restaurantIDKey, r)
 	if err != nil {
 		e.handleError(err, w)

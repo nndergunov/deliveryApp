@@ -13,10 +13,6 @@ import (
 
 const kitchenIDKey = "kitchenID"
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
-
 type endpointHandler struct {
 	service  service.AppService
 	serveMux *mux.Router
@@ -73,27 +69,24 @@ func (e endpointHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 	e.log.Printf("gave status %s", data.IsUp)
 }
 
+// swagger:operation GET /tasks/{id} returnTasks
+//
+// Returns tasks for the specified restaurant
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   type: integer
+//   required: true
+// produces:
+// - application/json
+// responses:
+//   '200':
+//     description: requested data
+//     schema:
+//       $ref: "#/definitions/Tasks"
 func (e endpointHandler) returnTasks(responseWriter http.ResponseWriter, request *http.Request) {
-	// swagger:operation GET /tasks/{id} returnTasks
-	//
-	// Returns tasks for the specified restaurant
-	//
-	// ---
-	// parameters:
-	// - name: id
-	//   in: path
-	//   type: integer
-	//   required: true
-	// produces:
-	// - application/json
-	// responses:
-	//   '200':
-	//     description: requested data
-	//     schema:
-	//       $ref: "#/definitions/Tasks"
-
-	enableCors(&responseWriter)
-
 	kitchenID, err := getIDFromEndpoint(kitchenIDKey, request)
 	if err != nil {
 		e.log.Println(err)
