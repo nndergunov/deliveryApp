@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
+	"google.golang.org/grpc"
 	"log"
+	"net"
 	"net/http"
 	"os"
 
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/grpc/handler"
+
 	"github.com/gorilla/handlers"
 
+	pb "github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/grpc/proto"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
 
@@ -28,10 +33,10 @@ const configFile = "/config.yaml"
 
 func main() {
 	// Construct the application logger.
-	log := logger.NewLogger(os.Stdout, "main: ")
+	l := logger.NewLogger(os.Stdout, "main: ")
 
 	// Perform the startup and shutdown sequence.
-	if err := run(log); err != nil {
+	if err := run(l); err != nil {
 		log.Fatal("startup", "ERROR", err)
 	}
 }
@@ -47,8 +52,8 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	log.Println("starting service", "version", configreader.GetString("buildmode"))
-	defer log.Println("shutdown complete")
+	defer log.Println("rest shutdown complete")
+	defer log.Println("grpc shutdown complete")
 
 	dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
 		" port=" + configreader.GetString("database.port") +
@@ -75,38 +80,54 @@ func run(log *logger.Logger) error {
 		ConsumerClient:   consumerClient,
 	})
 
-	handler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
+	//gRPC server
+	lis, err := net.Listen("tcp", configreader.GetString("server.grpc.address"))
+	if err != nil {
+		return fmt.Errorf("failed to listen: %v", err)
+	}
+
+	h := handler.NewHandler(handler.Params{
+		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
+		DeliveryService: deliveryService,
+	})
+
+	s := grpc.NewServer()
+	pb.RegisterDeliveryServer(s, h)
+
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.Panicln("grpc failed to serve: %v", err)
+		}
+	}()
+
+	log.Printf("started grpc service on address:%v version:%v", lis.Addr(), configreader.GetString("buildmode"))
+
+	//REST server
+	restHandler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
 		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
 		DeliveryService: deliveryService,
 	})
 
 	apiLogger := logger.NewLogger(os.Stdout, "api: ")
-	serverAPI := api.NewAPI(handler, apiLogger)
+	serverAPI := api.NewAPI(restHandler, apiLogger)
 
 	serverLogger := logger.NewLogger(os.Stdout, "server: ")
 	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
 
-	// serviceServer := server.NewServer(serverConfig)
-
 	serverErrors := make(chan interface{})
-
-	// serviceServer.StartListening(serverErrors)
 
 	// Where ORIGIN_ALLOWED is like `scheme://dns[:port]`, or `*` (insecure)
 	headersOK := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
 	originsOK := handlers.AllowedOrigins([]string{"*"})
 	methodsOK := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "DELETE", "PUT"})
 
-	// start server listen
-	// with error handling
-
 	go func() {
-		if err := http.ListenAndServe(serverConfig.Address, handlers.CORS(headersOK, originsOK, methodsOK)(handler)); err != nil {
+		if err := http.ListenAndServe(serverConfig.Address, handlers.CORS(headersOK, originsOK, methodsOK)(restHandler)); err != nil {
 			log.Panicln(err)
 		}
-
 		close(serverErrors)
 	}()
+	log.Printf("started rest service on port:%v version:%v", serverConfig.Address, configreader.GetString("buildmode"))
 
 	<-serverErrors
 
