@@ -1,9 +1,12 @@
-server:
+httpServer:
   address: ":8086"
   readTime: "5s"
   writeTime: "5s"
   idleTime: "5m"
   readerHeaderTime: "5s"
+
+grpcServer:
+  address: ":446"
 
 database:
   # host: "localhost"

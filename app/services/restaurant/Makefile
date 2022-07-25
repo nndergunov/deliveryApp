@@ -35,6 +35,9 @@ update-gomod:
 	make gomod-tidy
 
 download-gomod:
+	go get -u google.golang.org/grpc
+	go get -u google.golang.org/protobuf
+
 	go get -u github.com/adrianbrad/psqldocker
 	go get -u github.com/adrianbrad/psqltest
 	go get -u github.com/friendsofgo/errors
@@ -46,7 +49,9 @@ download-gomod:
 
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/api
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/configreader
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/grpcserver
 	go get -u github.com/nndergunov/deliveryApp/app/pkg/logger
+	go get -u github.com/nndergunov/deliveryApp/app/pkg/server
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18

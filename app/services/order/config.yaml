@@ -5,6 +5,9 @@ server:
   idleTime: "5m"
   readerHeaderTime: "5s"
 
+grpcServer:
+  address: ":445"
+
 services:
   # accounting: http://localhost:8080 # local run
   # restaurant: http://localhost:8086 # local run
