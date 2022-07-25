@@ -1,23 +1,23 @@
 docker-build-all:
 	docker network create delivery_app_net
-	make -C app/pkg/messagebroker docker-build
-	make -C app/services/accounting docker-build
-	make -C app/services/consumer docker-build
-	make -C app/services/courier docker-build
+#	make -C app/pkg/messagebroker docker-build
+#	make -C app/services/accounting docker-build
+#	make -C app/services/consumer docker-build
+#	make -C app/services/courier docker-build
 	make -C app/services/delivery docker-build
-	make -C app/services/kitchen docker-build
-	make -C app/services/order docker-build
-	make -C app/services/restaurant docker-build
+#	make -C app/services/kitchen docker-build
+#	make -C app/services/order docker-build
+#	make -C app/services/restaurant docker-build
 
 docker-delete-all:
-	make -C app/pkg/messagebroker docker-delete
-	make -C app/services/accounting docker-delete
-	make -C app/services/consumer docker-delete
-	make -C app/services/courier docker-delete
+#	make -C app/pkg/messagebroker docker-delete
+#	make -C app/services/accounting docker-delete
+#	make -C app/services/consumer docker-delete
+#	make -C app/services/courier docker-delete
 	make -C app/services/delivery docker-delete
-	make -C app/services/kitchen docker-delete
-	make -C app/services/order docker-delete
-	make -C app/services/restaurant docker-delete
+#	make -C app/services/kitchen docker-delete
+#	make -C app/services/order docker-delete
+#	make -C app/services/restaurant docker-delete
 	docker network rm delivery_app_net
 
 

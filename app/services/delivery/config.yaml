@@ -16,7 +16,7 @@ database:
   dbName: "delivery_db"
   sslmode: "disable"
 
-consumerServiceURl: http://consumer-service:8081
-courierServiceURl: http://courier-service:8082
-restaurantServiceURl: http://restaurant-service:8086
+consumerServiceURl: http://consumer-service:7071
+courierServiceURl: http://courier-service:7072
+restaurantServiceURl: http://restaurant-service:7076
 googleApiKey:
