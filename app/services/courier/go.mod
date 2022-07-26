@@ -10,6 +10,7 @@ require (
 	github.com/lib/pq v1.10.5
 	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220725131345-f11f1f7ecb5d
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220421192017-5bea05ecd937
+	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-20220725131345-f11f1f7ecb5d
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220516080600-4954ce51ac52
 	github.com/stretchr/testify v1.7.1
@@ -27,7 +28,6 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-20220725131345-f11f1f7ecb5d // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
