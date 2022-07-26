@@ -9,7 +9,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/clients"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice/tools"
 )
 
@@ -21,25 +21,25 @@ type DeliveryService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	DeliveryStorage  DeliveryStorage
+	Storage          DeliveryStorage
 	Logger           *logger.Logger
-	RestaurantClient service.RestaurantClient
-	CourierClient    service.CourierClient
-	ConsumerClient   service.ConsumerClient
+	RestaurantClient clients.RestaurantClient
+	CourierClient    clients.CourierClient
+	ConsumerClient   clients.ConsumerClient
 }
 
-type deliveryService struct {
-	deliveryStorage  DeliveryStorage
+type service struct {
+	storage          DeliveryStorage
 	logger           *logger.Logger
-	restaurantClient service.RestaurantClient
-	courierClient    service.CourierClient
-	consumerClient   service.ConsumerClient
+	restaurantClient clients.RestaurantClient
+	courierClient    clients.CourierClient
+	consumerClient   clients.ConsumerClient
 }
 
-// NewDeliveryService constructs a new NewDeliveryService.
-func NewDeliveryService(p Params) DeliveryService {
-	deliveryServiceItem := &deliveryService{
-		deliveryStorage:  p.DeliveryStorage,
+// NewService constructs a new NewService.
+func NewService(p Params) DeliveryService {
+	deliveryServiceItem := &service{
+		storage:          p.Storage,
 		logger:           p.Logger,
 		restaurantClient: p.RestaurantClient,
 		courierClient:    p.CourierClient,
@@ -50,7 +50,7 @@ func NewDeliveryService(p Params) DeliveryService {
 }
 
 // GetEstimateDelivery get delivery time and cost based on location from and to. Calculating based on average delivery time in the city by car
-func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (*domain.EstimateDeliveryResponse, error) {
+func (c *service) GetEstimateDelivery(consumerID, restaurantID string) (*domain.EstimateDeliveryResponse, error) {
 	consumerIDInt, err := strconv.Atoi(consumerID)
 	if err != nil {
 		return nil, fmt.Errorf("wrong consumer_id err: %q", err)
@@ -170,7 +170,7 @@ func (c *deliveryService) GetEstimateDelivery(consumerID, restaurantID string) (
 	return nil, errWrongLocData
 }
 
-func (c *deliveryService) convertToDecimalAfterDot(f float64) float64 {
+func (c *service) convertToDecimalAfterDot(f float64) float64 {
 	fStr := fmt.Sprintf("%.6f", f)
 	f, err := strconv.ParseFloat(fStr, 64)
 	if err != nil {
@@ -179,7 +179,7 @@ func (c *deliveryService) convertToDecimalAfterDot(f float64) float64 {
 	return f
 }
 
-func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*domain.AssignOrder, error) {
+func (c *service) AssignOrder(orderID string, order *domain.Order) (*domain.AssignOrder, error) {
 	orderIDInt, err := strconv.Atoi(orderID)
 	if err != nil {
 		return nil, errWrongOrderIDType
@@ -212,7 +212,7 @@ func (c *deliveryService) AssignOrder(orderID string, order *domain.Order) (*dom
 		CourierID: orderIDInt,
 	}
 
-	assignedOrder, err := c.deliveryStorage.AssignOrder(assignOrder)
+	assignedOrder, err := c.storage.AssignOrder(assignOrder)
 	if err != nil {
 		return nil, systemErr
 	}

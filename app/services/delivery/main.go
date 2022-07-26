@@ -2,21 +2,19 @@ package main
 
 import (
 	"fmt"
-	"google.golang.org/grpc"
 	"log"
-	"net"
 	"net/http"
 	"os"
+	"sync"
+
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/grpcserver"
+	"github.com/nndergunov/deliveryApp/app/pkg/server"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/grpc/handler"
-
-	"github.com/gorilla/handlers"
-
-	pb "github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/grpc/proto"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/handler/deliveryhandler"
-	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
-
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/consumerclient"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/clients/restaurantclient"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
@@ -62,75 +60,82 @@ func run(log *logger.Logger) error {
 		" dbname=" + configreader.GetString("database.dbName") +
 		" sslmode=" + configreader.GetString("database.sslmode"))
 
-	database, err := db.OpenDB("postgres", dbURL)
+	//*** grpc ***
+	grpcDatabase, err := db.OpenDB("postgres", dbURL)
 	if err != nil {
 		return err
 	}
-	DeliveryStorage := deliverystorage.NewDeliveryStorage(deliverystorage.Params{DB: database})
+
+	grpcStorage := deliverystorage.NewStorage(deliverystorage.Params{DB: grpcDatabase})
+
+	grpcService := deliveryservice.NewService(deliveryservice.Params{
+		Storage: grpcStorage,
+		Logger:  logger.NewLogger(os.Stdout, "grpc service: "),
+	})
+
+	grpcHandler := handler.NewHandler(handler.Params{
+		Logger:  logger.NewLogger(os.Stdout, "grpc endpoint: "),
+		Service: grpcService,
+	})
+
+	grpcServer := grpcserver.NewGRPCServer(grpcHandler, logger.NewLogger(os.Stdout, "grpc server: "))
+
+	grpcServerStopChan := make(chan interface{})
+	grpcServer.StartListening(configreader.GetString("server.grpc.address"), grpcServerStopChan)
+
+	//*** rest ***
 
 	courierClient := courierclient.NewCourierClient(configreader.GetString("courierServiceURl"))
 	restaurantClient := restaurantclient.NewRestaurantClient(configreader.GetString("restaurantServiceURl"))
 	consumerClient := consumerclient.NewConsumerClient(configreader.GetString("consumerServiceURl"))
 
-	deliveryService := deliveryservice.NewDeliveryService(deliveryservice.Params{
-		DeliveryStorage:  DeliveryStorage,
-		Logger:           logger.NewLogger(os.Stdout, "service: "),
-		CourierClient:    courierClient,
-		RestaurantClient: restaurantClient,
-		ConsumerClient:   consumerClient,
-	})
-
-	//gRPC server
-	lis, err := net.Listen("tcp", configreader.GetString("server.grpc.address"))
+	restDatabase, err := db.OpenDB("postgres", dbURL)
 	if err != nil {
-		return fmt.Errorf("failed to listen: %v", err)
+		return err
 	}
 
-	h := handler.NewHandler(handler.Params{
-		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
-		DeliveryService: deliveryService,
+	restStorage := deliverystorage.NewStorage(deliverystorage.Params{DB: restDatabase})
+
+	restService := deliveryservice.NewService(deliveryservice.Params{
+		RestaurantClient: restaurantClient,
+		CourierClient:    courierClient,
+		ConsumerClient:   consumerClient,
+		Storage:          restStorage,
+		Logger:           logger.NewLogger(os.Stdout, "rest service: "),
 	})
 
-	s := grpc.NewServer()
-	pb.RegisterDeliveryServer(s, h)
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			log.Panicln("grpc failed to serve: %v", err)
-		}
-	}()
-
-	log.Printf("started grpc service on address:%v version:%v", lis.Addr(), configreader.GetString("buildmode"))
-
-	//REST server
-	restHandler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
-		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
-		DeliveryService: deliveryService,
+	restHandler := deliveryhandler.NewHandler(deliveryhandler.Params{
+		Logger:  logger.NewLogger(os.Stdout, "rest endpoint: "),
+		Service: restService,
 	})
 
-	apiLogger := logger.NewLogger(os.Stdout, "api: ")
-	serverAPI := api.NewAPI(restHandler, apiLogger)
+	restAPI := api.NewAPI(restHandler, logger.NewLogger(os.Stdout, "rest api: "))
 
-	serverLogger := logger.NewLogger(os.Stdout, "server: ")
-	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
+	restServerConfig := getServerConfig(v1.EnableCORS(restAPI), nil, logger.NewLogger(os.Stdout, "rest server: "))
 
-	serverErrors := make(chan interface{})
+	restServer := server.NewServer(restServerConfig)
 
-	// Where ORIGIN_ALLOWED is like `scheme://dns[:port]`, or `*` (insecure)
-	headersOK := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOK := handlers.AllowedOrigins([]string{"*"})
-	methodsOK := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "DELETE", "PUT"})
+	restServerStopChan := make(chan interface{})
+	restServer.StartListening(restServerStopChan)
 
-	go func() {
-		if err := http.ListenAndServe(serverConfig.Address, handlers.CORS(headersOK, originsOK, methodsOK)(restHandler)); err != nil {
-			log.Panicln(err)
-		}
-		close(serverErrors)
-	}()
-	log.Printf("started rest service on port:%v version:%v", serverConfig.Address, configreader.GetString("buildmode"))
+	serverWG := new(sync.WaitGroup)
+	numberOfServersRunning := 2
 
-	<-serverErrors
+	serverWG.Add(numberOfServersRunning)
 
+	go func(wg *sync.WaitGroup) {
+		<-grpcServerStopChan
+
+		wg.Done()
+	}(serverWG)
+
+	go func(wg *sync.WaitGroup) {
+		<-restServerStopChan
+
+		wg.Done()
+	}(serverWG)
+
+	serverWG.Wait()
 	return nil
 }
 

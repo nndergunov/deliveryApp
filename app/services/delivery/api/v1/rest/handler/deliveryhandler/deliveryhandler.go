@@ -14,36 +14,36 @@ import (
 )
 
 type Params struct {
-	Logger          *logger.Logger
-	DeliveryService deliveryservice.DeliveryService
+	Logger  *logger.Logger
+	Service deliveryservice.DeliveryService
 }
 
-// deliveryHandler is the entrypoint into our application
-type deliveryHandler struct {
-	serveMux        *mux.Router
-	log             *logger.Logger
-	deliveryService deliveryservice.DeliveryService
+// handler is the entrypoint into our application
+type handler struct {
+	serveMux *mux.Router
+	log      *logger.Logger
+	service  deliveryservice.DeliveryService
 }
 
-// NewDeliveryHandler returns new http multiplexer with configured endpoints.
-func NewDeliveryHandler(p Params) *mux.Router {
+// NewHandler returns new http multiplexer with configured endpoints.
+func NewHandler(p Params) *mux.Router {
 	serveMux := mux.NewRouter()
 
-	handler := deliveryHandler{
-		serveMux:        serveMux,
-		log:             p.Logger,
-		deliveryService: p.DeliveryService,
+	handlerItem := handler{
+		serveMux: serveMux,
+		log:      p.Logger,
+		service:  p.Service,
 	}
 
-	handler.handlerInit()
+	handlerItem.handlerInit()
 
-	return handler.serveMux
+	return handlerItem.serveMux
 }
 
 const orderIDKey = "order_id"
 
-// NewDeliveryHandler creates an deliveryHandler value that handle a set of routes for the application.
-func (c *deliveryHandler) handlerInit() {
+// NewHandler creates an handler value that handle a set of routes for the application.
+func (c *handler) handlerInit() {
 	version := "/v1"
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
@@ -51,7 +51,7 @@ func (c *deliveryHandler) handlerInit() {
 	c.serveMux.HandleFunc(version+"/orders/{"+orderIDKey+"}/assign", c.assignOrder).Methods(http.MethodPost)
 }
 
-func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+func (c *handler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
 		ServiceName: "delivery",
 		IsUp:        "up",
@@ -112,7 +112,7 @@ func (c *deliveryHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 //   '400':
 //     description: bad request
 //     schema:
-func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getEstimateDeliveryValues(rw http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 
 	consumerIDList := queryParams["consumer_id"]
@@ -141,7 +141,7 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 		return
 	}
 
-	data, err := c.deliveryService.GetEstimateDelivery(consumerID, restaurantID)
+	data, err := c.service.GetEstimateDelivery(consumerID, restaurantID)
 	if err != nil {
 
 		if errors.Is(err, systemErr) {
@@ -197,7 +197,7 @@ func (c *deliveryHandler) getEstimateDeliveryValues(rw http.ResponseWriter, r *h
 //   '400':
 //     description: bad request
 //     schema:
-func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	orderID, ok := vars[orderIDKey]
 	if !ok {
@@ -218,7 +218,7 @@ func (c *deliveryHandler) assignOrder(rw http.ResponseWriter, r *http.Request) {
 
 	order := requestToOrder(&assignOrderRequest)
 
-	data, err := c.deliveryService.AssignOrder(orderID, order)
+	data, err := c.service.AssignOrder(orderID, order)
 	if err != nil {
 
 		if errors.Is(err, systemErr) {

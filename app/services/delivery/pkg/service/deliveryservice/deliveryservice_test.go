@@ -6,15 +6,16 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/courierapi"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
-	mock "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks/mock_clients"
+	mock "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks/mock_deliverystorage"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/service/deliveryservice"
 )
 
@@ -48,9 +49,9 @@ func TestGetEstimateDelivery(t *testing.T) {
 			t.Parallel()
 			ctl := gomock.NewController(t)
 			storage := mock.NewMockDeliveryStorage(ctl)
-			courierClient := mock.NewMockCourierClient(ctl)
-			consumerClient := mock.NewMockConsumerClient(ctl)
-			restaurantClient := mock.NewMockRestaurantClient(ctl)
+			courierClient := mock_clients.NewMockCourierClient(ctl)
+			consumerClient := mock_clients.NewMockConsumerClient(ctl)
+			restaurantClient := mock_clients.NewMockRestaurantClient(ctl)
 
 			mockConsumerClientOutData := &consumerapi.LocationResponse{
 				UserID:     1,
@@ -84,8 +85,8 @@ func TestGetEstimateDelivery(t *testing.T) {
 			consumerClient.EXPECT().GetLocation(mockConsumerClientInData).Return(mockConsumerClientOutData, nil)
 			restaurantClient.EXPECT().GetRestaurant(mockRestaurantClientInData).Return(mockRestaurantClientOutData, nil)
 
-			service := deliveryservice.NewDeliveryService(deliveryservice.Params{
-				DeliveryStorage:  storage,
+			service := deliveryservice.NewService(deliveryservice.Params{
+				Storage:          storage,
 				Logger:           logger.NewLogger(os.Stdout, "service: "),
 				RestaurantClient: restaurantClient,
 				CourierClient:    courierClient,
@@ -129,9 +130,9 @@ func TestAssignOrder(t *testing.T) {
 			t.Parallel()
 			ctl := gomock.NewController(t)
 			storage := mock.NewMockDeliveryStorage(ctl)
-			courierClient := mock.NewMockCourierClient(ctl)
-			consumerClient := mock.NewMockConsumerClient(ctl)
-			restaurantClient := mock.NewMockRestaurantClient(ctl)
+			courierClient := mock_clients.NewMockCourierClient(ctl)
+			consumerClient := mock_clients.NewMockConsumerClient(ctl)
+			restaurantClient := mock_clients.NewMockRestaurantClient(ctl)
 
 			mockRestaurantClientOutData := &restaurantapi.ReturnRestaurant{
 				ID:              1,
@@ -178,8 +179,8 @@ func TestAssignOrder(t *testing.T) {
 
 			courierClient.EXPECT().UpdateCourierAvailable(mockCourierClientOutData.LocationResponseList[0].UserID, "false").Return(&courierapi.CourierResponse{}, nil)
 
-			service := deliveryservice.NewDeliveryService(deliveryservice.Params{
-				DeliveryStorage:  storage,
+			service := deliveryservice.NewService(deliveryservice.Params{
+				Storage:          storage,
 				Logger:           logger.NewLogger(os.Stdout, "service: "),
 				RestaurantClient: restaurantClient,
 				CourierClient:    courierClient,

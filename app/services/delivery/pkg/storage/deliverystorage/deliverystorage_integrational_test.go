@@ -56,7 +56,7 @@ func TestAssignOrder(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := deliverystorage.NewDeliveryStorage(deliverystorage.Params{DB: database})
+			s := deliverystorage.NewStorage(deliverystorage.Params{DB: database})
 
 			resp, err := s.AssignOrder(test.in)
 			require.NoError(t, err)
