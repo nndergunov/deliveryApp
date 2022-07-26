@@ -11,7 +11,7 @@ import (
 	domain "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
-// MockConsumerService is a mock of ConsumerService interface.
+// MockConsumerService is a mock of Service interface.
 type MockConsumerService struct {
 	ctrl     *gomock.Controller
 	recorder *MockConsumerServiceMockRecorder

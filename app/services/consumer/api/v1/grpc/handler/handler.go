@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	"google.golang.org/grpc"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
@@ -14,8 +16,8 @@ import (
 )
 
 type Params struct {
-	Logger          *logger.Logger
-	ConsumerService consumerservice.ConsumerService
+	Logger  *logger.Logger
+	Service consumerservice.ConsumerService
 }
 
 // handler is the entrypoint into our application
@@ -26,11 +28,16 @@ type handler struct {
 }
 
 // NewHandler returns new http multiplexer with configured endpoints.
-func NewHandler(p Params) *handler {
-	return &handler{
+func NewHandler(p Params) *grpc.Server {
+	h := &handler{
 		log:     p.Logger,
-		service: p.ConsumerService,
+		service: p.Service,
 	}
+
+	srv := grpc.NewServer()
+	pb.RegisterConsumerServer(srv, h)
+
+	return srv
 }
 
 func (h *handler) InsertNewConsumer(ctx context.Context, in *pb.NewConsumerRequest) (*pb.ConsumerResponse, error) {

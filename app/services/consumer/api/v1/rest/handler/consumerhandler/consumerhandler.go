@@ -18,18 +18,18 @@ type Params struct {
 	ConsumerService consumerservice.ConsumerService
 }
 
-// consumerHandler is the entrypoint into our application
-type consumerHandler struct {
+// handler is the entrypoint into our application
+type handler struct {
 	serveMux        *mux.Router
 	log             *logger.Logger
 	consumerService consumerservice.ConsumerService
 }
 
-// NewConsumerHandler returns new http multiplexer with configured endpoints.
-func NewConsumerHandler(p Params) *mux.Router {
+// NewHandler returns new http multiplexer with configured endpoints.
+func NewHandler(p Params) *mux.Router {
 	serveMux := mux.NewRouter()
 
-	handler := consumerHandler{
+	handler := handler{
 		serveMux:        serveMux,
 		log:             p.Logger,
 		consumerService: p.ConsumerService,
@@ -42,8 +42,8 @@ func NewConsumerHandler(p Params) *mux.Router {
 
 const consumerIDKey = "consumer_id"
 
-// NewConsumerHandler creates an consumerHandler value that handle a set of routes for the application.
-func (c *consumerHandler) handlerInit() {
+// NewHandler creates an handler value that handle a set of routes for the application.
+func (c *handler) handlerInit() {
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
 	c.serveMux.HandleFunc("/v1/consumers", c.insertNewConsumer).Methods(http.MethodPost)
@@ -57,7 +57,7 @@ func (c *consumerHandler) handlerInit() {
 	c.serveMux.HandleFunc("/v1/locations/{"+consumerIDKey+"}", c.getConsumerLocation).Methods(http.MethodGet)
 }
 
-func (c *consumerHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+func (c *handler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
 		ServiceName: "consumer",
 		IsUp:        "up",
@@ -113,7 +113,7 @@ func (c *consumerHandler) statusHandler(responseWriter http.ResponseWriter, _ *h
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) insertNewConsumer(rw http.ResponseWriter, r *http.Request) {
 	var consumerRequest consumerapi.NewConsumerRequest
 
 	if err := consumerapi.BindJson(r, &consumerRequest); err != nil {
@@ -177,7 +177,7 @@ func (c *consumerHandler) insertNewConsumer(rw http.ResponseWriter, r *http.Requ
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) deleteConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
 	if !ok {
@@ -236,7 +236,7 @@ func (c *consumerHandler) deleteConsumer(rw http.ResponseWriter, r *http.Request
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) updateConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
 	if !ok {
@@ -309,7 +309,7 @@ func (c *consumerHandler) updateConsumer(rw http.ResponseWriter, r *http.Request
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getAllConsumer(rw http.ResponseWriter, r *http.Request) {
 	data, err := c.consumerService.GetAllConsumer()
 	if err != nil {
 
@@ -361,7 +361,7 @@ func (c *consumerHandler) getAllConsumer(rw http.ResponseWriter, r *http.Request
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
 	if !ok {
@@ -428,7 +428,7 @@ func (c *consumerHandler) getConsumer(rw http.ResponseWriter, r *http.Request) {
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) insertNewConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	consumerID, ok := vars[consumerIDKey]
 	if !ok {
@@ -506,7 +506,7 @@ func (c *consumerHandler) insertNewConsumerLocation(rw http.ResponseWriter, r *h
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) updateConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	consumerID, ok := vars[consumerIDKey]
 	if !ok {
@@ -579,7 +579,7 @@ func (c *consumerHandler) updateConsumerLocation(rw http.ResponseWriter, r *http
 //     description: bad request
 //     schema:
 //       type: string
-func (c *consumerHandler) getConsumerLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[consumerIDKey]
 	if !ok {

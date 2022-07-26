@@ -67,8 +67,8 @@ func run(log *logger.Logger) error {
 	})
 
 	grpcHandler := handler.NewHandler(handler.Params{
-		Logger:         logger.NewLogger(os.Stdout, "grpc endpoint: "),
-		AccountService: grpcService,
+		Logger:  logger.NewLogger(os.Stdout, "grpc endpoint: "),
+		Service: grpcService,
 	})
 
 	grpcServer := grpcserver.NewGRPCServer(grpcHandler, logger.NewLogger(os.Stdout, "grpc server: "))
@@ -90,8 +90,8 @@ func run(log *logger.Logger) error {
 	})
 
 	restHandler := accountinghandler.NewHandler(accountinghandler.Params{
-		Logger:         logger.NewLogger(os.Stdout, "rest endpoint: "),
-		AccountService: restService,
+		Logger:  logger.NewLogger(os.Stdout, "rest endpoint: "),
+		Service: restService,
 	})
 
 	restAPI := api.NewAPI(restHandler, logger.NewLogger(os.Stdout, "rest api: "))

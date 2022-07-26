@@ -6,7 +6,7 @@ server:
     idleTime: "5m"
     readerHeaderTime: "5s"
   grpc:
-    address: ":7071"
+    address: ":441"
 
 database:
   host: "host.docker.internal"

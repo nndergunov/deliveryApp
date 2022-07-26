@@ -14,8 +14,8 @@ import (
 )
 
 type Params struct {
-	Logger         *logger.Logger
-	AccountService accountingservice.AccountService
+	Logger  *logger.Logger
+	Service accountingservice.AccountService
 }
 
 // handler is the entrypoint into our application
@@ -29,7 +29,7 @@ type handler struct {
 func NewHandler(p Params) *grpc.Server {
 	h := &handler{
 		log:     p.Logger,
-		service: p.AccountService,
+		service: p.Service,
 	}
 
 	srv := grpc.NewServer()

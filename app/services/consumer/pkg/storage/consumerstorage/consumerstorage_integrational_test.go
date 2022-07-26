@@ -80,7 +80,7 @@ func TestInsertConsumer(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			resp, err := s.InsertConsumer(test.in)
 			require.NoError(t, err)
@@ -121,7 +121,7 @@ func TestDeleteConsumer(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			resp, err := s.InsertConsumer(test.in)
 			require.NoError(t, err)
@@ -179,7 +179,7 @@ func TestUpdateConsumer(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			resp, err := s.InsertConsumer(test.in)
 			require.NoError(t, err)
@@ -231,7 +231,7 @@ func TestGetAllConsumer(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			for _, data := range test.out {
 				resp, err := s.InsertConsumer(data)
@@ -279,7 +279,7 @@ func TestGetConsumer(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			resp, err := s.InsertConsumer(*test.out)
 			require.NoError(t, err)
@@ -340,7 +340,7 @@ func TestInsertConsumerLocation(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			resp, err := s.InsertLocation(test.in)
 			require.NoError(t, err)
@@ -410,7 +410,7 @@ func TestUpdateConsumerLocation(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			resp, err := s.InsertLocation(test.in)
 			require.NoError(t, err)
@@ -460,7 +460,7 @@ func TestGetConsumerLocation(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+			s := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
 			mockData := *test.out
 			resp, err := s.InsertLocation(mockData)

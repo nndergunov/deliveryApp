@@ -1,3 +1,9 @@
+push:
+	make gomod-tidy
+	git add .
+	git commit -m "one main"
+	git push origin feature
+
 golangci-lint:
 	golangci-lint run
 

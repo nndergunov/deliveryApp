@@ -5,15 +5,18 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 
-	"github.com/gorilla/handlers"
+	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
+	"github.com/nndergunov/deliveryApp/app/pkg/grpcserver"
+	"github.com/nndergunov/deliveryApp/app/pkg/server"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
-
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
 
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/grpc/handler"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/handler/consumerhandler"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/db"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/service/consumerservice"
@@ -24,10 +27,10 @@ const configFile = "/config.yaml"
 
 func main() {
 	// Construct the application logger.
-	log := logger.NewLogger(os.Stdout, "main: ")
+	l := logger.NewLogger(os.Stdout, "main: ")
 
 	// Perform the startup and shutdown sequence.
-	if err := run(log); err != nil {
+	if err := run(l); err != nil {
 		log.Fatal("startup", "ERROR", err)
 	}
 }
@@ -43,9 +46,6 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	log.Println("starting service", "version", configreader.GetString("buildmode"))
-	defer log.Println("shutdown complete")
-
 	dbURL := fmt.Sprintf("host=" + configreader.GetString("database.host") +
 		" port=" + configreader.GetString("database.port") +
 		" user=" + configreader.GetString("database.user") +
@@ -53,52 +53,74 @@ func run(log *logger.Logger) error {
 		" dbname=" + configreader.GetString("database.dbName") +
 		" sslmode=" + configreader.GetString("database.sslmode"))
 
-	database, err := db.OpenDB("postgres", dbURL)
+	//*** grpc ***
+	grpcDatabase, err := db.OpenDB("postgres", dbURL)
 	if err != nil {
 		return err
 	}
-	consumerStorage := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
-	consumerService := consumerservice.NewService(consumerservice.Params{
-		Storage: consumerStorage,
-		Logger:  logger.NewLogger(os.Stdout, "service: "),
+	grpcStorage := consumerstorage.NewStorage(consumerstorage.Params{DB: grpcDatabase})
+
+	grpcService := consumerservice.NewService(consumerservice.Params{
+		Storage: grpcStorage,
+		Logger:  logger.NewLogger(os.Stdout, "grpc service: "),
 	})
 
-	handler := consumerhandler.NewHandler(consumerhandler.Params{
-		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
-		ConsumerService: consumerService,
+	grpcHandler := handler.NewHandler(handler.Params{
+		Logger:  logger.NewLogger(os.Stdout, "grpc endpoint: "),
+		Service: grpcService,
 	})
 
-	apiLogger := logger.NewLogger(os.Stdout, "api: ")
-	serverAPI := api.NewAPI(handler, apiLogger)
+	grpcServer := grpcserver.NewGRPCServer(grpcHandler, logger.NewLogger(os.Stdout, "grpc server: "))
 
-	serverLogger := logger.NewLogger(os.Stdout, "server: ")
-	serverConfig := getServerConfig(serverAPI, nil, serverLogger)
+	grpcServerStopChan := make(chan interface{})
+	grpcServer.StartListening(configreader.GetString("server.grpc.address"), grpcServerStopChan)
 
-	// serviceServer := server.NewServer(serverConfig)
+	//*** rest ***
+	restDatabase, err := db.OpenDB("postgres", dbURL)
+	if err != nil {
+		return err
+	}
 
-	serverErrors := make(chan interface{})
+	restStorage := consumerstorage.NewStorage(consumerstorage.Params{DB: restDatabase})
 
-	// serviceServer.StartListening(serverErrors)
+	restService := consumerservice.NewService(consumerservice.Params{
+		Storage: restStorage,
+		Logger:  logger.NewLogger(os.Stdout, "rest service: "),
+	})
 
-	// Where ORIGIN_ALLOWED is like `scheme://dns[:port]`, or `*` (insecure)
-	headersOK := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOK := handlers.AllowedOrigins([]string{"*"})
-	methodsOK := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "DELETE", "PUT"})
+	restHandler := consumerhandler.NewHandler(consumerhandler.Params{
+		Logger:          logger.NewLogger(os.Stdout, "rest endpoint: "),
+		ConsumerService: restService,
+	})
 
-	// start server listen
-	// with error handling
+	restAPI := api.NewAPI(restHandler, logger.NewLogger(os.Stdout, "rest api: "))
 
-	go func() {
-		if err := http.ListenAndServe(serverConfig.Address, handlers.CORS(headersOK, originsOK, methodsOK)(handler)); err != nil {
-			log.Panicln(err)
-		}
+	restServerConfig := getServerConfig(v1.EnableCORS(restAPI), nil, logger.NewLogger(os.Stdout, "rest server: "))
 
-		close(serverErrors)
-	}()
+	restServer := server.NewServer(restServerConfig)
 
-	<-serverErrors
+	restServerStopChan := make(chan interface{})
+	restServer.StartListening(restServerStopChan)
 
+	serverWG := new(sync.WaitGroup)
+	numberOfServersRunning := 2
+
+	serverWG.Add(numberOfServersRunning)
+
+	go func(wg *sync.WaitGroup) {
+		<-grpcServerStopChan
+
+		wg.Done()
+	}(serverWG)
+
+	go func(wg *sync.WaitGroup) {
+		<-restServerStopChan
+
+		wg.Done()
+	}(serverWG)
+
+	serverWG.Wait()
 	return nil
 }
 

@@ -60,16 +60,16 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	storage := consumerstorage.NewConsumerStorage(consumerstorage.Params{DB: database})
+	storage := consumerstorage.NewStorage(consumerstorage.Params{DB: database})
 
-	service := consumerservice.NewConsumerService(consumerservice.Params{
-		ConsumerStorage: storage,
-		Logger:          logger.NewLogger(os.Stdout, "service: "),
+	service := consumerservice.NewService(consumerservice.Params{
+		Storage: storage,
+		Logger:  logger.NewLogger(os.Stdout, "service: "),
 	})
 
 	h := handler.NewHandler(handler.Params{
-		Logger:          logger.NewLogger(os.Stdout, "endpoint: "),
-		ConsumerService: service,
+		Logger:  logger.NewLogger(os.Stdout, "endpoint: "),
+		Service: service,
 	})
 
 	s := grpc.NewServer()

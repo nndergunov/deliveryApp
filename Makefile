@@ -10,7 +10,7 @@ docker-build-all:
 	make -C app/services/restaurant docker-build
 
 docker-delete-all:
-	make -C app/pkg/messagebroker docker-delete
+#	make -C app/pkg/messagebroker docker-delete
 	make -C app/services/accounting docker-delete
 	make -C app/services/consumer docker-delete
 	make -C app/services/courier docker-delete
