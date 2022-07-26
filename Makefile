@@ -20,6 +20,7 @@ docker-delete-all:
 	make -C app/services/restaurant docker-delete
 	docker network rm delivery_app_net
 
+
 docker-rebuild-all:
 	make -C app/pkg/messagebroker docker-rebuild
 	make -C app/services/accounting docker-rebuild
