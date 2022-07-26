@@ -15,18 +15,18 @@ type Params struct {
 	DB *sql.DB
 }
 
-type CourierStorage struct {
+type Storage struct {
 	db *sql.DB
 }
 
-func NewCourierStorage(p Params) *CourierStorage {
-	return &CourierStorage{
+func NewStorage(p Params) *Storage {
+	return &Storage{
 		db: p.DB,
 	}
 }
 
 // InsertCourier inserts a new courier into the database.
-func (c CourierStorage) InsertCourier(courier domain.Courier) (*domain.Courier, error) {
+func (c Storage) InsertCourier(courier domain.Courier) (*domain.Courier, error) {
 	hashPass, err := bcrypt.GenerateFromPassword([]byte(courier.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("generating password hash: %w", err)
@@ -49,7 +49,7 @@ func (c CourierStorage) InsertCourier(courier domain.Courier) (*domain.Courier, 
 	return &newCourier, nil
 }
 
-func (c CourierStorage) DeleteCourier(id int) error {
+func (c Storage) DeleteCourier(id int) error {
 	sql := `DELETE FROM 
 				courier
 			WHERE id = $1
@@ -61,7 +61,7 @@ func (c CourierStorage) DeleteCourier(id int) error {
 	return nil
 }
 
-func (c CourierStorage) UpdateCourier(courier domain.Courier) (*domain.Courier, error) {
+func (c Storage) UpdateCourier(courier domain.Courier) (*domain.Courier, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -88,7 +88,7 @@ func (c CourierStorage) UpdateCourier(courier domain.Courier) (*domain.Courier, 
 	return &updatedCourier, nil
 }
 
-func (c CourierStorage) UpdateCourierAvailable(id int, available bool) (*domain.Courier, error) {
+func (c Storage) UpdateCourierAvailable(id int, available bool) (*domain.Courier, error) {
 	sql := `UPDATE 
 				courier
 			SET 
@@ -108,7 +108,7 @@ func (c CourierStorage) UpdateCourierAvailable(id int, available bool) (*domain.
 	return &updatedCourier, nil
 }
 
-func (c CourierStorage) GetCourierList(param domain.SearchParam) ([]domain.Courier, error) {
+func (c Storage) GetCourierList(param domain.SearchParam) ([]domain.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 `
@@ -140,7 +140,7 @@ func (c CourierStorage) GetCourierList(param domain.SearchParam) ([]domain.Couri
 	return courierList, nil
 }
 
-func (c CourierStorage) GetCourierByID(id int) (*domain.Courier, error) {
+func (c Storage) GetCourierByID(id int) (*domain.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 			WHERE
@@ -157,7 +157,7 @@ func (c CourierStorage) GetCourierByID(id int) (*domain.Courier, error) {
 	return &courier, nil
 }
 
-func (c CourierStorage) GetCourierDuplicateByParam(param domain.SearchParam) (*domain.Courier, error) {
+func (c Storage) GetCourierDuplicateByParam(param domain.SearchParam) (*domain.Courier, error) {
 	sql := `SELECT * FROM 
 				courier
 	`
@@ -196,7 +196,7 @@ func (c CourierStorage) GetCourierDuplicateByParam(param domain.SearchParam) (*d
 	return &courier, nil
 }
 
-func (c CourierStorage) CleanCourierTable() error {
+func (c Storage) CleanCourierTable() error {
 	sql := `DELETE FROM
 				courier
 			WHERE 
@@ -210,7 +210,7 @@ func (c CourierStorage) CleanCourierTable() error {
 }
 
 // InsertLocation inserts a new courier into the database.
-func (c CourierStorage) InsertLocation(location domain.Location) (*domain.Location, error) {
+func (c Storage) InsertLocation(location domain.Location) (*domain.Location, error) {
 	sql := `INSERT 
 			INTO
 			    location (user_id, latitude, longitude, country, city, region, street, home_number, floor, door)
@@ -233,7 +233,7 @@ func (c CourierStorage) InsertLocation(location domain.Location) (*domain.Locati
 	return &newLocation, nil
 }
 
-func (c CourierStorage) DeleteLocation(courierID int) error {
+func (c Storage) DeleteLocation(courierID int) error {
 	sql := `DELETE
 			FROM location
 			WHERE user_id = $1;`
@@ -244,7 +244,7 @@ func (c CourierStorage) DeleteLocation(courierID int) error {
 	return nil
 }
 
-func (c CourierStorage) GetLocation(userID int) (*domain.Location, error) {
+func (c Storage) GetLocation(userID int) (*domain.Location, error) {
 	sql := `SELECT
 				user_id, latitude, longitude, country, city, region, street, home_number, floor, door
 			FROM 
@@ -270,7 +270,7 @@ func (c CourierStorage) GetLocation(userID int) (*domain.Location, error) {
 	return &location, nil
 }
 
-func (c CourierStorage) UpdateLocation(location domain.Location) (*domain.Location, error) {
+func (c Storage) UpdateLocation(location domain.Location) (*domain.Location, error) {
 	sql := `UPDATE 
 				location
 			SET 
@@ -303,7 +303,7 @@ func (c CourierStorage) UpdateLocation(location domain.Location) (*domain.Locati
 	return &updatedLocation, nil
 }
 
-func (c CourierStorage) GetLocationList(param domain.SearchParam) ([]domain.Location, error) {
+func (c Storage) GetLocationList(param domain.SearchParam) ([]domain.Location, error) {
 	sql := `SELECT * FROM 
 				location
 `
@@ -336,7 +336,7 @@ func (c CourierStorage) GetLocationList(param domain.SearchParam) ([]domain.Loca
 	return locationList, nil
 }
 
-func (c CourierStorage) CleanLocationTable() error {
+func (c Storage) CleanLocationTable() error {
 	sql := `DELETE FROM
 				location
 			WHERE 

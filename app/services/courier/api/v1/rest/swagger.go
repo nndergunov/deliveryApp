@@ -1,4 +1,4 @@
-// Package v1 Courier Service API V1.
+// Package rest Package v1 Courier Service API V1.
 //
 // API specification of the courier service
 //

@@ -28,10 +28,12 @@ service Courier {
 
 // The request message containing the user's data.
 message NewCourierRequest {
-  string Firstname = 1;
-  string Lastname = 2;
-  string Email = 3;
-  string Phone = 4;
+  string Username = 1;
+  string Password = 2;
+  string Firstname = 3;
+  string Lastname = 4;
+  string Email = 5;
+  string Phone = 6;
 }
 
 // The request message containing the user's data.
@@ -46,10 +48,12 @@ message UpdateCourierRequest {
 // The response message containing the greetings
 message CourierResponse {
   int64 ID = 1;
-  string Firstname = 2;
-  string Lastname = 3;
-  string Email = 4;
-  string Phone = 5;
+  string Username = 2;
+  string Firstname = 3;
+  string Lastname = 4;
+  string Email = 5;
+  string Phone = 6;
+  bool Available = 7;
 }
 
 message CourierListResponse {

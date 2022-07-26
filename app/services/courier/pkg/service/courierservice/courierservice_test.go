@@ -53,7 +53,7 @@ func TestInsertNewCourier(t *testing.T) {
 			storage.EXPECT().GetCourierDuplicateByParam(domain.SearchParam{"username": test.in.Username}).Return(nil, nil)
 			storage.EXPECT().InsertCourier(test.in).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			newAccount, err := service.InsertCourier(test.in)
 			require.NoError(t, err)
 
@@ -90,7 +90,7 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 			storage.EXPECT().DeleteCourier(mockInData).Return(nil)
 			storage.EXPECT().DeleteLocation(mockInData).Return(nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.DeleteCourier(test.in)
 			require.NoError(t, err)
 
@@ -140,7 +140,7 @@ func TestUpdateCourier(t *testing.T) {
 
 			storage.EXPECT().UpdateCourier(test.in).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.UpdateCourier(test.in, intStr)
 			require.NoError(t, err)
 
@@ -192,7 +192,7 @@ func TestUpdateCourierAvailable(t *testing.T) {
 
 			storage.EXPECT().UpdateCourierAvailable(idInt, availableBool).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.UpdateCourierAvailable(test.inID, test.InAvailable)
 			require.NoError(t, err)
 
@@ -245,7 +245,7 @@ func TestGetAllCourier(t *testing.T) {
 			storage := mockstorage.NewMockCourierStorage(ctl)
 			storage.EXPECT().GetCourierList(test.in).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetCourierList(test.in)
 			require.NoError(t, err)
 
@@ -286,7 +286,7 @@ func TestGetCourier(t *testing.T) {
 
 			storage.EXPECT().GetCourierByID(id).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetCourier(test.in)
 			require.NoError(t, err)
 
@@ -344,7 +344,7 @@ func TestInsertNewCourierLocation(t *testing.T) {
 			storage.EXPECT().GetLocation(test.in.UserID).Return(nil, nil)
 			storage.EXPECT().InsertLocation(test.in).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.InsertLocation(test.in, strconv.Itoa(test.in.UserID))
 			require.NoError(t, err)
 
@@ -416,7 +416,7 @@ func TestUpdateCourierLocation(t *testing.T) {
 			storage.EXPECT().GetLocation(userIDStr).Return(test.out, nil)
 			storage.EXPECT().UpdateLocation(test.in.location).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.UpdateLocation(test.in.location, test.in.userID)
 			require.NoError(t, err)
 
@@ -463,7 +463,7 @@ func TestGetCourierLocation(t *testing.T) {
 
 			storage.EXPECT().GetLocation(mockInData).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetLocation(test.in)
 			require.NoError(t, err)
 
@@ -511,7 +511,7 @@ func TestGetCourierLocationList(t *testing.T) {
 
 			storage.EXPECT().GetLocationList(test.in).Return(test.out, nil)
 
-			service := courierservice.NewCourierService(courierservice.Params{CourierStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := courierservice.NewService(courierservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetLocationList(test.in)
 			require.NoError(t, err)
 

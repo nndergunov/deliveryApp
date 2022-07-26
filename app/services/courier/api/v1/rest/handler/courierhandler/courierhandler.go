@@ -9,42 +9,42 @@ import (
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
-	courierapi2 "github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/courierapi"
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/courierapi"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/service/courierservice"
 )
 
 type Params struct {
-	Logger         *logger.Logger
-	CourierService courierservice.CourierService
+	Logger  *logger.Logger
+	Service courierservice.CourierService
 }
 
-// courierHandler is the entrypoint into our application
-type courierHandler struct {
+// handler is the entrypoint into our application
+type handler struct {
 	serveMux       *mux.Router
 	log            *logger.Logger
 	courierService courierservice.CourierService
 }
 
-// NewCourierHandler returns new http multiplexer with configured endpoints.
-func NewCourierHandler(p Params) *mux.Router {
+// NewHandler returns new http multiplexer with configured endpoints.
+func NewHandler(p Params) *mux.Router {
 	serveMux := mux.NewRouter()
 
-	handler := courierHandler{
+	handlerItem := handler{
 		serveMux:       serveMux,
 		log:            p.Logger,
-		courierService: p.CourierService,
+		courierService: p.Service,
 	}
 
-	handler.handlerInit()
+	handlerItem.handlerInit()
 
-	return handler.serveMux
+	return handlerItem.serveMux
 }
 
 const courierIDKey = "courier_id"
 
-// NewCourierHandler creates an courierHandler value that handle a set of routes for the application.
-func (c *courierHandler) handlerInit() {
+// NewHandler creates an handler value that handle a set of routes for the application.
+func (c *handler) handlerInit() {
 	c.serveMux.HandleFunc("/status", c.statusHandler).Methods(http.MethodPost)
 
 	c.serveMux.HandleFunc("/v1/couriers", c.insertNewCourier).Methods(http.MethodPost)
@@ -61,7 +61,7 @@ func (c *courierHandler) handlerInit() {
 	c.serveMux.HandleFunc("/v1/locations/{"+courierIDKey+"}", c.getLocation).Methods(http.MethodGet)
 }
 
-func (c *courierHandler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
+func (c *handler) statusHandler(responseWriter http.ResponseWriter, _ *http.Request) {
 	data := v1.Status{
 		ServiceName: "courier",
 		IsUp:        "up",
@@ -117,12 +117,12 @@ func (c *courierHandler) statusHandler(responseWriter http.ResponseWriter, _ *ht
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Request) {
-	var courierRequest courierapi2.NewCourierRequest
+func (c *handler) insertNewCourier(rw http.ResponseWriter, r *http.Request) {
+	var courierRequest courierapi.NewCourierRequest
 
-	if err := courierapi2.BindJson(r, &courierRequest); err != nil {
+	if err := courierapi.BindJson(r, &courierRequest); err != nil {
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -134,20 +134,20 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 	response := courierToResponse(*data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -179,11 +179,11 @@ func (c *courierHandler) insertNewCourier(rw http.ResponseWriter, r *http.Reques
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) deleteCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
@@ -192,19 +192,19 @@ func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
-	if err := courierapi2.Respond(rw, http.StatusOK, data); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, data); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -244,20 +244,20 @@ func (c *courierHandler) deleteCourier(rw http.ResponseWriter, r *http.Request) 
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) updateCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var updateCourierRequest courierapi2.UpdateCourierRequest
+	var updateCourierRequest courierapi.UpdateCourierRequest
 
-	if err := courierapi2.BindJson(r, &updateCourierRequest); err != nil {
+	if err := courierapi.BindJson(r, &updateCourierRequest); err != nil {
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -269,13 +269,13 @@ func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -283,7 +283,7 @@ func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 
 	response := courierToResponse(*data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -322,11 +322,11 @@ func (c *courierHandler) updateCourier(rw http.ResponseWriter, r *http.Request) 
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) updateCourierAvailable(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
@@ -335,7 +335,7 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 	queryParamsList := queryParams["available"]
 
 	if queryParamsList == nil {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoAvailableParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoAvailableParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
@@ -345,20 +345,20 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
 	}
 
 	response := courierToResponse(*data)
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -397,7 +397,7 @@ func (c *courierHandler) updateCourierAvailable(rw http.ResponseWriter, r *http.
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getCourierList(rw http.ResponseWriter, r *http.Request) {
 	param := domain.SearchParam{}
 
 	queryParams := r.URL.Query()
@@ -414,13 +414,13 @@ func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request)
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -428,7 +428,7 @@ func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request)
 
 	response := courierListToResponse(data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -460,11 +460,11 @@ func (c *courierHandler) getCourierList(rw http.ResponseWriter, r *http.Request)
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam); err != nil {
 			c.log.Println(err)
 		}
 	}
@@ -473,13 +473,13 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -487,7 +487,7 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 
 	response := courierToResponse(*data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -526,20 +526,20 @@ func (c *courierHandler) getCourier(rw http.ResponseWriter, r *http.Request) {
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) insertNewLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	courierID, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var locationRequest courierapi2.NewLocationRequest
+	var locationRequest courierapi.NewLocationRequest
 
-	if err := courierapi2.BindJson(r, &locationRequest); err != nil {
+	if err := courierapi.BindJson(r, &locationRequest); err != nil {
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -551,13 +551,13 @@ func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Reque
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -565,7 +565,7 @@ func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Reque
 
 	response := locationToResponse(*data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -604,20 +604,20 @@ func (c *courierHandler) insertNewLocation(rw http.ResponseWriter, r *http.Reque
 //     description: bad request
 //     schema:
 //       type: string
-func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) updateLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	courierID, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
 
-	var updateLocationRequest courierapi2.UpdateLocationRequest
+	var updateLocationRequest courierapi.UpdateLocationRequest
 
-	if err := courierapi2.BindJson(r, &updateLocationRequest); err != nil {
+	if err := courierapi.BindJson(r, &updateLocationRequest); err != nil {
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errIncorrectInputData.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -629,13 +629,13 @@ func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request)
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -643,7 +643,7 @@ func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request)
 
 	response := locationToResponse(*data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -675,11 +675,11 @@ func (c *courierHandler) updateLocation(rw http.ResponseWriter, r *http.Request)
 //   '400':
 //     description: bad request
 //     schema:
-func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getLocation(rw http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID, ok := vars[courierIDKey]
 	if !ok {
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, errNoCourierIDParam.Error()); err != nil {
 			c.log.Println(err)
 		}
 	}
@@ -688,13 +688,13 @@ func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -702,7 +702,7 @@ func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 
 	response := locationToResponse(*data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}
@@ -734,7 +734,7 @@ func (c *courierHandler) getLocation(rw http.ResponseWriter, r *http.Request) {
 //   '400':
 //     description: bad request
 //     schema:
-func (c *courierHandler) getLocationList(rw http.ResponseWriter, r *http.Request) {
+func (c *handler) getLocationList(rw http.ResponseWriter, r *http.Request) {
 	param := domain.SearchParam{}
 	queryParams := r.URL.Query()
 
@@ -750,13 +750,13 @@ func (c *courierHandler) getLocationList(rw http.ResponseWriter, r *http.Request
 	if err != nil {
 		if errors.Is(err, systemErr) {
 			c.log.Println(err)
-			if err := courierapi2.Respond(rw, http.StatusInternalServerError, ""); err != nil {
+			if err := courierapi.Respond(rw, http.StatusInternalServerError, ""); err != nil {
 				c.log.Println(err)
 			}
 			return
 		}
 		c.log.Println(err)
-		if err := courierapi2.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
+		if err := courierapi.Respond(rw, http.StatusBadRequest, err.Error()); err != nil {
 			c.log.Println(err)
 		}
 		return
@@ -764,7 +764,7 @@ func (c *courierHandler) getLocationList(rw http.ResponseWriter, r *http.Request
 
 	response := locationListToResponse(data)
 
-	if err := courierapi2.Respond(rw, http.StatusOK, response); err != nil {
+	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
 		return
 	}

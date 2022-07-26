@@ -93,7 +93,7 @@ func TestInsertCourier(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertCourier(test.in)
 			require.NoError(t, err)
@@ -135,7 +135,7 @@ func TestDeleteCourier(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertCourier(test.in)
 			require.NoError(t, err)
@@ -198,7 +198,7 @@ func TestUpdateCourier(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertCourier(test.in)
 			require.NoError(t, err)
@@ -247,7 +247,7 @@ func TestUpdateCourierAvailable(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertCourier(*test.out)
 			require.NoError(t, err)
@@ -303,7 +303,7 @@ func TestGetAllCourier(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			for _, data := range test.out {
 				resp, err := s.InsertCourier(data)
@@ -353,7 +353,7 @@ func TestGetCourier(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertCourier(*test.out)
 			require.NoError(t, err)
@@ -414,7 +414,7 @@ func TestInsertCourierLocation(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertLocation(test.in)
 			require.NoError(t, err)
@@ -484,7 +484,7 @@ func TestUpdateCourierLocation(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			resp, err := s.InsertLocation(test.in)
 			require.NoError(t, err)
@@ -534,7 +534,7 @@ func TestGetCourierLocation(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			mockData := *test.out
 			resp, err := s.InsertLocation(mockData)
@@ -601,7 +601,7 @@ func TestGetCourierLocationList(t *testing.T) {
 			database, teardown := dbtest.NewUnit(t, c, test.name)
 			t.Cleanup(teardown)
 
-			s := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+			s := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
 			for _, mockInData := range test.out {
 				resp, err := s.InsertLocation(mockInData)

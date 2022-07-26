@@ -61,16 +61,16 @@ func run(log *logger.Logger) error {
 		return err
 	}
 
-	storage := courierstorage.NewCourierStorage(courierstorage.Params{DB: database})
+	storage := courierstorage.NewStorage(courierstorage.Params{DB: database})
 
-	service := courierservice.NewCourierService(courierservice.Params{
-		CourierStorage: storage,
-		Logger:         logger.NewLogger(os.Stdout, "service: "),
+	service := courierservice.NewService(courierservice.Params{
+		Storage: storage,
+		Logger:  logger.NewLogger(os.Stdout, "service: "),
 	})
 
 	h := handler.NewHandler(handler.Params{
-		Logger:         logger.NewLogger(os.Stdout, "endpoint: "),
-		CourierService: service,
+		Logger:  logger.NewLogger(os.Stdout, "endpoint: "),
+		Service: service,
 	})
 
 	s := grpc.NewServer()

@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	"google.golang.org/grpc"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
@@ -14,8 +16,8 @@ import (
 )
 
 type Params struct {
-	Logger         *logger.Logger
-	CourierService courierservice.CourierService
+	Logger  *logger.Logger
+	Service courierservice.CourierService
 }
 
 // handler is the entrypoint into our application
@@ -26,15 +28,22 @@ type handler struct {
 }
 
 // NewHandler returns new http multiplexer with configured endpoints.
-func NewHandler(p Params) *handler {
-	return &handler{
+func NewHandler(p Params) *grpc.Server {
+	h := &handler{
 		log:     p.Logger,
-		service: p.CourierService,
+		service: p.Service,
 	}
+
+	srv := grpc.NewServer()
+	pb.RegisterCourierServer(srv, h)
+
+	return srv
 }
 
 func (h *handler) InsertNewCourier(ctx context.Context, in *pb.NewCourierRequest) (*pb.CourierResponse, error) {
 	courier := domain.Courier{
+		Username:  in.Username,
+		Password:  in.Password,
 		Firstname: in.Firstname,
 		Lastname:  in.Lastname,
 		Email:     in.Email,
@@ -48,10 +57,12 @@ func (h *handler) InsertNewCourier(ctx context.Context, in *pb.NewCourierRequest
 
 	return &pb.CourierResponse{
 		ID:        int64(resp.ID),
+		Username:  resp.Username,
 		Firstname: resp.Firstname,
 		Lastname:  resp.Lastname,
 		Email:     resp.Email,
 		Phone:     resp.Phone,
+		Available: resp.Available,
 	}, nil
 }
 
