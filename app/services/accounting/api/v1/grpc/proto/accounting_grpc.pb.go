@@ -25,7 +25,7 @@ type AccountingClient interface {
 	// Sends a greeting
 	InsertNewAccount(ctx context.Context, in *NewAccountRequest, opts ...grpc.CallOption) (*AccountResponse, error)
 	GetAccountList(ctx context.Context, in *SearchParam, opts ...grpc.CallOption) (*AccountListResponse, error)
-	GetAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountListResponse, error)
+	GetAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountResponse, error)
 	DeleteAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountDeleteResponse, error)
 	InsertTransaction(ctx context.Context, in *TransactionRequest, opts ...grpc.CallOption) (*TransactionResponse, error)
 	DeleteTransaction(ctx context.Context, in *TransactionID, opts ...grpc.CallOption) (*TransactionDeleteResponse, error)
@@ -57,8 +57,8 @@ func (c *accountingClient) GetAccountList(ctx context.Context, in *SearchParam, 
 	return out, nil
 }
 
-func (c *accountingClient) GetAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountListResponse, error) {
-	out := new(AccountListResponse)
+func (c *accountingClient) GetAccount(ctx context.Context, in *AccountID, opts ...grpc.CallOption) (*AccountResponse, error) {
+	out := new(AccountResponse)
 	err := c.cc.Invoke(ctx, "/accounting_proto.Accounting/GetAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ type AccountingServer interface {
 	// Sends a greeting
 	InsertNewAccount(context.Context, *NewAccountRequest) (*AccountResponse, error)
 	GetAccountList(context.Context, *SearchParam) (*AccountListResponse, error)
-	GetAccount(context.Context, *AccountID) (*AccountListResponse, error)
+	GetAccount(context.Context, *AccountID) (*AccountResponse, error)
 	DeleteAccount(context.Context, *AccountID) (*AccountDeleteResponse, error)
 	InsertTransaction(context.Context, *TransactionRequest) (*TransactionResponse, error)
 	DeleteTransaction(context.Context, *TransactionID) (*TransactionDeleteResponse, error)
@@ -117,7 +117,7 @@ func (UnimplementedAccountingServer) InsertNewAccount(context.Context, *NewAccou
 func (UnimplementedAccountingServer) GetAccountList(context.Context, *SearchParam) (*AccountListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountList not implemented")
 }
-func (UnimplementedAccountingServer) GetAccount(context.Context, *AccountID) (*AccountListResponse, error) {
+func (UnimplementedAccountingServer) GetAccount(context.Context, *AccountID) (*AccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
 }
 func (UnimplementedAccountingServer) DeleteAccount(context.Context, *AccountID) (*AccountDeleteResponse, error) {

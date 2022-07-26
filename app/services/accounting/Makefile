@@ -1,3 +1,11 @@
+push:
+	go mod tidy
+	golangci-lint run
+	gofumpt -l -w .
+	git add .
+	git commit -m "on main"
+	git push origin feature
+
 golangci-lint:
 	golangci-lint run
 
@@ -60,7 +68,6 @@ download-gomod:
 	go get -u github.com/lib/pq
 	go get -u google.golang.org/grpc
 	go get -u google.golang.org/protobuf
-
 
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
