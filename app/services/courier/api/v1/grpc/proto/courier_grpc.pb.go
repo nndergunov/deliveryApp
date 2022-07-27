@@ -22,16 +22,16 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CourierClient interface {
-	// Sends a greeting
 	InsertNewCourier(ctx context.Context, in *NewCourierRequest, opts ...grpc.CallOption) (*CourierResponse, error)
-	GetAllCourier(ctx context.Context, in *SearchParamCourier, opts ...grpc.CallOption) (*CourierListResponse, error)
+	GetAllCourier(ctx context.Context, in *ParamCourier, opts ...grpc.CallOption) (*CourierListResponse, error)
 	DeleteCourier(ctx context.Context, in *CourierID, opts ...grpc.CallOption) (*CourierDeleteResponse, error)
 	UpdateCourier(ctx context.Context, in *UpdateCourierRequest, opts ...grpc.CallOption) (*CourierResponse, error)
+	UpdateCourierAvailable(ctx context.Context, in *ParamCourier, opts ...grpc.CallOption) (*CourierResponse, error)
 	GetCourier(ctx context.Context, in *CourierID, opts ...grpc.CallOption) (*CourierResponse, error)
 	InsertNewLocation(ctx context.Context, in *Location, opts ...grpc.CallOption) (*Location, error)
 	UpdateLocation(ctx context.Context, in *Location, opts ...grpc.CallOption) (*Location, error)
 	GetLocation(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Location, error)
-	GetLocationList(ctx context.Context, in *SearchParamLocation, opts ...grpc.CallOption) (*LocationList, error)
+	GetLocationList(ctx context.Context, in *ParamLocation, opts ...grpc.CallOption) (*LocationList, error)
 }
 
 type courierClient struct {
@@ -51,7 +51,7 @@ func (c *courierClient) InsertNewCourier(ctx context.Context, in *NewCourierRequ
 	return out, nil
 }
 
-func (c *courierClient) GetAllCourier(ctx context.Context, in *SearchParamCourier, opts ...grpc.CallOption) (*CourierListResponse, error) {
+func (c *courierClient) GetAllCourier(ctx context.Context, in *ParamCourier, opts ...grpc.CallOption) (*CourierListResponse, error) {
 	out := new(CourierListResponse)
 	err := c.cc.Invoke(ctx, "/courier.Courier/getAllCourier", in, out, opts...)
 	if err != nil {
@@ -72,6 +72,15 @@ func (c *courierClient) DeleteCourier(ctx context.Context, in *CourierID, opts .
 func (c *courierClient) UpdateCourier(ctx context.Context, in *UpdateCourierRequest, opts ...grpc.CallOption) (*CourierResponse, error) {
 	out := new(CourierResponse)
 	err := c.cc.Invoke(ctx, "/courier.Courier/updateCourier", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courierClient) UpdateCourierAvailable(ctx context.Context, in *ParamCourier, opts ...grpc.CallOption) (*CourierResponse, error) {
+	out := new(CourierResponse)
+	err := c.cc.Invoke(ctx, "/courier.Courier/updateCourierAvailable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +123,7 @@ func (c *courierClient) GetLocation(ctx context.Context, in *UserID, opts ...grp
 	return out, nil
 }
 
-func (c *courierClient) GetLocationList(ctx context.Context, in *SearchParamLocation, opts ...grpc.CallOption) (*LocationList, error) {
+func (c *courierClient) GetLocationList(ctx context.Context, in *ParamLocation, opts ...grpc.CallOption) (*LocationList, error) {
 	out := new(LocationList)
 	err := c.cc.Invoke(ctx, "/courier.Courier/getLocationList", in, out, opts...)
 	if err != nil {
@@ -127,16 +136,16 @@ func (c *courierClient) GetLocationList(ctx context.Context, in *SearchParamLoca
 // All implementations must embed UnimplementedCourierServer
 // for forward compatibility
 type CourierServer interface {
-	// Sends a greeting
 	InsertNewCourier(context.Context, *NewCourierRequest) (*CourierResponse, error)
-	GetAllCourier(context.Context, *SearchParamCourier) (*CourierListResponse, error)
+	GetAllCourier(context.Context, *ParamCourier) (*CourierListResponse, error)
 	DeleteCourier(context.Context, *CourierID) (*CourierDeleteResponse, error)
 	UpdateCourier(context.Context, *UpdateCourierRequest) (*CourierResponse, error)
+	UpdateCourierAvailable(context.Context, *ParamCourier) (*CourierResponse, error)
 	GetCourier(context.Context, *CourierID) (*CourierResponse, error)
 	InsertNewLocation(context.Context, *Location) (*Location, error)
 	UpdateLocation(context.Context, *Location) (*Location, error)
 	GetLocation(context.Context, *UserID) (*Location, error)
-	GetLocationList(context.Context, *SearchParamLocation) (*LocationList, error)
+	GetLocationList(context.Context, *ParamLocation) (*LocationList, error)
 	mustEmbedUnimplementedCourierServer()
 }
 
@@ -147,7 +156,7 @@ type UnimplementedCourierServer struct {
 func (UnimplementedCourierServer) InsertNewCourier(context.Context, *NewCourierRequest) (*CourierResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InsertNewCourier not implemented")
 }
-func (UnimplementedCourierServer) GetAllCourier(context.Context, *SearchParamCourier) (*CourierListResponse, error) {
+func (UnimplementedCourierServer) GetAllCourier(context.Context, *ParamCourier) (*CourierListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllCourier not implemented")
 }
 func (UnimplementedCourierServer) DeleteCourier(context.Context, *CourierID) (*CourierDeleteResponse, error) {
@@ -155,6 +164,9 @@ func (UnimplementedCourierServer) DeleteCourier(context.Context, *CourierID) (*C
 }
 func (UnimplementedCourierServer) UpdateCourier(context.Context, *UpdateCourierRequest) (*CourierResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourier not implemented")
+}
+func (UnimplementedCourierServer) UpdateCourierAvailable(context.Context, *ParamCourier) (*CourierResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourierAvailable not implemented")
 }
 func (UnimplementedCourierServer) GetCourier(context.Context, *CourierID) (*CourierResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCourier not implemented")
@@ -168,7 +180,7 @@ func (UnimplementedCourierServer) UpdateLocation(context.Context, *Location) (*L
 func (UnimplementedCourierServer) GetLocation(context.Context, *UserID) (*Location, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLocation not implemented")
 }
-func (UnimplementedCourierServer) GetLocationList(context.Context, *SearchParamLocation) (*LocationList, error) {
+func (UnimplementedCourierServer) GetLocationList(context.Context, *ParamLocation) (*LocationList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLocationList not implemented")
 }
 func (UnimplementedCourierServer) mustEmbedUnimplementedCourierServer() {}
@@ -203,7 +215,7 @@ func _Courier_InsertNewCourier_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _Courier_GetAllCourier_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchParamCourier)
+	in := new(ParamCourier)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -215,7 +227,7 @@ func _Courier_GetAllCourier_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/courier.Courier/getAllCourier",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CourierServer).GetAllCourier(ctx, req.(*SearchParamCourier))
+		return srv.(CourierServer).GetAllCourier(ctx, req.(*ParamCourier))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -252,6 +264,24 @@ func _Courier_UpdateCourier_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourierServer).UpdateCourier(ctx, req.(*UpdateCourierRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Courier_UpdateCourierAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParamCourier)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourierServer).UpdateCourierAvailable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/courier.Courier/updateCourierAvailable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourierServer).UpdateCourierAvailable(ctx, req.(*ParamCourier))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -329,7 +359,7 @@ func _Courier_GetLocation_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _Courier_GetLocationList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchParamLocation)
+	in := new(ParamLocation)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -341,7 +371,7 @@ func _Courier_GetLocationList_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/courier.Courier/getLocationList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CourierServer).GetLocationList(ctx, req.(*SearchParamLocation))
+		return srv.(CourierServer).GetLocationList(ctx, req.(*ParamLocation))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -368,6 +398,10 @@ var Courier_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "updateCourier",
 			Handler:    _Courier_UpdateCourier_Handler,
+		},
+		{
+			MethodName: "updateCourierAvailable",
+			Handler:    _Courier_UpdateCourierAvailable_Handler,
 		},
 		{
 			MethodName: "getCourier",
