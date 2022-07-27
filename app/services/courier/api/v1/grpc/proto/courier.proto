@@ -10,7 +10,7 @@ service Courier {
   // Sends a greeting
   rpc insertNewCourier (NewCourierRequest) returns (CourierResponse) {}
 
-  rpc getAllCourier (SearchParam) returns (CourierListResponse){}
+  rpc getAllCourier (SearchParamCourier) returns (CourierListResponse){}
 
   rpc deleteCourier (CourierID) returns (CourierDeleteResponse){}
 
@@ -18,11 +18,13 @@ service Courier {
 
   rpc getCourier (CourierID) returns (CourierResponse){}
 
-  rpc insertNewCourierLocation (Location) returns (Location){}
+  rpc insertNewLocation (Location) returns (Location){}
 
-  rpc updateCourierLocation (Location) returns (Location){}
+  rpc updateLocation (Location) returns (Location){}
 
-  rpc getCourierLocation (userID) returns (Location){}
+  rpc getLocation (userID) returns (Location){}
+
+  rpc getLocationList (SearchParamLocation) returns (LocationList){}
 
 }
 
@@ -60,9 +62,14 @@ message CourierListResponse {
   repeated CourierResponse CourierListResponse = 1;
 }
 
-message SearchParam {
+message SearchParamCourier {
   optional string available = 1;
 }
+
+message SearchParamLocation {
+  optional string city = 1;
+}
+
 
 message CourierID {
   int64 CourierID = 1;
@@ -84,6 +91,11 @@ message Location {
   optional string Floor = 9;
   optional string Door = 10;
 }
+
+message LocationList {
+  repeated Location LocationList = 1;
+}
+
 message userID {
   int64 userID = 1;
 }
