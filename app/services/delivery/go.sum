@@ -198,10 +198,10 @@ github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8
 github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8739/go.mod h1:VZTZLvj3fcLQ3rdlsxBFZfxw2gPH3vd5AqlVnSRGzLU=
 github.com/nndergunov/deliveryApp/app/services/consumer v0.0.0-20220725131345-f11f1f7ecb5d h1:nBmeagBAzL7KuBslTE6bADbJpTWW7Sm+ixi5SPdFv44=
 github.com/nndergunov/deliveryApp/app/services/consumer v0.0.0-20220725131345-f11f1f7ecb5d/go.mod h1:KImc3J3/sjPSamdnurvrBZBM87L7tMaeDaj1jDGX1q8=
-github.com/nndergunov/deliveryApp/app/services/courier v0.0.0-20220725131345-f11f1f7ecb5d h1:DmifvQhRvWjiRBQ5ivwv6O7ZPu5Hixzg4SIIACYyawU=
-github.com/nndergunov/deliveryApp/app/services/courier v0.0.0-20220725131345-f11f1f7ecb5d/go.mod h1:S0WTpnqGf3fZlbEY+W+v77Q3GaHl5BQ9dMSYd7R9IPw=
-github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220725131345-f11f1f7ecb5d h1:aKrITng5Pshz+uAgG9CqhLQn+e9+5gEdxEFk+kKzfTk=
-github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220725131345-f11f1f7ecb5d/go.mod h1:opuDBSBtN8WTIhk/X3BVcVZxJ2JqFY819jLbYvS12Sc=
+github.com/nndergunov/deliveryApp/app/services/courier v0.0.0-20220727145253-a622be07c55e h1:BZcqG4Q17tI5gsLwwb6kfAsxnrCwSwOw1U77GVOix1s=
+github.com/nndergunov/deliveryApp/app/services/courier v0.0.0-20220727145253-a622be07c55e/go.mod h1:2AqNcVV8GjQj97uqA9wze8FNqJw4M41vqI2B3KteE2E=
+github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220727145253-a622be07c55e h1:0+U6VitkQuLn91AZYd3gQ68tpgrs4Y0aCDQJz4C8+wU=
+github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220727145253-a622be07c55e/go.mod h1:opuDBSBtN8WTIhk/X3BVcVZxJ2JqFY819jLbYvS12Sc=
 github.com/pelletier/go-toml v1.9.5 h1:4yBQzkHv+7BHq2PQUZF3Mx0IYxG7LsP222s7Agd3ve8=
 github.com/pelletier/go-toml v1.9.5/go.mod h1:u1nR/EPcESfeI/szUZKdtJ0xRNbUoANCkoOuaOx1Y+c=
 github.com/pelletier/go-toml/v2 v2.0.2 h1:+jQXlF3scKIcSEKkdHzXhCTDLPFi5r1wnK6yPS+49Gw=

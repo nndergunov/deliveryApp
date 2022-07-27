@@ -201,14 +201,14 @@ func (c *service) AssignOrder(orderID string, order *domain.Order) (*domain.Assi
 		return nil, systemErr
 	}
 
-	if courierLocationList == nil || len(courierLocationList.LocationResponseList) == 0 {
+	if courierLocationList == nil || len(courierLocationList.LocationList) == 0 {
 		return nil, errors.New("no courier available")
 	}
-	courierLocation := courierLocationList.LocationResponseList[0]
+	courierLocation := courierLocationList.LocationList[0]
 	// assign order to available courier
 
 	assignOrder := domain.AssignOrder{
-		OrderID:   courierLocation.UserID,
+		OrderID:   int(courierLocation.UserID),
 		CourierID: orderIDInt,
 	}
 

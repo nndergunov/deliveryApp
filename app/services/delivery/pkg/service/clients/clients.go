@@ -2,7 +2,7 @@ package clients
 
 import (
 	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
-	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/courierapi"
+	pb "github.com/nndergunov/deliveryApp/app/services/courier/api/v1/grpc/proto"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
 )
 
@@ -11,9 +11,8 @@ type RestaurantClient interface {
 }
 
 type CourierClient interface {
-	GetCourier(courierID int) (*courierapi.CourierResponse, error)
-	GetLocation(city string) (*courierapi.LocationResponseList, error)
-	UpdateCourierAvailable(courierID int, available string) (*courierapi.CourierResponse, error)
+	GetLocation(city string) (*pb.LocationList, error)
+	UpdateCourierAvailable(courierID int, available string) (*pb.CourierResponse, error)
 }
 
 type ConsumerClient interface {
