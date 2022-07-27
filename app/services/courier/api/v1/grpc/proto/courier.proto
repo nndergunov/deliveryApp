@@ -66,9 +66,6 @@ message SearchParamCourier {
   optional string available = 1;
 }
 
-message SearchParamLocation {
-  optional string city = 1;
-}
 
 
 message CourierID {
@@ -77,6 +74,10 @@ message CourierID {
 
 message CourierDeleteResponse {
   string CourierDeleteResponse = 1;
+}
+
+message SearchParamLocation {
+  optional string city = 1;
 }
 
 message Location {
