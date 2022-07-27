@@ -226,7 +226,6 @@ func (h *handler) GetLocation(ctx context.Context, in *pb.UserID) (*pb.Location,
 }
 
 func (h *handler) GetLocationList(ctx context.Context, in *pb.SearchParamLocation) (*pb.LocationList, error) {
-
 	param := domain.SearchParam{}
 
 	city := in.GetCity()
