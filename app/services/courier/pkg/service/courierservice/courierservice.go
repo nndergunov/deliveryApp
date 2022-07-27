@@ -27,19 +27,19 @@ type CourierService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	CourierStorage CourierStorage
-	Logger         *logger.Logger
+	Storage CourierStorage
+	Logger  *logger.Logger
 }
 
-type courierService struct {
+type service struct {
 	courierStorage CourierStorage
 	logger         *logger.Logger
 }
 
-// NewCourierService constructs a new NewCourierService.
-func NewCourierService(p Params) CourierService {
-	courierServiceItem := &courierService{
-		courierStorage: p.CourierStorage,
+// NewService constructs a new NewService.
+func NewService(p Params) CourierService {
+	courierServiceItem := &service{
+		courierStorage: p.Storage,
 		logger:         p.Logger,
 	}
 
@@ -47,7 +47,7 @@ func NewCourierService(p Params) CourierService {
 }
 
 // InsertCourier prepare and send data to courierStorage service.
-func (c *courierService) InsertCourier(courier domain.Courier) (*domain.Courier, error) {
+func (c *service) InsertCourier(courier domain.Courier) (*domain.Courier, error) {
 	if len(courier.Username) < 4 || len(courier.Password) < 8 {
 		return nil, fmt.Errorf("username or password don't meet requirement")
 	}
@@ -73,7 +73,7 @@ func (c *courierService) InsertCourier(courier domain.Courier) (*domain.Courier,
 }
 
 // DeleteCourier prepare courier data for removing.
-func (c *courierService) DeleteCourier(id string) (data string, err error) {
+func (c *service) DeleteCourier(id string) (data string, err error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
@@ -103,7 +103,7 @@ func (c *courierService) DeleteCourier(id string) (data string, err error) {
 }
 
 // UpdateCourier prepare data for updating.
-func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error) {
+func (c *service) UpdateCourier(courier domain.Courier, id string) (*domain.Courier, error) {
 	// todo: if updating phone number or email send otp first and then update
 
 	idInt, err := strconv.Atoi(id)
@@ -171,7 +171,7 @@ func (c *courierService) UpdateCourier(courier domain.Courier, id string) (*doma
 }
 
 // UpdateCourierAvailable prepare data for updating.
-func (c *courierService) UpdateCourierAvailable(id, available string) (*domain.Courier, error) {
+func (c *service) UpdateCourierAvailable(id, available string) (*domain.Courier, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
@@ -207,7 +207,7 @@ func (c *courierService) UpdateCourierAvailable(id, available string) (*domain.C
 }
 
 // GetCourierList prepare data to get it from courierStorage.
-func (c *courierService) GetCourierList(param domain.SearchParam) ([]domain.Courier, error) {
+func (c *service) GetCourierList(param domain.SearchParam) ([]domain.Courier, error) {
 	availableStr := param["available"]
 	if availableStr != "" {
 		if _, err := strconv.ParseBool(availableStr); err != nil {
@@ -227,7 +227,7 @@ func (c *courierService) GetCourierList(param domain.SearchParam) ([]domain.Cour
 }
 
 // GetCourier prepare data to get it from courierStorage.
-func (c *courierService) GetCourier(id string) (*domain.Courier, error) {
+func (c *service) GetCourier(id string) (*domain.Courier, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
@@ -248,7 +248,7 @@ func (c *courierService) GetCourier(id string) (*domain.Courier, error) {
 }
 
 // InsertLocation prepare and send data to courierStorage service.
-func (c *courierService) InsertLocation(location domain.Location, userID string) (*domain.Location, error) {
+func (c *service) InsertLocation(location domain.Location, userID string) (*domain.Location, error) {
 	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
@@ -286,7 +286,7 @@ func (c *courierService) InsertLocation(location domain.Location, userID string)
 }
 
 // UpdateLocation prepare data for updating.
-func (c *courierService) UpdateLocation(location domain.Location, courierID string) (*domain.Location, error) {
+func (c *service) UpdateLocation(location domain.Location, courierID string) (*domain.Location, error) {
 	cidInt, err := strconv.Atoi(courierID)
 	if err != nil {
 		c.logger.Println(err)
@@ -319,7 +319,7 @@ func (c *courierService) UpdateLocation(location domain.Location, courierID stri
 }
 
 // GetLocation prepare data to get it from customerStorage.
-func (c *courierService) GetLocation(userID string) (*domain.Location, error) {
+func (c *service) GetLocation(userID string) (*domain.Location, error) {
 	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
@@ -340,7 +340,7 @@ func (c *courierService) GetLocation(userID string) (*domain.Location, error) {
 }
 
 // GetLocationList prepare data to get it from courierStorage.
-func (c *courierService) GetLocationList(param domain.SearchParam) ([]domain.Location, error) {
+func (c *service) GetLocationList(param domain.SearchParam) ([]domain.Location, error) {
 	locationList, err := c.courierStorage.GetLocationList(param)
 	if err != nil {
 		c.logger.Println(err)

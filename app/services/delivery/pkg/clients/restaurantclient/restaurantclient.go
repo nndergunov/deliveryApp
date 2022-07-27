@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/restaurantapi"
+	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
+
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/deliveryapi"
 )
 
 type RestaurantClient struct {

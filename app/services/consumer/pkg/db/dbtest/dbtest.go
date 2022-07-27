@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -23,7 +24,9 @@ func StartDB() (*docker.Container, error) {
 
 // StopDB stops a running database instance.
 func StopDB(c *docker.Container) {
-	docker.StopContainer(c.ID)
+	if err := docker.StopContainer(c.ID); err != nil {
+		log.Println(err)
+	}
 }
 
 // NewUnit creates a test database inside a Docker container. It creates the

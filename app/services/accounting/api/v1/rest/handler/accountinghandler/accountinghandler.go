@@ -16,8 +16,8 @@ import (
 )
 
 type Params struct {
-	Logger         *logger.Logger
-	AccountService accountingservice.AccountService
+	Logger  *logger.Logger
+	Service accountingservice.AccountService
 }
 
 // handler is the entrypoint into our application
@@ -34,7 +34,7 @@ func NewHandler(p Params) *mux.Router {
 	handler := handler{
 		serveMux: serveMux,
 		log:      p.Logger,
-		service:  p.AccountService,
+		service:  p.Service,
 	}
 
 	handler.handlerInit()

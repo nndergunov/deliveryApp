@@ -25,34 +25,34 @@ type ConsumerService interface {
 
 // Params is the input parameter struct for the module that contains its dependencies
 type Params struct {
-	ConsumerStorage ConsumerStorage
-	Logger          *logger.Logger
+	Storage ConsumerStorage
+	Logger  *logger.Logger
 }
 
-type consumerService struct {
-	consumerStorage ConsumerStorage
-	logger          *logger.Logger
+type service struct {
+	storage ConsumerStorage
+	logger  *logger.Logger
 }
 
-// NewConsumerService constructs a new NewConsumerService.
-func NewConsumerService(p Params) ConsumerService {
-	consumerServiceItem := &consumerService{
-		consumerStorage: p.ConsumerStorage,
-		logger:          p.Logger,
+// NewService constructs a new NewService.
+func NewService(p Params) ConsumerService {
+	consumerServiceItem := &service{
+		storage: p.Storage,
+		logger:  p.Logger,
 	}
 
 	return consumerServiceItem
 }
 
-// InsertConsumer prepare and send data to consumerStorage service.
-func (c *consumerService) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
+// InsertConsumer prepare and send data to storage service.
+func (c *service) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
 	if consumer.Phone == "" && consumer.Email == "" {
 		return nil, fmt.Errorf("wrong phone or email")
 	}
 	param := domain.SearchParam{}
 	param["email"] = consumer.Email
 	param["phone"] = consumer.Phone
-	foundConsumer, err := c.consumerStorage.GetConsumerDuplicateByParam(param)
+	foundConsumer, err := c.storage.GetConsumerDuplicateByParam(param)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -61,7 +61,7 @@ func (c *consumerService) InsertConsumer(consumer domain.Consumer) (*domain.Cons
 		return nil, fmt.Errorf("consumer with this email or phone already exist")
 	}
 
-	newConsumer, err := c.consumerStorage.InsertConsumer(consumer)
+	newConsumer, err := c.storage.InsertConsumer(consumer)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -71,14 +71,14 @@ func (c *consumerService) InsertConsumer(consumer domain.Consumer) (*domain.Cons
 }
 
 // DeleteConsumer prepare consumer data for deleting.
-func (c *consumerService) DeleteConsumer(id string) (data string, err error) {
+func (c *service) DeleteConsumer(id string) (data string, err error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return "", errWrongConsumerIDType
 	}
 
-	foundConsumer, err := c.consumerStorage.GetConsumerByID(idInt)
+	foundConsumer, err := c.storage.GetConsumerByID(idInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return "", systemErr
@@ -87,12 +87,12 @@ func (c *consumerService) DeleteConsumer(id string) (data string, err error) {
 		return "", errConsumerWithIDNotFound
 	}
 
-	if err = c.consumerStorage.DeleteConsumer(idInt); err != nil {
+	if err = c.storage.DeleteConsumer(idInt); err != nil {
 		c.logger.Println(err)
 		return "", systemErr
 	}
 
-	if err = c.consumerStorage.DeleteLocation(idInt); err != nil {
+	if err = c.storage.DeleteLocation(idInt); err != nil {
 		c.logger.Println(err)
 		return "", systemErr
 	}
@@ -101,7 +101,7 @@ func (c *consumerService) DeleteConsumer(id string) (data string, err error) {
 }
 
 // UpdateConsumer prepare data for updating.
-func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*domain.Consumer, error) {
+func (c *service) UpdateConsumer(consumer domain.Consumer, id string) (*domain.Consumer, error) {
 	// todo: if updating phone number or email send otp first and then update
 
 	idInt, err := strconv.Atoi(id)
@@ -114,7 +114,7 @@ func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*
 	param["id"] = id
 	param["email"] = consumer.Email
 	param["phone"] = consumer.Phone
-	foundConsumer, err := c.consumerStorage.GetConsumerDuplicateByParam(param)
+	foundConsumer, err := c.storage.GetConsumerDuplicateByParam(param)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -125,7 +125,7 @@ func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*
 
 	consumer.ID = idInt
 
-	updatedConsumer, err := c.consumerStorage.UpdateConsumer(consumer)
+	updatedConsumer, err := c.storage.UpdateConsumer(consumer)
 
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
@@ -135,9 +135,9 @@ func (c *consumerService) UpdateConsumer(consumer domain.Consumer, id string) (*
 	return updatedConsumer, nil
 }
 
-// GetAllConsumer prepare data to get it from consumerStorage.
-func (c *consumerService) GetAllConsumer() ([]domain.Consumer, error) {
-	allConsumer, err := c.consumerStorage.GetAllConsumer()
+// GetAllConsumer prepare data to get it from storage.
+func (c *service) GetAllConsumer() ([]domain.Consumer, error) {
+	allConsumer, err := c.storage.GetAllConsumer()
 	if err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -147,14 +147,14 @@ func (c *consumerService) GetAllConsumer() ([]domain.Consumer, error) {
 }
 
 // GetConsumer prepare data to get it from customerStorage.
-func (c *consumerService) GetConsumer(id string) (*domain.Consumer, error) {
+func (c *service) GetConsumer(id string) (*domain.Consumer, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	consumer, err := c.consumerStorage.GetConsumerByID(idInt)
+	consumer, err := c.storage.GetConsumerByID(idInt)
 	if err != nil && err == sql.ErrNoRows {
 		return nil, err
 	}
@@ -167,15 +167,15 @@ func (c *consumerService) GetConsumer(id string) (*domain.Consumer, error) {
 	return consumer, nil
 }
 
-// InsertLocation prepare and send data to consumerStorage service.
-func (c *consumerService) InsertLocation(location domain.Location, userID string) (*domain.Location, error) {
+// InsertLocation prepare and send data to storage service.
+func (c *service) InsertLocation(location domain.Location, userID string) (*domain.Location, error) {
 	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	foundConsumer, err := c.consumerStorage.GetConsumerByID(userIDInt)
+	foundConsumer, err := c.storage.GetConsumerByID(userIDInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -184,7 +184,7 @@ func (c *consumerService) InsertLocation(location domain.Location, userID string
 		return nil, fmt.Errorf("couldn't find consumer with this id")
 	}
 
-	foundConsumerLocation, err := c.consumerStorage.GetLocation(userIDInt)
+	foundConsumerLocation, err := c.storage.GetLocation(userIDInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -196,7 +196,7 @@ func (c *consumerService) InsertLocation(location domain.Location, userID string
 		return nil, fmt.Errorf("location already exist: instead update old one")
 	}
 
-	newLocation, err := c.consumerStorage.InsertLocation(location)
+	newLocation, err := c.storage.InsertLocation(location)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -206,7 +206,7 @@ func (c *consumerService) InsertLocation(location domain.Location, userID string
 }
 
 // UpdateLocation prepare data for updating.
-func (c *consumerService) UpdateLocation(location domain.Location, userID string) (*domain.Location, error) {
+func (c *service) UpdateLocation(location domain.Location, userID string) (*domain.Location, error) {
 	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
@@ -215,7 +215,7 @@ func (c *consumerService) UpdateLocation(location domain.Location, userID string
 
 	location.UserID = userIDInt
 
-	updatedLocation, err := c.consumerStorage.UpdateLocation(location)
+	updatedLocation, err := c.storage.UpdateLocation(location)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr
@@ -225,14 +225,14 @@ func (c *consumerService) UpdateLocation(location domain.Location, userID string
 }
 
 // GetLocation prepare data to get it from customerStorage.
-func (c *consumerService) GetLocation(userID string) (*domain.Location, error) {
+func (c *service) GetLocation(userID string) (*domain.Location, error) {
 	userIDInt, err := strconv.Atoi(userID)
 	if err != nil {
 		c.logger.Println(err)
 		return nil, errWrongConsumerIDType
 	}
 
-	location, err := c.consumerStorage.GetLocation(userIDInt)
+	location, err := c.storage.GetLocation(userIDInt)
 	if err != nil && err != sql.ErrNoRows {
 		c.logger.Println(err)
 		return nil, systemErr

@@ -11,18 +11,18 @@ type Params struct {
 	DB *sql.DB
 }
 
-type DeliveryStorage struct {
+type Storage struct {
 	db *sql.DB
 }
 
-func NewDeliveryStorage(p Params) *DeliveryStorage {
-	return &DeliveryStorage{
+func NewStorage(p Params) *Storage {
+	return &Storage{
 		db: p.DB,
 	}
 }
 
 // AssignOrder store assigned assignOrder to the order
-func (c DeliveryStorage) AssignOrder(order domain.AssignOrder) (*domain.AssignOrder, error) {
+func (c Storage) AssignOrder(order domain.AssignOrder) (*domain.AssignOrder, error) {
 	sql := `INSERT INTO
 				delivery
 					(order_id, courier_id)
@@ -39,7 +39,7 @@ func (c DeliveryStorage) AssignOrder(order domain.AssignOrder) (*domain.AssignOr
 }
 
 // DeleteAssignedOrder store assigned assignOrder to the order
-func (c DeliveryStorage) DeleteAssignedOrder(orderID int) error {
+func (c Storage) DeleteAssignedOrder(orderID int) error {
 	sql := `DELETE FROM delivery
 			WHERE order_id = $1`
 	if _, err := c.db.Exec(sql, orderID); err != nil {

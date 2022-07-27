@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	"google.golang.org/grpc"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
@@ -14,8 +16,8 @@ import (
 )
 
 type Params struct {
-	Logger         *logger.Logger
-	CourierService courierservice.CourierService
+	Logger  *logger.Logger
+	Service courierservice.CourierService
 }
 
 // handler is the entrypoint into our application
@@ -26,15 +28,22 @@ type handler struct {
 }
 
 // NewHandler returns new http multiplexer with configured endpoints.
-func NewHandler(p Params) *handler {
-	return &handler{
+func NewHandler(p Params) *grpc.Server {
+	h := &handler{
 		log:     p.Logger,
-		service: p.CourierService,
+		service: p.Service,
 	}
+
+	srv := grpc.NewServer()
+	pb.RegisterCourierServer(srv, h)
+
+	return srv
 }
 
 func (h *handler) InsertNewCourier(ctx context.Context, in *pb.NewCourierRequest) (*pb.CourierResponse, error) {
 	courier := domain.Courier{
+		Username:  in.Username,
+		Password:  in.Password,
 		Firstname: in.Firstname,
 		Lastname:  in.Lastname,
 		Email:     in.Email,
@@ -48,14 +57,16 @@ func (h *handler) InsertNewCourier(ctx context.Context, in *pb.NewCourierRequest
 
 	return &pb.CourierResponse{
 		ID:        int64(resp.ID),
+		Username:  resp.Username,
 		Firstname: resp.Firstname,
 		Lastname:  resp.Lastname,
 		Email:     resp.Email,
 		Phone:     resp.Phone,
+		Available: resp.Available,
 	}, nil
 }
 
-func (h *handler) GetAllCourier(ctx context.Context, in *pb.SearchParam) (*pb.CourierListResponse, error) {
+func (h *handler) GetAllCourier(ctx context.Context, in *pb.SearchParamCourier) (*pb.CourierListResponse, error) {
 	param := domain.SearchParam{}
 	param["available"] = in.GetAvailable()
 	respList, err := h.service.GetCourierList(param)
@@ -128,7 +139,7 @@ func (h *handler) GetCourier(ctx context.Context, in *pb.CourierID) (*pb.Courier
 	}, nil
 }
 
-func (h *handler) InsertNewCourierLocation(ctx context.Context, in *pb.Location) (*pb.Location, error) {
+func (h *handler) InsertNewLocation(ctx context.Context, in *pb.Location) (*pb.Location, error) {
 	location := domain.Location{
 		UserID:     int(in.UserID),
 		Latitude:   *in.Latitude,
@@ -161,7 +172,7 @@ func (h *handler) InsertNewCourierLocation(ctx context.Context, in *pb.Location)
 	}, nil
 }
 
-func (h *handler) UpdateCourierLocation(ctx context.Context, in *pb.Location) (*pb.Location, error) {
+func (h *handler) UpdateLocation(ctx context.Context, in *pb.Location) (*pb.Location, error) {
 	location := domain.Location{
 		UserID:     int(in.UserID),
 		Latitude:   *in.Latitude,
@@ -194,7 +205,7 @@ func (h *handler) UpdateCourierLocation(ctx context.Context, in *pb.Location) (*
 	}, nil
 }
 
-func (h *handler) GetCourierLocation(ctx context.Context, in *pb.UserID) (*pb.Location, error) {
+func (h *handler) GetLocation(ctx context.Context, in *pb.UserID) (*pb.Location, error) {
 	resp, err := h.service.GetLocation(strconv.FormatInt(in.UserID, 10))
 	if err != nil {
 		return nil, err
@@ -212,4 +223,41 @@ func (h *handler) GetCourierLocation(ctx context.Context, in *pb.UserID) (*pb.Lo
 		Floor:      &resp.Floor,
 		Door:       &resp.Door,
 	}, nil
+}
+
+func (h *handler) GetLocationList(ctx context.Context, in *pb.SearchParamLocation) (*pb.LocationList, error) {
+	param := domain.SearchParam{}
+
+	city := in.GetCity()
+	if city != "" {
+		param["city"] = city
+	}
+
+	respList, err := h.service.GetLocationList(param)
+	if err != nil {
+		return nil, err
+	}
+
+	if respList == nil {
+		return nil, nil
+	}
+
+	var outList []*pb.Location
+
+	for _, resp := range respList {
+		out := &pb.Location{
+			UserID:     int64(resp.UserID),
+			Latitude:   &resp.Latitude,
+			Longitude:  &resp.Longitude,
+			Country:    &resp.Country,
+			City:       &resp.City,
+			Region:     &resp.Region,
+			Street:     &resp.Street,
+			HomeNumber: &resp.HomeNumber,
+			Floor:      &resp.Floor,
+			Door:       &resp.Door,
+		}
+		outList = append(outList, out)
+	}
+	return &pb.LocationList{LocationList: outList}, nil
 }

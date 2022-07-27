@@ -11,15 +11,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/deliveryapi"
+	mockservice "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks/mock_deliveryservice"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/handler/deliveryhandler"
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-
-	mockservice "github.com/nndergunov/deliveryApp/app/services/delivery/pkg/mocks"
 )
 
 func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
@@ -61,9 +60,9 @@ func TestGetEstimateDeliveryValuesEndpoint(t *testing.T) {
 			}
 			service.EXPECT().GetEstimateDelivery(test.in.consumerID, test.in.restaurantID).Return(mockOutData, nil)
 
-			handler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
-				Logger:          logger.NewLogger(os.Stdout, test.name),
-				DeliveryService: service,
+			handler := deliveryhandler.NewHandler(deliveryhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -127,9 +126,9 @@ func TestAssignOrderEndpoint(t *testing.T) {
 			}
 			service.EXPECT().AssignOrder(test.InID, mockInData).Return(mockOutData, nil)
 
-			handler := deliveryhandler.NewDeliveryHandler(deliveryhandler.Params{
-				Logger:          logger.NewLogger(os.Stdout, test.name),
-				DeliveryService: service,
+			handler := deliveryhandler.NewHandler(deliveryhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.inBody)

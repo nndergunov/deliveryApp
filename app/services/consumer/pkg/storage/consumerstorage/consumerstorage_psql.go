@@ -12,18 +12,18 @@ type Params struct {
 	DB *sql.DB
 }
 
-type ConsumerStorage struct {
+type Storage struct {
 	db *sql.DB
 }
 
-func NewConsumerStorage(p Params) *ConsumerStorage {
-	return &ConsumerStorage{
+func NewStorage(p Params) *Storage {
+	return &Storage{
 		db: p.DB,
 	}
 }
 
 // InsertConsumer inserts a new consumer into the database.
-func (c ConsumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
+func (c Storage) InsertConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
 	sql := `INSERT INTO consumer (firstname, lastname, email, phone, created_at, updated_at)
         	VALUES ($1, $2, $3, $4, now(), now())
         	returning *
@@ -40,7 +40,7 @@ func (c ConsumerStorage) InsertConsumer(consumer domain.Consumer) (*domain.Consu
 	return &newConsumer, nil
 }
 
-func (c ConsumerStorage) DeleteConsumer(id int) error {
+func (c Storage) DeleteConsumer(id int) error {
 	sql := `DELETE
 			FROM consumer
             WHERE id = $1
@@ -52,7 +52,7 @@ func (c ConsumerStorage) DeleteConsumer(id int) error {
 	return nil
 }
 
-func (c ConsumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
+func (c Storage) UpdateConsumer(consumer domain.Consumer) (*domain.Consumer, error) {
 	sql := `UPDATE consumer
             SET firstname = $1,
                 lastname = $2,
@@ -73,7 +73,7 @@ func (c ConsumerStorage) UpdateConsumer(consumer domain.Consumer) (*domain.Consu
 	return &updatedConsumer, nil
 }
 
-func (c ConsumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
+func (c Storage) GetAllConsumer() ([]domain.Consumer, error) {
 	sql := `SELECT
 				id, firstname, lastname, email, phone, created_at, updated_at
 			FROM 
@@ -98,7 +98,7 @@ func (c ConsumerStorage) GetAllConsumer() ([]domain.Consumer, error) {
 	return allConsumer, nil
 }
 
-func (c ConsumerStorage) GetConsumerByID(id int) (*domain.Consumer, error) {
+func (c Storage) GetConsumerByID(id int) (*domain.Consumer, error) {
 	sql := `SELECT id, firstname, lastname, email, phone, created_at, updated_at
 			FROM consumer 
 			WHERE id = $1;`
@@ -113,7 +113,7 @@ func (c ConsumerStorage) GetConsumerByID(id int) (*domain.Consumer, error) {
 	return &consumer, nil
 }
 
-func (c ConsumerStorage) GetConsumerDuplicateByParam(param domain.SearchParam) (*domain.Consumer, error) {
+func (c Storage) GetConsumerDuplicateByParam(param domain.SearchParam) (*domain.Consumer, error) {
 	sql := `SELECT *
 			FROM consumer
 	`
@@ -146,7 +146,7 @@ func (c ConsumerStorage) GetConsumerDuplicateByParam(param domain.SearchParam) (
 	return &consumer, nil
 }
 
-func (c ConsumerStorage) CleanConsumerTable() error {
+func (c Storage) CleanConsumerTable() error {
 	sql := `DELETE
 			FROM consumer
 			WHERE 1=1;`
@@ -159,7 +159,7 @@ func (c ConsumerStorage) CleanConsumerTable() error {
 }
 
 // InsertLocation inserts a new consumer into the database.
-func (c ConsumerStorage) InsertLocation(location domain.Location) (*domain.Location, error) {
+func (c Storage) InsertLocation(location domain.Location) (*domain.Location, error) {
 	sql := `INSERT INTO
     				location (user_id, latitude, longitude, country, city, region, street, home_number, floor, door)
 			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
@@ -181,7 +181,7 @@ func (c ConsumerStorage) InsertLocation(location domain.Location) (*domain.Locat
 	return &newLocation, nil
 }
 
-func (c ConsumerStorage) DeleteLocation(consumerID int) error {
+func (c Storage) DeleteLocation(consumerID int) error {
 	sql := `DELETE
 			FROM location
 			WHERE user_id = $1
@@ -192,7 +192,7 @@ func (c ConsumerStorage) DeleteLocation(consumerID int) error {
 	return nil
 }
 
-func (c ConsumerStorage) GetLocation(userID int) (*domain.Location, error) {
+func (c Storage) GetLocation(userID int) (*domain.Location, error) {
 	sql := `SELECT user_id, latitude, longitude, country, city, region, street, home_number, floor, door
 			FROM location`
 
@@ -216,7 +216,7 @@ func (c ConsumerStorage) GetLocation(userID int) (*domain.Location, error) {
 	return &location, nil
 }
 
-func (c ConsumerStorage) UpdateLocation(location domain.Location) (*domain.Location, error) {
+func (c Storage) UpdateLocation(location domain.Location) (*domain.Location, error) {
 	sql := `UPDATE 
 				location
 			SET 

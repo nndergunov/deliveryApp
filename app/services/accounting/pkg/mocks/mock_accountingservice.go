@@ -11,7 +11,7 @@ import (
 	domain "github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 )
 
-// MockAccountService is a mock of AccountService interface.
+// MockAccountService is a mock of Service interface.
 type MockAccountService struct {
 	ctrl     *gomock.Controller
 	recorder *MockAccountServiceMockRecorder

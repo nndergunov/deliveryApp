@@ -61,7 +61,6 @@ download-gomod:
 	go get -u google.golang.org/grpc
 	go get -u google.golang.org/protobuf
 
-
 gomod-tidy:
 	go mod tidy -go=1.18 -compat=1.18
 

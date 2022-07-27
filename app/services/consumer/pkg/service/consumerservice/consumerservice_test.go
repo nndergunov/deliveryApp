@@ -49,7 +49,7 @@ func TestInsertNewConsumer(t *testing.T) {
 			storage.EXPECT().GetConsumerDuplicateByParam(domain.SearchParam{"email": test.in.Email, "phone": test.in.Phone}).Return(nil, nil)
 			storage.EXPECT().InsertConsumer(test.in).Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			newAccount, err := service.InsertConsumer(test.in)
 			require.NoError(t, err)
 
@@ -85,7 +85,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 			storage.EXPECT().DeleteConsumer(mockInData).Return(nil)
 			storage.EXPECT().DeleteLocation(mockInData).Return(nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.DeleteConsumer(test.in)
 			require.NoError(t, err)
 
@@ -131,7 +131,7 @@ func TestUpdateConsumer(t *testing.T) {
 			storage.EXPECT().GetConsumerDuplicateByParam(domain.SearchParam{"id": intStr, "email": test.in.Email, "phone": test.in.Phone}).Return(nil, nil)
 			storage.EXPECT().UpdateConsumer(test.in).Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.UpdateConsumer(test.in, intStr)
 			require.NoError(t, err)
 
@@ -176,7 +176,7 @@ func TestGetAllConsumer(t *testing.T) {
 			storage := mockstorage.NewMockConsumerStorage(ctl)
 			storage.EXPECT().GetAllConsumer().Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetAllConsumer()
 			require.NoError(t, err)
 
@@ -217,7 +217,7 @@ func TestGetConsumer(t *testing.T) {
 
 			storage.EXPECT().GetConsumerByID(id).Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetConsumer(test.in)
 			require.NoError(t, err)
 
@@ -275,7 +275,7 @@ func TestInsertNewConsumerLocation(t *testing.T) {
 			storage.EXPECT().GetLocation(test.in.UserID).Return(nil, nil)
 			storage.EXPECT().InsertLocation(test.in).Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.InsertLocation(test.in, strconv.Itoa(test.in.UserID))
 			require.NoError(t, err)
 
@@ -343,7 +343,7 @@ func TestUpdateConsumerLocation(t *testing.T) {
 
 			storage.EXPECT().UpdateLocation(test.in.location).Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.UpdateLocation(test.in.location, test.in.userID)
 			require.NoError(t, err)
 
@@ -390,7 +390,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 
 			storage.EXPECT().GetLocation(mockInData).Return(test.out, nil)
 
-			service := consumerservice.NewConsumerService(consumerservice.Params{ConsumerStorage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
+			service := consumerservice.NewService(consumerservice.Params{Storage: storage, Logger: logger.NewLogger(os.Stdout, "service: ")})
 			resp, err := service.GetLocation(test.in)
 			require.NoError(t, err)
 

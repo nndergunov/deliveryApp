@@ -2,9 +2,11 @@ package handler
 
 import (
 	"context"
-	"github.com/nndergunov/deliveryApp/app/pkg/logger"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"strconv"
+
+	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	pb "github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/grpc/proto"
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
@@ -12,8 +14,8 @@ import (
 )
 
 type Params struct {
-	Logger         *logger.Logger
-	AccountService accountingservice.AccountService
+	Logger  *logger.Logger
+	Service accountingservice.AccountService
 }
 
 // handler is the entrypoint into our application
@@ -24,11 +26,16 @@ type handler struct {
 }
 
 // NewHandler returns new http multiplexer with configured endpoints.
-func NewHandler(p Params) *handler {
-	return &handler{
+func NewHandler(p Params) *grpc.Server {
+	h := &handler{
 		log:     p.Logger,
-		service: p.AccountService,
+		service: p.Service,
 	}
+
+	srv := grpc.NewServer()
+	pb.RegisterAccountingServer(srv, h)
+
+	return srv
 }
 
 // InsertNewAccount implements accounting_proto.AccountingServer
@@ -87,7 +94,6 @@ func (h *handler) GetAccountList(ctx context.Context, in *pb.SearchParam) (*pb.A
 
 // GetAccount implements accounting_proto.AccountingServer
 func (h *handler) GetAccount(ctx context.Context, in *pb.AccountID) (*pb.AccountResponse, error) {
-
 	out, err := h.service.GetAccountByID(strconv.Itoa(int(in.AccountID)))
 	if err != nil {
 		return nil, err
@@ -108,7 +114,6 @@ func (h *handler) GetAccount(ctx context.Context, in *pb.AccountID) (*pb.Account
 
 // DeleteAccount implements accounting_proto.AccountingServer
 func (h *handler) DeleteAccount(ctx context.Context, in *pb.AccountID) (*pb.AccountDeleteResponse, error) {
-
 	out, err := h.service.DeleteAccount(strconv.Itoa(int(in.AccountID)))
 	if err != nil {
 		return nil, err
@@ -143,7 +148,6 @@ func (h *handler) InsertTransaction(ctx context.Context, in *pb.TransactionReque
 
 // DeleteTransaction implements accounting_proto.AccountingServer
 func (h *handler) DeleteTransaction(ctx context.Context, in *pb.TransactionID) (*pb.TransactionDeleteResponse, error) {
-
 	out, err := h.service.DeleteTransaction(strconv.Itoa(int(in.TransactionID)))
 	if err != nil {
 		return nil, err

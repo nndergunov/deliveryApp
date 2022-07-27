@@ -6,15 +6,15 @@ gofumpt:
 
 service:
 	mockgen -source=pkg/service/deliveryservice/deliveryservice.go \
-    -destination=pkg/mocks/mock_deliveryservice.go
+    -destination=pkg/mocks/mock_deliveryservice/mock_deliveryservice.go
 
 genstorage:
 	mockgen -source=pkg/service/deliveryservice/storage.go \
-	-destination=pkg/mocks/mock_deliverystorage.go
+	-destination=pkg/mocks/mock_deliverystorage/mock_deliverystorage.go
 
 genclient:
-	mockgen -source=pkg/service/clients.go \
-	-destination=pkg/mocks/mock_clients.go
+	mockgen -source=pkg/service/clients/clients.go \
+	-destination=pkg/mocks/mock_clients/mock_clients.go
 
 go-test-unit:
 	go test api/v1/handler/deliveryhandler/deliveryhandler_test.go -v

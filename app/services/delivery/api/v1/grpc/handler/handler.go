@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	"google.golang.org/grpc"
+
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 
 	"github.com/nndergunov/deliveryApp/app/services/delivery/pkg/domain"
@@ -13,8 +15,8 @@ import (
 )
 
 type Params struct {
-	Logger          *logger.Logger
-	DeliveryService deliveryservice.DeliveryService
+	Logger  *logger.Logger
+	Service deliveryservice.DeliveryService
 }
 
 // handler is the entrypoint into our application
@@ -25,11 +27,16 @@ type handler struct {
 }
 
 // NewHandler returns new http multiplexer with configured endpoints.
-func NewHandler(p Params) *handler {
-	return &handler{
+func NewHandler(p Params) *grpc.Server {
+	h := &handler{
 		log:     p.Logger,
-		service: p.DeliveryService,
+		service: p.Service,
 	}
+
+	srv := grpc.NewServer()
+	pb.RegisterDeliveryServer(srv, h)
+
+	return srv
 }
 
 func (h handler) GetEstimateDeliveryValues(ctx context.Context, in *pb.EstimateDeliveryRequest) (*pb.EstimateDeliveryResponse, error) {

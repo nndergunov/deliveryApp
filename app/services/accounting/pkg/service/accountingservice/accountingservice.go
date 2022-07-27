@@ -10,7 +10,7 @@ import (
 	"github.com/nndergunov/deliveryApp/app/services/accounting/pkg/domain"
 )
 
-// AccountService is the interface for the accountingstorage service.
+// Service is the interface for the accountingstorage service.
 
 type AccountService interface {
 	InsertNewAccount(account domain.Account) (*domain.Account, error)

@@ -12,8 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
+
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
 
 	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/handler/consumerhandler"
 	"github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
@@ -72,7 +73,7 @@ func TestInsertNewConsumerEndpoint(t *testing.T) {
 
 			service.EXPECT().InsertConsumer(mockInData).Return(mockOutData, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -123,7 +124,7 @@ func TestDeleteConsumerEndpoint(t *testing.T) {
 
 			service.EXPECT().DeleteConsumer(test.in).Return(test.out, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -198,7 +199,7 @@ func TestUpdateConsumerEndpoint(t *testing.T) {
 
 			service.EXPECT().UpdateConsumer(mockInData, "1").Return(mockOutData, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -276,7 +277,7 @@ func TestGetAllConsumerEndpoint(t *testing.T) {
 
 			service.EXPECT().GetAllConsumer().Return(mockOutDataList, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -340,7 +341,7 @@ func TestGetConsumerEndpoint(t *testing.T) {
 
 			service.EXPECT().GetConsumer("1").Return(mockOutData, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -438,7 +439,7 @@ func TestInsertNewConsumerLocationEndpoint(t *testing.T) {
 
 			service.EXPECT().InsertLocation(mockInData, "1").Return(mockOutData, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -538,7 +539,7 @@ func TestUpdateConsumerLocationEndpoint(t *testing.T) {
 
 			service.EXPECT().UpdateLocation(mockInData, "1").Return(mockOutData, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})
@@ -616,7 +617,7 @@ func TestGetConsumerLocationEndpoint(t *testing.T) {
 
 			service.EXPECT().GetLocation(test.in).Return(mockOutData, nil)
 
-			handler := consumerhandler.NewConsumerHandler(consumerhandler.Params{
+			handler := consumerhandler.NewHandler(consumerhandler.Params{
 				Logger:          logger.NewLogger(os.Stdout, test.name),
 				ConsumerService: service,
 			})

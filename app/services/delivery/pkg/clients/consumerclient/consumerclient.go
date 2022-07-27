@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/consumerapi"
+	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
 
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/deliveryapi"
+	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/deliveryapi"
 )
 
 type ConsumerClient struct {

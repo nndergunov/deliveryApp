@@ -10,7 +10,7 @@ service Courier {
   // Sends a greeting
   rpc insertNewCourier (NewCourierRequest) returns (CourierResponse) {}
 
-  rpc getAllCourier (SearchParam) returns (CourierListResponse){}
+  rpc getAllCourier (SearchParamCourier) returns (CourierListResponse){}
 
   rpc deleteCourier (CourierID) returns (CourierDeleteResponse){}
 
@@ -18,20 +18,24 @@ service Courier {
 
   rpc getCourier (CourierID) returns (CourierResponse){}
 
-  rpc insertNewCourierLocation (Location) returns (Location){}
+  rpc insertNewLocation (Location) returns (Location){}
 
-  rpc updateCourierLocation (Location) returns (Location){}
+  rpc updateLocation (Location) returns (Location){}
 
-  rpc getCourierLocation (userID) returns (Location){}
+  rpc getLocation (userID) returns (Location){}
+
+  rpc getLocationList (SearchParamLocation) returns (LocationList){}
 
 }
 
 // The request message containing the user's data.
 message NewCourierRequest {
-  string Firstname = 1;
-  string Lastname = 2;
-  string Email = 3;
-  string Phone = 4;
+  string Username = 1;
+  string Password = 2;
+  string Firstname = 3;
+  string Lastname = 4;
+  string Email = 5;
+  string Phone = 6;
 }
 
 // The request message containing the user's data.
@@ -46,19 +50,23 @@ message UpdateCourierRequest {
 // The response message containing the greetings
 message CourierResponse {
   int64 ID = 1;
-  string Firstname = 2;
-  string Lastname = 3;
-  string Email = 4;
-  string Phone = 5;
+  string Username = 2;
+  string Firstname = 3;
+  string Lastname = 4;
+  string Email = 5;
+  string Phone = 6;
+  bool Available = 7;
 }
 
 message CourierListResponse {
   repeated CourierResponse CourierListResponse = 1;
 }
 
-message SearchParam {
+message SearchParamCourier {
   optional string available = 1;
 }
+
+
 
 message CourierID {
   int64 CourierID = 1;
@@ -66,6 +74,10 @@ message CourierID {
 
 message CourierDeleteResponse {
   string CourierDeleteResponse = 1;
+}
+
+message SearchParamLocation {
+  optional string city = 1;
 }
 
 message Location {
@@ -80,6 +92,11 @@ message Location {
   optional string Floor = 9;
   optional string Door = 10;
 }
+
+message LocationList {
+  repeated Location LocationList = 1;
+}
+
 message userID {
   int64 userID = 1;
 }

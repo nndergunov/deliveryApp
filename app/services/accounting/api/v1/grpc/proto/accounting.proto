@@ -13,7 +13,7 @@ service Accounting {
 
   rpc GetAccountList (SearchParam) returns (AccountListResponse){}
 
-  rpc GetAccount (AccountID) returns (AccountListResponse){}
+  rpc GetAccount (AccountID) returns (AccountResponse){}
 
   rpc DeleteAccount (AccountID) returns (AccountDeleteResponse){}
 

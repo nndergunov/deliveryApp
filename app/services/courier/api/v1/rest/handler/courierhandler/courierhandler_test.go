@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/courierapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/courierapi"
 
 	"github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/handler/courierhandler"
 	"github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
@@ -81,9 +82,9 @@ func TestInsertNewCourierEndpoint(t *testing.T) {
 
 			service.EXPECT().InsertCourier(mockInData).Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)
@@ -133,9 +134,9 @@ func TestDeleteCourierEndpoint(t *testing.T) {
 
 			service.EXPECT().DeleteCourier(test.in).Return(test.out, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -216,9 +217,9 @@ func TestUpdateCourierEndpoint(t *testing.T) {
 
 			service.EXPECT().UpdateCourier(mockInData, test.inID).Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.inBody)
@@ -287,9 +288,9 @@ func TestUpdateCourierAvailableEndpoint(t *testing.T) {
 			}
 			service.EXPECT().UpdateCourierAvailable(test.inID, test.inParam).Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -354,9 +355,9 @@ func TestGetCourierEndpoint(t *testing.T) {
 
 			service.EXPECT().GetCourier(test.in).Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -439,9 +440,9 @@ func TestGetCourierListEndpoint(t *testing.T) {
 
 			service.EXPECT().GetCourierList(mockInData).Return(mockOutDataList, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -534,9 +535,9 @@ func TestInsertNewLocationEndpoint(t *testing.T) {
 
 			service.EXPECT().InsertLocation(mockInData, "1").Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)
@@ -634,9 +635,9 @@ func TestUpdateLocationEndpoint(t *testing.T) {
 
 			service.EXPECT().UpdateLocation(mockInData, "1").Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)
@@ -712,9 +713,9 @@ func TestGetLocationEndpoint(t *testing.T) {
 
 			service.EXPECT().GetLocation(test.in).Return(mockOutData, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)
@@ -810,9 +811,9 @@ func TestGetLocationListEndpoint(t *testing.T) {
 
 			service.EXPECT().GetLocationList(domain.SearchParam{"city": "testCity"}).Return(mockOutDataList, nil)
 
-			handler := courierhandler.NewCourierHandler(courierhandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				CourierService: service,
+			handler := courierhandler.NewHandler(courierhandler.Params{
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)

@@ -8,9 +8,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/nndergunov/deliveryApp/app/pkg/api/v1/accountingapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/nndergunov/deliveryApp/app/services/accounting/api/v1/rest/accountingapi"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
@@ -67,8 +68,8 @@ func TestInsertNewAccountEndpointSuccess(t *testing.T) {
 			service.EXPECT().InsertNewAccount(mockInData).Return(mockOutData, nil)
 
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				AccountService: service,
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)
@@ -131,8 +132,8 @@ func TestGetAccountEndpointSuccess(t *testing.T) {
 			service.EXPECT().GetAccountByID(test.in).Return(mockOutData, nil)
 
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				AccountService: service,
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -205,8 +206,8 @@ func TestGetAccountListEndpointSuccess(t *testing.T) {
 			service.EXPECT().GetAccountListByParam(test.in).Return(mockOutDataList, nil)
 
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				AccountService: service,
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -253,8 +254,8 @@ func TestDeleteEndpointSuccess(t *testing.T) {
 			service.EXPECT().DeleteAccount(test.in).Return(test.out, nil)
 
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				AccountService: service,
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			resp := httptest.NewRecorder()
@@ -354,8 +355,8 @@ func TestInsertTransactionsEndpointSuccess(t *testing.T) {
 			service.EXPECT().InsertTransaction(mockInData).Return(mockOutData, nil)
 
 			handler := accountinghandler.NewHandler(accountinghandler.Params{
-				Logger:         logger.NewLogger(os.Stdout, test.name),
-				AccountService: service,
+				Logger:  logger.NewLogger(os.Stdout, test.name),
+				Service: service,
 			})
 
 			reqBody, err := v1.Encode(test.in)
