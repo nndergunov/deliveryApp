@@ -239,7 +239,7 @@ func (c *service) GetLocation(userID string) (*domain.Location, error) {
 	}
 	if err != nil && err == sql.ErrNoRows {
 		c.logger.Println(err)
-		return nil, err
+		return nil, fmt.Errorf("no user found with this id")
 	}
 
 	return location, nil
