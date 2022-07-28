@@ -8,9 +8,9 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	consumerapi "github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
-	courierapi "github.com/nndergunov/deliveryApp/app/services/courier/api/v1/rest/courierapi"
-	restaurantapi "github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/restaurantapi"
+	consumer_proto "github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/grpc/proto"
+	courier_proto "github.com/nndergunov/deliveryApp/app/services/courier/api/v1/grpc/proto"
+	pb "github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/grpclogic/pb"
 )
 
 // MockRestaurantClient is a mock of RestaurantClient interface.
@@ -37,10 +37,10 @@ func (m *MockRestaurantClient) EXPECT() *MockRestaurantClientMockRecorder {
 }
 
 // GetRestaurant mocks base method.
-func (m *MockRestaurantClient) GetRestaurant(restaurantID int) (*restaurantapi.ReturnRestaurant, error) {
+func (m *MockRestaurantClient) GetRestaurant(restaurantID int) (*pb.RestaurantResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRestaurant", restaurantID)
-	ret0, _ := ret[0].(*restaurantapi.ReturnRestaurant)
+	ret0, _ := ret[0].(*pb.RestaurantResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -74,26 +74,11 @@ func (m *MockCourierClient) EXPECT() *MockCourierClientMockRecorder {
 	return m.recorder
 }
 
-// GetCourier mocks base method.
-func (m *MockCourierClient) GetCourier(courierID int) (*courierapi.CourierResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCourier", courierID)
-	ret0, _ := ret[0].(*courierapi.CourierResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCourier indicates an expected call of GetCourier.
-func (mr *MockCourierClientMockRecorder) GetCourier(courierID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCourier", reflect.TypeOf((*MockCourierClient)(nil).GetCourier), courierID)
-}
-
 // GetLocation mocks base method.
-func (m *MockCourierClient) GetLocation(city string) (*courierapi.LocationResponseList, error) {
+func (m *MockCourierClient) GetLocation(city string) (*courier_proto.LocationList, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLocation", city)
-	ret0, _ := ret[0].(*courierapi.LocationResponseList)
+	ret0, _ := ret[0].(*courier_proto.LocationList)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -105,10 +90,10 @@ func (mr *MockCourierClientMockRecorder) GetLocation(city interface{}) *gomock.C
 }
 
 // UpdateCourierAvailable mocks base method.
-func (m *MockCourierClient) UpdateCourierAvailable(courierID int, available string) (*courierapi.CourierResponse, error) {
+func (m *MockCourierClient) UpdateCourierAvailable(courierID, available string) (*courier_proto.CourierResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateCourierAvailable", courierID, available)
-	ret0, _ := ret[0].(*courierapi.CourierResponse)
+	ret0, _ := ret[0].(*courier_proto.CourierResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -143,16 +128,16 @@ func (m *MockConsumerClient) EXPECT() *MockConsumerClientMockRecorder {
 }
 
 // GetLocation mocks base method.
-func (m *MockConsumerClient) GetLocation(consumerID int) (*consumerapi.LocationResponse, error) {
+func (m *MockConsumerClient) GetLocation(id int64) (*consumer_proto.Location, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetLocation", consumerID)
-	ret0, _ := ret[0].(*consumerapi.LocationResponse)
+	ret := m.ctrl.Call(m, "GetLocation", id)
+	ret0, _ := ret[0].(*consumer_proto.Location)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetLocation indicates an expected call of GetLocation.
-func (mr *MockConsumerClientMockRecorder) GetLocation(consumerID interface{}) *gomock.Call {
+func (mr *MockConsumerClientMockRecorder) GetLocation(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLocation", reflect.TypeOf((*MockConsumerClient)(nil).GetLocation), consumerID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLocation", reflect.TypeOf((*MockConsumerClient)(nil).GetLocation), id)
 }

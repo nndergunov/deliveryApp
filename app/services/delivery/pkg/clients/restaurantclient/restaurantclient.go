@@ -3,10 +3,11 @@ package restaurantclient
 import (
 	"context"
 	"fmt"
+	"log"
+
 	pb "github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/grpclogic/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 type RestaurantClient struct {

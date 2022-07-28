@@ -3,10 +3,11 @@ package courierclient
 import (
 	"context"
 	"fmt"
+	"log"
+
 	pb "github.com/nndergunov/deliveryApp/app/services/courier/api/v1/grpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 type CourierClient struct {
