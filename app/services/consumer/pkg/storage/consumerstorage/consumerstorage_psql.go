@@ -196,10 +196,10 @@ func (c Storage) GetLocation(userID int) (*domain.Location, error) {
 	sql := `SELECT user_id, latitude, longitude, country, city, region, street, home_number, floor, door
 			FROM location`
 
-	where := ` WHERE 1=1`
+	where := ""
 
 	if userID != 0 {
-		where = where + " AND user_id =" + strconv.FormatInt(int64(userID), 10)
+		where = " WHERE user_id =" + strconv.FormatInt(int64(userID), 10)
 	}
 
 	sql = sql + where

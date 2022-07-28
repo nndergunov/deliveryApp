@@ -11,7 +11,7 @@ import (
 	domain "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
-// MockConsumerService is a mock of Service interface.
+// MockConsumerService is a mock of ConsumerService interface.
 type MockConsumerService struct {
 	ctrl     *gomock.Controller
 	recorder *MockConsumerServiceMockRecorder
@@ -110,18 +110,18 @@ func (mr *MockConsumerServiceMockRecorder) InsertConsumer(consumer interface{}) 
 }
 
 // InsertLocation mocks base method.
-func (m *MockConsumerService) InsertLocation(consumer domain.Location, id string) (*domain.Location, error) {
+func (m *MockConsumerService) InsertLocation(location domain.Location, id string) (*domain.Location, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertLocation", consumer, id)
+	ret := m.ctrl.Call(m, "InsertLocation", location, id)
 	ret0, _ := ret[0].(*domain.Location)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // InsertLocation indicates an expected call of InsertLocation.
-func (mr *MockConsumerServiceMockRecorder) InsertLocation(consumer, id interface{}) *gomock.Call {
+func (mr *MockConsumerServiceMockRecorder) InsertLocation(location, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertLocation", reflect.TypeOf((*MockConsumerService)(nil).InsertLocation), consumer, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertLocation", reflect.TypeOf((*MockConsumerService)(nil).InsertLocation), location, id)
 }
 
 // UpdateConsumer mocks base method.
@@ -140,16 +140,16 @@ func (mr *MockConsumerServiceMockRecorder) UpdateConsumer(consumer, id interface
 }
 
 // UpdateLocation mocks base method.
-func (m *MockConsumerService) UpdateLocation(consumer domain.Location, id string) (*domain.Location, error) {
+func (m *MockConsumerService) UpdateLocation(location domain.Location, id string) (*domain.Location, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateLocation", consumer, id)
+	ret := m.ctrl.Call(m, "UpdateLocation", location, id)
 	ret0, _ := ret[0].(*domain.Location)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateLocation indicates an expected call of UpdateLocation.
-func (mr *MockConsumerServiceMockRecorder) UpdateLocation(consumer, id interface{}) *gomock.Call {
+func (mr *MockConsumerServiceMockRecorder) UpdateLocation(location, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLocation", reflect.TypeOf((*MockConsumerService)(nil).UpdateLocation), consumer, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateLocation", reflect.TypeOf((*MockConsumerService)(nil).UpdateLocation), location, id)
 }

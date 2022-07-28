@@ -11,7 +11,7 @@ import (
 	domain "github.com/nndergunov/deliveryApp/app/services/consumer/pkg/domain"
 )
 
-// MockConsumerStorage is a mock of Storage interface.
+// MockConsumerStorage is a mock of ConsumerStorage interface.
 type MockConsumerStorage struct {
 	ctrl     *gomock.Controller
 	recorder *MockConsumerStorageMockRecorder
