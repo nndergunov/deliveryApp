@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"google.golang.org/grpc"
@@ -203,6 +204,9 @@ func (h *handler) GetConsumerLocation(ctx context.Context, in *pb.UserID) (*pb.L
 	resp, err := h.service.GetLocation(strconv.FormatInt(in.UserID, 10))
 	if err != nil {
 		return nil, err
+	}
+	if resp == nil {
+		return nil, fmt.Errorf("no location found")
 	}
 
 	return &pb.Location{

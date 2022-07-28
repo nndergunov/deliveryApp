@@ -329,7 +329,7 @@ func (c *service) GetLocation(userID string) (*domain.Location, error) {
 	location, err := c.courierStorage.GetLocation(userIDInt)
 	if err != nil && err == sql.ErrNoRows {
 		c.logger.Println(err)
-		return nil, fmt.Errorf("no user found with this id")
+		return nil, nil
 	}
 
 	if err != nil && err != sql.ErrNoRows {
