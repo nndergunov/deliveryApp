@@ -1,13 +1,13 @@
 package consumerclient
 
 import (
+	"context"
 	"fmt"
-	"net/http"
-	"strconv"
+	"log"
 
-	"github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/rest/consumerapi"
-
-	"github.com/nndergunov/deliveryApp/app/services/delivery/api/v1/rest/deliveryapi"
+	pb "github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/grpc/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type ConsumerClient struct {
@@ -18,23 +18,27 @@ func NewConsumerClient(url string) *ConsumerClient {
 	return &ConsumerClient{consumerURL: url}
 }
 
-func (a ConsumerClient) GetLocation(consumerID int) (*consumerapi.LocationResponse, error) {
-	resp, err := http.Get(a.consumerURL + "/v1/locations/" + strconv.Itoa(consumerID))
+func (a ConsumerClient) GetLocation(consumerID int64) (*pb.Location, error) {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(a.consumerURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		return nil, fmt.Errorf("sending request: %w", err)
+		return nil, fmt.Errorf("did not connect: %v", err)
 	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("not ok status: %v", resp.StatusCode)
-	}
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(conn)
 
-	locationData := consumerapi.LocationResponse{}
-	if err = deliveryapi.DecodeJSON(resp.Body, &locationData); err != nil {
-		return nil, fmt.Errorf("decoding : %w", err)
-	}
+	c := pb.NewConsumerClient(conn)
 
-	if err := resp.Body.Close(); err != nil {
-		return nil, err
-	}
+	// Contact the server and print out its response.
+	ctx := context.TODO()
 
-	return &locationData, nil
+	r, err := c.GetConsumerLocation(ctx, &pb.UserID{UserID: consumerID})
+	if err != nil {
+		return nil, fmt.Errorf("could not get locaiton: %v", err)
+	}
+	return r, nil
 }

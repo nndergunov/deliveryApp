@@ -13,8 +13,8 @@ require (
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/services/consumer v0.0.0-20220725131345-f11f1f7ecb5d
-	github.com/nndergunov/deliveryApp/app/services/courier v0.0.0-20220725131345-f11f1f7ecb5d
-	github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220725131345-f11f1f7ecb5d
+	github.com/nndergunov/deliveryApp/app/services/courier v0.0.0-20220727160540-feb36f874dee
+	github.com/nndergunov/deliveryApp/app/services/restaurant v0.0.0-20220727160540-feb36f874dee
 	github.com/stretchr/testify v1.8.0
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.0
