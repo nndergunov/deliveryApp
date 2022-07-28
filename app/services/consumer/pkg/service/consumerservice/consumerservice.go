@@ -238,7 +238,8 @@ func (c *service) GetLocation(userID string) (*domain.Location, error) {
 		return nil, systemErr
 	}
 	if err != nil && err == sql.ErrNoRows {
-		return nil, nil
+		c.logger.Println(err)
+		return nil, err
 	}
 
 	return location, nil
