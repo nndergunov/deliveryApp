@@ -328,7 +328,8 @@ func (c *service) GetLocation(userID string) (*domain.Location, error) {
 
 	location, err := c.courierStorage.GetLocation(userIDInt)
 	if err != nil && err == sql.ErrNoRows {
-		return nil, nil
+		c.logger.Println(err)
+		return nil, err
 	}
 
 	if err != nil && err != sql.ErrNoRows {
