@@ -28,14 +28,14 @@ func (a CourierClient) GetLocation(city string) (*pb.LocationList, error) {
 	// Contact the server and print out its response.
 	ctx := context.TODO()
 
-	r, err := c.GetLocationList(ctx, &pb.SearchParamLocation{City: &city})
+	r, err := c.GetLocationList(ctx, &pb.ParamLocation{City: &city})
 	if err != nil {
 		return nil, fmt.Errorf("could not get locations: %v", err)
 	}
 	return r, nil
 }
 
-func (a CourierClient) UpdateCourierAvailable(courierID int, available string) (*pb.CourierResponse, error) {
+func (a CourierClient) UpdateCourierAvailable(courierID string, available string) (*pb.CourierResponse, error) {
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(a.courierURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -47,9 +47,9 @@ func (a CourierClient) UpdateCourierAvailable(courierID int, available string) (
 	// Contact the server and print out its response.
 	ctx := context.TODO()
 
-	r, err := c.UpdateCourier(ctx, &pb.SearchParamLocation{City: &city})
+	r, err := c.UpdateCourierAvailable(ctx, &pb.ParamCourier{Id: &courierID, Available: &available})
 	if err != nil {
-		return nil, fmt.Errorf("could not get locations: %v", err)
+		return nil, fmt.Errorf("could not update courier available: %v", err)
 	}
 	return r, nil
 }
