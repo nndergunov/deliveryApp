@@ -6,6 +6,7 @@ import (
 	pb "github.com/nndergunov/deliveryApp/app/services/consumer/api/v1/grpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
 )
 
 type ConsumerClient struct {
@@ -22,7 +23,13 @@ func (a ConsumerClient) GetLocation(consumerID int64) (*pb.Location, error) {
 	if err != nil {
 		return nil, fmt.Errorf("did not connect: %v", err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(conn)
+
 	c := pb.NewConsumerClient(conn)
 
 	// Contact the server and print out its response.

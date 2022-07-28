@@ -6,6 +6,7 @@ import (
 	pb "github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/grpclogic/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
 )
 
 type RestaurantClient struct {
@@ -22,7 +23,12 @@ func (a RestaurantClient) GetRestaurant(restaurantID int) (*pb.RestaurantRespons
 	if err != nil {
 		return nil, fmt.Errorf("did not connect: %v", err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(conn)
 	c := pb.NewRestaurantServiceClient(conn)
 
 	// Contact the server and print out its response.
