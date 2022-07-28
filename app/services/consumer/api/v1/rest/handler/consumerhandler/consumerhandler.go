@@ -604,7 +604,10 @@ func (c *handler) getConsumerLocation(rw http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	response := locationToResponse(*data)
+	response := consumerapi.LocationResponse{}
+	if data != nil {
+		response = locationToResponse(*data)
+	}
 
 	if err := consumerapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
