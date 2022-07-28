@@ -8,12 +8,12 @@ import (
 	"sync"
 
 	"github.com/nndergunov/deliveryApp/app/pkg/api"
-	v1 "github.com/nndergunov/deliveryApp/app/pkg/api/v1"
 	"github.com/nndergunov/deliveryApp/app/pkg/configreader"
 	"github.com/nndergunov/deliveryApp/app/pkg/grpcserver"
 	"github.com/nndergunov/deliveryApp/app/pkg/logger"
 	"github.com/nndergunov/deliveryApp/app/pkg/server"
 	"github.com/nndergunov/deliveryApp/app/pkg/server/config"
+
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/grpclogic"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/handlers"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/db"

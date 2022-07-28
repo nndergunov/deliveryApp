@@ -5,9 +5,10 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/grpc"
+
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/api/v1/grpclogic/pb"
 	"github.com/nndergunov/deliveryApp/app/services/restaurant/pkg/service"
-	"google.golang.org/grpc"
 )
 
 type restaurantGRPC struct {
