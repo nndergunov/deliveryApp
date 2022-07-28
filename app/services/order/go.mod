@@ -8,9 +8,9 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.6
-	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220719145029-84b20cae8739
+	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220727160540-feb36f874dee
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220719145029-84b20cae8739
-	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-00010101000000-000000000000
+	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-20220727160540-feb36f874dee
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/pkg/messagebroker v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8739
@@ -37,6 +37,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20181231230500-73749d4874d5 // indirect
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible // indirect
 	github.com/goccy/go-yaml v1.9.5 // indirect
@@ -44,6 +45,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
+	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/josharian/intern v1.0.0 // indirect

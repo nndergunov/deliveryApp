@@ -368,6 +368,8 @@ github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220719145029-84b20cae8739
 github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220719145029-84b20cae8739/go.mod h1:Ctf+Q3dmfpQ5LOblpMlyVSAo1Cd/QVs06XPaB4AcRhQ=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220719145029-84b20cae8739 h1:/o6I+rLvub/ZJW9OozPTBkxNmYyzsPjO5cgQBmz63J0=
 github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220719145029-84b20cae8739/go.mod h1:ZUwhDklV6a8zUSmHhlHE9I7viwpewNgQOFY93kjJtRc=
+github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-20220727160540-feb36f874dee h1:JHDb+yqjS7EWMmpoZKCnodJWyswMjemfrrHSIn7ItKA=
+github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-20220727160540-feb36f874dee/go.mod h1:dfl0z6i+ybxCcbLesg6/IyWzXEcghz2MiSyaEb3+Z6s=
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739 h1:doXDJjptvw5K1O9d4obJxwrekxTQ3Rh69LfKDu7fRxQ=
 github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739/go.mod h1:GuUn+pPsRBBdho0yROQZWBthhJUB6tR+EeAvp0CVR00=
 github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8739 h1:/Sk7qFXVnccfoavdYBGjJOAWMDDI5uUZSsgjxFyso1s=

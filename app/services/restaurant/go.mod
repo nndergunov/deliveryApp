@@ -10,7 +10,6 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/nndergunov/deliveryApp/app/pkg/api v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/pkg/configreader v0.0.0-20220719145029-84b20cae8739
-	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-00010101000000-000000000000
 	github.com/nndergunov/deliveryApp/app/pkg/logger v0.0.0-20220719145029-84b20cae8739
 	github.com/nndergunov/deliveryApp/app/pkg/server v0.0.0-20220719145029-84b20cae8739
 	github.com/stretchr/testify v1.8.0
@@ -48,6 +47,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
+	github.com/nndergunov/deliveryApp/app/pkg/grpcserver v0.0.0-20220727160540-feb36f874dee // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.3 // indirect

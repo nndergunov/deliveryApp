@@ -9,7 +9,7 @@ genservice:
     -destination=pkg/mocks/mock_consumerservice.go
 
 genstorage:
-	mockgen -source=pkg/service/consumerservice/storage.go \
+	mockgen -source=pkg/service/consumerservice/consumerstorage.go \
 	-destination=pkg/mocks/mock_consumerstorage.go
 
 go-test-unit:

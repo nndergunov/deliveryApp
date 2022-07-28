@@ -11,7 +11,7 @@ import (
 	domain "github.com/nndergunov/deliveryApp/app/services/courier/pkg/domain"
 )
 
-// MockCourierStorage is a mock of Storage interface.
+// MockCourierStorage is a mock of CourierStorage interface.
 type MockCourierStorage struct {
 	ctrl     *gomock.Controller
 	recorder *MockCourierStorageMockRecorder
