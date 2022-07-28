@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"google.golang.org/grpc"
@@ -232,6 +233,9 @@ func (h *handler) GetLocation(ctx context.Context, in *pb.UserID) (*pb.Location,
 		return nil, err
 	}
 
+	if resp == nil {
+		return nil, fmt.Errorf("no location found")
+	}
 	return &pb.Location{
 		UserID:     int64(resp.UserID),
 		Latitude:   &resp.Latitude,
