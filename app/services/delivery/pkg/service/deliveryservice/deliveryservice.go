@@ -219,6 +219,7 @@ func (c *service) AssignOrder(orderID string, order *domain.Order) (*domain.Assi
 	// update available courier to false
 	_, err = c.courierClient.UpdateCourierAvailable(strconv.FormatInt(courierLocation.UserID, 10), "false")
 	if err != nil {
+		c.logger.Println(err)
 		return nil, systemErr
 	}
 

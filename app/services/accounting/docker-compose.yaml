@@ -16,7 +16,7 @@ services:
     build: .
     ports:
       - "8080:8080"
-      - "440:440"
+      - "140:140"
     restart: on-failure
     depends_on:
       - accounting_service_db

@@ -16,7 +16,7 @@ services:
     build: .
     ports:
       - "8083:8083"
-      - "443:443"
+      - "143:143"
     restart: on-failure
     depends_on:
       - delivery_service_db

@@ -6,13 +6,13 @@ server:
   readerHeaderTime: "5s"
 
 grpcServer:
-  address: ":445"
+  address: ":145"
 
 services:
   # accounting: http://localhost:8080 # local run
   # restaurant: http://localhost:8086 # local run
-  accounting: http://accounting-service:8080 # docker run
-  restaurant: http://restaurant-service:8086 # docker run
+  accounting: accounting-service:140 # docker run
+  restaurant: restaurant-service:146 # docker run
 
 database:
   # host: localhost # local run

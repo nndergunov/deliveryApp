@@ -16,6 +16,7 @@ services:
     build: .
     ports:
       - "8085:8085"
+      - "145:145"
     restart: on-failure
     depends_on:
       - order_service_db

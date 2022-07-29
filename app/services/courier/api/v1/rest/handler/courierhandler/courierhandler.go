@@ -700,7 +700,10 @@ func (c *handler) getLocation(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := locationToResponse(*data)
+	response := courierapi.LocationResponse{}
+	if data != nil {
+		response = locationToResponse(*data)
+	}
 
 	if err := courierapi.Respond(rw, http.StatusOK, response); err != nil {
 		c.log.Println(err)
