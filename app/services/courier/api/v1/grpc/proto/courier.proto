@@ -16,6 +16,8 @@ service Courier {
 
   rpc updateCourier (UpdateCourierRequest) returns (CourierResponse){}
 
+  rpc updateCourierAvailable (UpdateCourierAvailableRequest) returns (CourierResponse){}
+
   rpc getCourier (CourierID) returns (CourierResponse){}
 
   rpc insertNewLocation (Location) returns (Location){}
@@ -45,6 +47,11 @@ message UpdateCourierRequest {
   string Lastname = 3;
   string Email = 4;
   string Phone = 5;
+}
+
+message UpdateCourierAvailableRequest {
+  int64  ID = 1;
+  string Available = 2;
 }
 
 // The response message containing the greetings

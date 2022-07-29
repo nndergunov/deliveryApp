@@ -16,7 +16,7 @@ services:
     build: .
     ports:
       - "8082:8082"
-      - "442:442"
+      - "142:142"
     restart: on-failure
     depends_on:
       - courier_service_db

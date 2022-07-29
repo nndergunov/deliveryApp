@@ -84,6 +84,7 @@ func (h *handler) GetAllCourier(ctx context.Context, in *pb.SearchParamCourier) 
 	for _, resp := range respList {
 		out := &pb.CourierResponse{
 			ID:        int64(resp.ID),
+			Username:  resp.Username,
 			Firstname: resp.Firstname,
 			Lastname:  resp.Lastname,
 			Email:     resp.Email,
@@ -118,6 +119,23 @@ func (h *handler) UpdateCourier(ctx context.Context, in *pb.UpdateCourierRequest
 
 	return &pb.CourierResponse{
 		ID:        int64(resp.ID),
+		Username:  resp.Username,
+		Firstname: resp.Firstname,
+		Lastname:  resp.Lastname,
+		Email:     resp.Email,
+		Phone:     resp.Phone,
+	}, nil
+}
+
+func (h *handler) UpdateCourierAvailable(ctx context.Context, in *pb.UpdateCourierAvailableRequest) (*pb.CourierResponse, error) {
+	resp, err := h.service.UpdateCourierAvailable(strconv.FormatInt(in.GetID(), 10), in.GetAvailable())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CourierResponse{
+		ID:        int64(resp.ID),
+		Username:  resp.Username,
 		Firstname: resp.Firstname,
 		Lastname:  resp.Lastname,
 		Email:     resp.Email,
@@ -133,6 +151,7 @@ func (h *handler) GetCourier(ctx context.Context, in *pb.CourierID) (*pb.Courier
 
 	return &pb.CourierResponse{
 		ID:        int64(resp.ID),
+		Username:  resp.Username,
 		Firstname: resp.Firstname,
 		Lastname:  resp.Lastname,
 		Email:     resp.Email,

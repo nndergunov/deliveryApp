@@ -16,7 +16,7 @@ services:
     build: .
     ports:
       - "8081:8081"
-      - "441:441"
+      - "141:141"
     restart: on-failure
     depends_on:
       - consumer_service_db

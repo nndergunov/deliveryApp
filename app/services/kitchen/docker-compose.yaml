@@ -5,6 +5,7 @@ services:
     build: .
     ports:
       - "8084:8084"
+      - "144:144"
     restart: on-failure
 networks:
   default:

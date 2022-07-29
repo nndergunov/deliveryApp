@@ -27,15 +27,15 @@ const configFile = "/config.yaml"
 
 func main() {
 	// Construct the application logger.
-	l := logger.NewLogger(os.Stdout, "main: ")
+	mLog := logger.NewLogger(os.Stdout, "main: ")
 
 	// Perform the startup and shutdown sequence.
-	if err := run(l); err != nil {
-		log.Fatal("startup", "ERROR", err)
+	if err := run(); err != nil {
+		mLog.Fatal("startup", "ERROR", err)
 	}
 }
 
-func run(log *logger.Logger) error {
+func run() error {
 	confPath, err := os.Getwd()
 	if err != nil {
 		return err

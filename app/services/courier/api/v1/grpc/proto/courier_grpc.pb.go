@@ -27,6 +27,7 @@ type CourierClient interface {
 	GetAllCourier(ctx context.Context, in *SearchParamCourier, opts ...grpc.CallOption) (*CourierListResponse, error)
 	DeleteCourier(ctx context.Context, in *CourierID, opts ...grpc.CallOption) (*CourierDeleteResponse, error)
 	UpdateCourier(ctx context.Context, in *UpdateCourierRequest, opts ...grpc.CallOption) (*CourierResponse, error)
+	UpdateCourierAvailable(ctx context.Context, in *UpdateCourierAvailableRequest, opts ...grpc.CallOption) (*CourierResponse, error)
 	GetCourier(ctx context.Context, in *CourierID, opts ...grpc.CallOption) (*CourierResponse, error)
 	InsertNewLocation(ctx context.Context, in *Location, opts ...grpc.CallOption) (*Location, error)
 	UpdateLocation(ctx context.Context, in *Location, opts ...grpc.CallOption) (*Location, error)
@@ -72,6 +73,15 @@ func (c *courierClient) DeleteCourier(ctx context.Context, in *CourierID, opts .
 func (c *courierClient) UpdateCourier(ctx context.Context, in *UpdateCourierRequest, opts ...grpc.CallOption) (*CourierResponse, error) {
 	out := new(CourierResponse)
 	err := c.cc.Invoke(ctx, "/courier.Courier/updateCourier", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courierClient) UpdateCourierAvailable(ctx context.Context, in *UpdateCourierAvailableRequest, opts ...grpc.CallOption) (*CourierResponse, error) {
+	out := new(CourierResponse)
+	err := c.cc.Invoke(ctx, "/courier.Courier/updateCourierAvailable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -132,6 +142,7 @@ type CourierServer interface {
 	GetAllCourier(context.Context, *SearchParamCourier) (*CourierListResponse, error)
 	DeleteCourier(context.Context, *CourierID) (*CourierDeleteResponse, error)
 	UpdateCourier(context.Context, *UpdateCourierRequest) (*CourierResponse, error)
+	UpdateCourierAvailable(context.Context, *UpdateCourierAvailableRequest) (*CourierResponse, error)
 	GetCourier(context.Context, *CourierID) (*CourierResponse, error)
 	InsertNewLocation(context.Context, *Location) (*Location, error)
 	UpdateLocation(context.Context, *Location) (*Location, error)
@@ -155,6 +166,9 @@ func (UnimplementedCourierServer) DeleteCourier(context.Context, *CourierID) (*C
 }
 func (UnimplementedCourierServer) UpdateCourier(context.Context, *UpdateCourierRequest) (*CourierResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourier not implemented")
+}
+func (UnimplementedCourierServer) UpdateCourierAvailable(context.Context, *UpdateCourierAvailableRequest) (*CourierResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCourierAvailable not implemented")
 }
 func (UnimplementedCourierServer) GetCourier(context.Context, *CourierID) (*CourierResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCourier not implemented")
@@ -252,6 +266,24 @@ func _Courier_UpdateCourier_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourierServer).UpdateCourier(ctx, req.(*UpdateCourierRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Courier_UpdateCourierAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCourierAvailableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourierServer).UpdateCourierAvailable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/courier.Courier/updateCourierAvailable",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourierServer).UpdateCourierAvailable(ctx, req.(*UpdateCourierAvailableRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -368,6 +400,10 @@ var Courier_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "updateCourier",
 			Handler:    _Courier_UpdateCourier_Handler,
+		},
+		{
+			MethodName: "updateCourierAvailable",
+			Handler:    _Courier_UpdateCourierAvailable_Handler,
 		},
 		{
 			MethodName: "getCourier",

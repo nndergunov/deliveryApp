@@ -6,7 +6,7 @@ server:
     idleTime: "5m"
     readerHeaderTime: "5s"
   grpc:
-    address: ":443"
+    address: ":143"
 
 database:
   host: "host.docker.internal"
@@ -16,7 +16,7 @@ database:
   dbName: "delivery_db"
   sslmode: "disable"
 
-consumerServiceURl: 127.0.0.1:441
-courierServiceURl: 127.0.0.1:442
-restaurantServiceURl: 127.0.0.1:446
+consumerServiceURl: host.docker.internal:141
+courierServiceURl: host.docker.internal:142
+restaurantServiceURl: host.docker.internal:146
 googleApiKey:

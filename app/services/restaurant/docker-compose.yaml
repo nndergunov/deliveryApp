@@ -17,6 +17,7 @@ services:
     build: .
     ports:
       - "8086:8086"
+      - "146:146"
     restart: on-failure
     depends_on:
       - restaurant_service_db

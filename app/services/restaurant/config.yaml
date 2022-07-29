@@ -6,7 +6,7 @@ httpServer:
   readerHeaderTime: "5s"
 
 grpcServer:
-  address: ":446"
+  address: ":146"
 
 database:
   # host: "localhost"
