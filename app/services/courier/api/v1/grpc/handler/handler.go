@@ -67,7 +67,7 @@ func (h *handler) InsertNewCourier(ctx context.Context, in *pb.NewCourierRequest
 	}, nil
 }
 
-func (h *handler) GetAllCourier(ctx context.Context, in *pb.SearchParamCourier) (*pb.CourierListResponse, error) {
+func (h *handler) GetAllCourier(ctx context.Context, in *pb.ParamCourier) (*pb.CourierListResponse, error) {
 	param := domain.SearchParam{}
 	param["available"] = in.GetAvailable()
 	respList, err := h.service.GetCourierList(param)
@@ -106,6 +106,7 @@ func (h *handler) DeleteCourier(ctx context.Context, in *pb.CourierID) (*pb.Cour
 
 func (h *handler) UpdateCourier(ctx context.Context, in *pb.UpdateCourierRequest) (*pb.CourierResponse, error) {
 	courier := domain.Courier{
+		Username:  in.Username,
 		Firstname: in.Firstname,
 		Lastname:  in.Lastname,
 		Email:     in.Email,
@@ -127,8 +128,9 @@ func (h *handler) UpdateCourier(ctx context.Context, in *pb.UpdateCourierRequest
 	}, nil
 }
 
-func (h *handler) UpdateCourierAvailable(ctx context.Context, in *pb.UpdateCourierAvailableRequest) (*pb.CourierResponse, error) {
-	resp, err := h.service.UpdateCourierAvailable(strconv.FormatInt(in.GetID(), 10), in.GetAvailable())
+func (h *handler) UpdateCourierAvailable(ctx context.Context, in *pb.ParamCourier) (*pb.CourierResponse, error) {
+
+	resp, err := h.service.UpdateCourierAvailable(in.GetId(), in.GetAvailable())
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +250,7 @@ func (h *handler) GetLocation(ctx context.Context, in *pb.UserID) (*pb.Location,
 	}, nil
 }
 
-func (h *handler) GetLocationList(ctx context.Context, in *pb.SearchParamLocation) (*pb.LocationList, error) {
+func (h *handler) GetLocationList(ctx context.Context, in *pb.ParamLocation) (*pb.LocationList, error) {
 	param := domain.SearchParam{}
 
 	city := in.GetCity()

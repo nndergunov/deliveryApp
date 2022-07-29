@@ -5,18 +5,16 @@ package courier;
 
 option go_package = "proto/courier.proto";
 
-// The Accounting service definition.
 service Courier {
-  // Sends a greeting
   rpc insertNewCourier (NewCourierRequest) returns (CourierResponse) {}
 
-  rpc getAllCourier (SearchParamCourier) returns (CourierListResponse){}
+  rpc getAllCourier (ParamCourier) returns (CourierListResponse){}
 
   rpc deleteCourier (CourierID) returns (CourierDeleteResponse){}
 
   rpc updateCourier (UpdateCourierRequest) returns (CourierResponse){}
 
-  rpc updateCourierAvailable (UpdateCourierAvailableRequest) returns (CourierResponse){}
+  rpc updateCourierAvailable (ParamCourier) returns (CourierResponse){}
 
   rpc getCourier (CourierID) returns (CourierResponse){}
 
@@ -26,11 +24,10 @@ service Courier {
 
   rpc getLocation (userID) returns (Location){}
 
-  rpc getLocationList (SearchParamLocation) returns (LocationList){}
+  rpc getLocationList (ParamLocation) returns (LocationList){}
 
 }
 
-// The request message containing the user's data.
 message NewCourierRequest {
   string Username = 1;
   string Password = 2;
@@ -40,21 +37,15 @@ message NewCourierRequest {
   string Phone = 6;
 }
 
-// The request message containing the user's data.
 message UpdateCourierRequest {
   int64  ID = 1;
-  string Firstname = 2;
-  string Lastname = 3;
-  string Email = 4;
-  string Phone = 5;
+  string Username = 2;
+  string Firstname = 3;
+  string Lastname = 5;
+  string Email = 6;
+  string Phone = 7;
 }
 
-message UpdateCourierAvailableRequest {
-  int64  ID = 1;
-  string Available = 2;
-}
-
-// The response message containing the greetings
 message CourierResponse {
   int64 ID = 1;
   string Username = 2;
@@ -69,11 +60,10 @@ message CourierListResponse {
   repeated CourierResponse CourierListResponse = 1;
 }
 
-message SearchParamCourier {
+message ParamCourier {
   optional string available = 1;
+  optional string id = 2;
 }
-
-
 
 message CourierID {
   int64 CourierID = 1;
@@ -83,7 +73,7 @@ message CourierDeleteResponse {
   string CourierDeleteResponse = 1;
 }
 
-message SearchParamLocation {
+message ParamLocation {
   optional string city = 1;
 }
 
